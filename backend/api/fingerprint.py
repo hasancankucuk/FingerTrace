@@ -1,0 +1,116 @@
+from helpers.map_device_type import map_device_type
+from flask import Blueprint, request, jsonify
+from helpers.firebase_utils import firestore_set, firestore_get, firestore_update, firestore_delete, firestore_get_all
+
+fingerprint_bp = Blueprint('fingerprint', __name__)
+
+@fingerprint_bp.route('/fingerprints', methods=['GET'])
+def list_fingerprints():
+    docs = firestore_get_all('fingerprints')
+    return jsonify(docs), 200
+
+@fingerprint_bp.route('/fingerprints/<doc_id>', methods=['GET'])
+def get_fingerprint(doc_id):
+    doc = firestore_get('fingerprints', doc_id)
+    if doc:
+        return jsonify(doc), 200
+    return jsonify({'error': 'Not found'}), 404
+
+@fingerprint_bp.route('/fingerprints', methods=['POST'])
+def create_fingerprint():
+    from datetime import datetime
+    data = request.json or {}
+    doc_id = data.get('id')
+    if not doc_id:
+        return jsonify({'error': 'Missing id'}), 400
+
+    workspace_id = data.get('workspace_id') or data.get('ws_id')
+    workspace_name = None
+
+    workspace_field = data.get('workspace')
+    if isinstance(workspace_field, dict):
+        workspace_id = workspace_id or workspace_field.get('id')
+        workspace_name = workspace_field.get('name') or workspace_field.get('title')
+    elif isinstance(workspace_field, str):
+        workspace_name = workspace_field
+
+    workspace_name = workspace_name or data.get('workspace_name')
+
+    if workspace_id:
+        data['workspace_id'] = workspace_id
+    if workspace_name:
+        data['workspace'] = workspace_name
+
+    now = datetime.utcnow().isoformat()
+    data['created_at'] = now
+    data['updated_at'] = now
+    firestore_set('fingerprints', doc_id, data)
+
+    return jsonify({
+        'message': 'Fingerprint created',
+        'id': doc_id,
+        'workspace_id': data.get('workspace_id'),
+        'workspace': data.get('workspace')
+    }), 201
+
+@fingerprint_bp.route('/fingerprints/<doc_id>', methods=['PUT'])
+def update_fingerprint(doc_id):
+    from datetime import datetime
+    data = request.json
+    data['updated_at'] = datetime.utcnow().isoformat()
+    firestore_update('fingerprints', doc_id, data)
+    return jsonify({'message': 'Fingerprint updated'}), 200
+
+@fingerprint_bp.route('/fingerprints/<doc_id>', methods=['DELETE'])
+def delete_fingerprint(doc_id):
+    firestore_delete('fingerprints', doc_id)
+    return jsonify({'message': 'Fingerprint deleted'}), 200
+
+@fingerprint_bp.route('/fingerprints/merged', methods=['GET'])
+def list_merged_fingerprints():
+    fingerprints = firestore_get_all('fingerprints')
+    deviceinfo_list = firestore_get_all('deviceinfo')
+
+    workspace_id = request.args.get("workspace_id")
+    workspace_keys = ("workspace_id", "workspace", "ws_id")
+
+    if workspace_id:
+        def in_workspace_rec(obj):
+            if not isinstance(obj, dict):
+                return False
+            for k in workspace_keys:
+                val = obj.get(k)
+                if val and str(val) == str(workspace_id):
+                    return True
+            return False
+
+        deviceinfo_list = [d for d in deviceinfo_list if in_workspace_rec(d)]
+        fingerprints = [f for f in fingerprints if in_workspace_rec(f)]
+
+    fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints if isinstance(fp, dict) and fp.get('fingerprint')}
+
+    merged_data = []
+    for device in deviceinfo_list:
+        fp = device.get('fingerprint')
+        if fp and fp in fingerprints_dict:
+            fp_data = fingerprints_dict[fp]
+            merged_entry = {
+                "request_id": fp_data.get("id", ""),
+                "fingerprint": fp or "",
+                "created_at": device.get("created_at", "") or fp_data.get("created_at", ""),
+                "updated_at": device.get("updated_at", "") or fp_data.get("updated_at", ""),
+                "device_type": map_device_type(device.get("device_type")),
+                "platform": device.get("platform", ""),
+                "time_zone": device.get("time_zone", "") or fp_data.get("time_zone", ""),
+                "user_agent": device.get("user_agent", "") or fp_data.get("user_agent", ""),
+                "color_depth": device.get("color_depth", "") or fp_data.get("color_depth", ""),
+                "color_gamut": device.get("color_gamut", "") or fp_data.get("color_gamut", ""),
+                "bar_visibility": device.get("bar_visibility", "") or fp_data.get("bar_visibility", ""),
+                "browser_feature_support": device.get("browser_feature_support", "") or fp_data.get("browser_feature_support", ""),
+            }
+            merged_data.append(merged_entry)
+
+    if not merged_data:
+        return jsonify({"message": "No data"}), 200
+
+    return jsonify(merged_data), 200

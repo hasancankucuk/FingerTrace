@@ -1,0 +1,78 @@
+import "./App.css";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import Dashboard from "./app/dashboard/Dashboard";
+import LoginPage from "./app/login/Login";
+import SignupPage from "./app/signup/Signup";
+import { ApiKeys } from "./app/api-keys/ApiKeys";
+import { SidebarProvider } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
+import { Health } from "./app/health/Health";
+import { Analysis } from "./app/analysis/Analysis";
+import { Identification } from "./app/identification/Identification";
+import { Account } from "./app/account/Account";
+import { useAuthStore } from "./store/useAuthStore";
+import type { AuthState } from "./models/Authstate";
+import { ForgotPassword } from "./app/login/ForgotPassword";
+
+function SidebarLayout() {
+  return (
+    <div className="flex h-screen w-full">
+      <AppSidebar variant="inset" />
+      <main className="flex-1 overflow-y-auto p-4">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+function NoSidebarLayout() {
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <Outlet />
+    </div>
+  );
+}
+
+function PrivateRoute() {
+  const isAuth = useAuthStore((s: AuthState) => Boolean(s.token));
+  return isAuth ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <SidebarProvider>
+        <Routes>
+          {/* Pages without sidebar */}
+          <Route element={<NoSidebarLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </Route>
+
+          {/* Protected pages with sidebar */}
+          <Route element={<PrivateRoute />}>
+            <Route element={<SidebarLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/api-keys" element={<ApiKeys />} />
+              <Route path="/analysis" element={<Analysis />} />
+              <Route path="/health" element={<Health />} />
+              <Route path="/identification" element={<Identification />} />
+              <Route path="/security" element={<div>Security Page</div>} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/account" element={<Account />} />
+            </Route>
+          </Route>
+        </Routes>
+      </SidebarProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;

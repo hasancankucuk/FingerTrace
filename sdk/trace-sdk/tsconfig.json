@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es5",
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "removeComments": false,
+    "importHelpers": true,
+    "noErrorTruncation": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "types": [
+      "jest",
+      "node",
+      "cypress"
+    ]
+  },
+  "include": [
+    "src/index.ts",
+    "src/**/*.ts",
+    "src/**/**/*.ts",
+    " rollup.config.mjs",
+    "cypress/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "lib": [
+        "es2015",
+        "dom"
+      ],
+      "declaration": true
+    }
+  }
+}

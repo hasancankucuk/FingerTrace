@@ -1,0 +1,7 @@
+Flask-JWT-Extended
+Flask
+flask-cors
+firebase-admin
+pycountry
+pytz
+requests
