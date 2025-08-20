@@ -20,28 +20,42 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    { title: "Get Started", url: "/", icon: IconQuestionMark },
-    { title: "Analysis", url: "/analysis", icon: IconEye },
-    { title: "API Keys", url: "/api-keys", icon: IconKey },
-    { title: "Health", url: "/health", icon: IconActivityHeartbeat },
-    { title: "Identification", url: "/identification", icon: IconFingerprint },
-    // { title: "Integration", url: "/integration", icon: IconFileDescription },
-  ],
-  navSecondary: [],
-};
+import { getCurrentUser } from "@/services/auth";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [user, setUser] = React.useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
+  useEffect(() => {
+    getCurrentUser()
+      .then((res) => setUser(res))
+      .catch(() => {
+        toast.error("Error fetching data");
+      });
+  }, []);
+  const data = {
+    user,
+    navMain: [
+      { title: "Get Started", url: "/", icon: IconQuestionMark },
+      { title: "Analysis", url: "/analysis", icon: IconEye },
+      { title: "API Keys", url: "/api-keys", icon: IconKey },
+      { title: "Health", url: "/health", icon: IconActivityHeartbeat },
+      {
+        title: "Identification",
+        url: "/identification",
+        icon: IconFingerprint,
+      },
+      // { title: "Integration", url: "/integration", icon: IconFileDescription },
+    ],
+    navSecondary: [],
+  };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -52,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
               onClick={() => navigate("/")}
             >
-              <a href="#">
+              <a href="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Finger Trace</span>
               </a>
@@ -72,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           }))}
         />
 
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
       <SidebarFooter>

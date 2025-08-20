@@ -22,10 +22,12 @@ import { ForgotPassword } from "./app/login/ForgotPassword";
 
 function SidebarLayout() {
   return (
-    <div className="flex h-screen w-full">
-      <AppSidebar variant="inset" />
-      <main className="flex-1 overflow-y-auto p-4">
-        <Outlet />
+    <div className="flex h-screen w-full bg-gray-50">
+      <AppSidebar className="h-full flex-shrink-0" />
+      <main className="flex-1 flex flex-col overflow-y-auto bg-gray-50">
+        <div className="p-4 flex-1">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
@@ -34,7 +36,9 @@ function SidebarLayout() {
 function NoSidebarLayout() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
-      <Outlet />
+      <div className="w-full max-w-md p-4">
+        <Outlet />
+      </div>
     </div>
   );
 }

@@ -96,15 +96,15 @@ export const Account = () => {
             </div>
 
             <div className="flex flex-row justify-between items-start">
-              <Button className="mt-2 w-fit" onClick={saveChanges}>
-                Save Changes
-              </Button>
               <Button
                 className="mt-2 w-fit"
                 onClick={deleteAccount}
                 variant="destructive"
               >
                 Delete Account
+              </Button>
+              <Button className="mt-2 w-fit" onClick={saveChanges}>
+                Save Changes
               </Button>
             </div>
           </CardContent>

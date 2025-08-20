@@ -30,9 +30,9 @@ def user():
     print(user)
 
     return jsonify({
-        "email": user.email,
-        "name": user.display_name,
-        "phone": user.phone_number,
+        "email": user["email"],
+        "name": user["display_name"],
+        "phone": user["phone_number"],
     }), 200
 
 @auth_bp.route('/user', methods=['PUT'])
