@@ -1,31 +1,16 @@
+from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, jsonify
 import os
-import firebase_admin
-from firebase_admin import firestore
 
 health_bp = Blueprint("health", __name__)
 
 @health_bp.route("/health", methods=["GET"])
-def health_check():
+@jwt_protected
+def health_check(current_user):
     checks = {}
 
     # App check
-    checks["app"] = "ok"
-
-    # Firebase check
-    try:
-        _ = firebase_admin.get_app()
-        checks["firebase"] = "ok"
-    except Exception as e:
-        checks["firebase"] = f"error: {str(e)}"
-
-    # Firestore check
-    try:
-        db = firestore.client()
-        _ = db.collection("health").document("ping").get()
-        checks["firestore"] = "ok"
-    except Exception as e:
-        checks["firestore"] = f"error: {str(e)}"
+    checks["backend"] = "ok"
 
     # Version check (ok/error + value)
     version = os.environ.get("APP_VERSION", "1.0.0")
@@ -39,5 +24,6 @@ def health_check():
 
     return jsonify({
         "status": overall_status,
-        "checks": checks
+        "checks": checks,
+        "user": current_user  # token’dan gelen kullanıcı bilgisi
     }), 200 if overall_status == "healthy" else 503

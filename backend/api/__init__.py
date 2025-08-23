@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask # type: ignore
 from flask_cors import CORS # type: ignore
 from .auth import auth_bp
@@ -10,10 +11,13 @@ from .workspaces import workspaces_bp
 
 from flask_jwt_extended import JWTManager # type: ignore
 
+ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 app.config['JWT_SECRET_KEY'] = 'H9jGsv4lykGeRToN3DQ3-322PH2MmcGu8Wm4AN7os2E'
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
+
 jwt = JWTManager(app)
 
 app.register_blueprint(auth_bp)

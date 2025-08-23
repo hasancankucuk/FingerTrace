@@ -1,63 +1,39 @@
-interface WorkspaceData {
-  name: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  id?: string;
-}
+import { httpRequest } from "./http";
+import { getToken } from "./auth";
+import type { WorkspacesType } from "@/models/Workspaces";
 
-export const createWorkspace = async (workspaceData: WorkspaceData) => {
-  try {
-    const response = await fetch("http://localhost:5000/api/workspaces", {
+export const createWorkspace = async (workspaceData: WorkspacesType) => {
+  const token = getToken();
+  return httpRequest<{ message: string; id: string }>(
+    "http://localhost:5000/api/workspaces",
+    {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(workspaceData),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to create workspace");
+      token,
+      body: workspaceData,
     }
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating workspace:", error);
-    throw error;
-  }
+  );
 };
 
 export const getWorkspaces = async () => {
-  try {
-    const response = await fetch("http://localhost:5000/api/workspaces", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch workspaces");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching workspaces:", error);
-    throw error;
-  }
+  const token = getToken();
+  return httpRequest<WorkspacesType[]>("http://localhost:5000/api/workspaces", {
+    method: "GET",
+    token,
+  });
 };
 
+export const getWorkspace = async (workspaceId: string) => {
+  const token = getToken();
+  return httpRequest<WorkspacesType>(
+    `http://localhost:5000/api/workspaces/${workspaceId}`,
+    { method: "GET", token }
+  );
+};
 
 export const deleteWorkspace = async (workspaceId: string) => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/workspaces/${workspaceId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Failed to delete workspace");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error deleting workspace:", error);
-    throw error;
-  }
+  const token = getToken();
+  return httpRequest<{ message: string }>(
+    `http://localhost:5000/api/workspaces/${workspaceId}`,
+    { method: "DELETE", token }
+  );
 };

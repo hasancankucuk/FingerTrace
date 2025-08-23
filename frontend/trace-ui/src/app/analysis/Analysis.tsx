@@ -101,6 +101,12 @@ export const Analysis = () => {
   return (
     <>
       <Toaster />
+      <div className="max-w-4xl mx-auto space-y-6 p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>API Usage</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
       <div className="flex flex-col gap-6 px-4 py-6">
         <div className="flex items-center gap-4 mb-2">
           <label className="text-sm font-medium">API Usage Period:</label>
@@ -222,6 +228,10 @@ export const Analysis = () => {
           </Card>
         </div>
       </div>
+          </CardContent>
+        </Card>
+      </div>
+
     </>
   );
 };

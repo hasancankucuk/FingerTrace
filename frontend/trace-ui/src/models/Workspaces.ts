@@ -1,7 +1,7 @@
 export type WorkspacesType = {
-    id: string
-    name: string
-    description: string
-    createdAt: Date
-    updatedAt: Date
-}
+  id?: string
+  name: string
+  description?: string
+  createdAt?: string | Date
+  updatedAt?: string | Date
+};

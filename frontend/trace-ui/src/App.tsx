@@ -1,4 +1,3 @@
-import "./App.css";
 import {
   BrowserRouter,
   Routes,
@@ -23,7 +22,7 @@ import { ForgotPassword } from "./app/login/ForgotPassword";
 function SidebarLayout() {
   return (
     <div className="flex h-screen w-full bg-gray-50">
-      <AppSidebar className="h-full flex-shrink-0" />
+      <AppSidebar className="h-full flex-shrink-0" collapsible="icon" />
       <main className="flex-1 flex flex-col overflow-y-auto bg-gray-50">
         <div className="p-4 flex-1">
           <Outlet />
@@ -36,7 +35,7 @@ function SidebarLayout() {
 function NoSidebarLayout() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
-      <div className="w-full max-w-md p-4">
+      <div className="w-full p-4">
         <Outlet />
       </div>
     </div>

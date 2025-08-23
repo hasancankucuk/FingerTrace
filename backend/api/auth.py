@@ -1,4 +1,4 @@
-from helpers.firebase_utils import create_user, firebase_reset_password, get_user, firebase_update_user, firebase_delete_user, firestore_update, firestore_delete
+from helpers.firebase_utils import create_user, firebase_reset_password, firestore_get_all, get_user, firebase_update_user, firebase_delete_user, firestore_update, firestore_delete
 from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity # type: ignore
 
@@ -11,15 +11,17 @@ def register():
     password = data.get('password')
     name = data.get('name')
 
+
     if not email or not password or not name:
         return jsonify({"error": "Missing fields"}), 400
 
     user = create_user(email, password, name)
+
     if user is None:
         return jsonify({"error": "Email already exists"}), 400
 
-    access_token = create_access_token(identity=user.uid)
-    return jsonify({"uid": user.uid, "access_token": access_token}), 201
+    access_token = create_access_token(identity=user["uid"])
+    return jsonify({"uid": user["uid"], "access_token": access_token}), 201
 
 @auth_bp.route('/user', methods=['GET'])
 @jwt_required()
@@ -51,10 +53,22 @@ def update_user():
 def delete_user():
     uid = get_jwt_identity()
     try:
+        user = get_user(uid)
+        email = user["email"]
+
+        workspaces = firestore_get_all("workspaces")
+        user_workspaces = [ws for ws in workspaces if ws.get("created_by") == email]
+
+        for ws in user_workspaces:
+            firestore_delete("workspaces", ws["id"])
+
+        # Firebase kullanıcıyı sil
         firebase_delete_user(uid)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-    return jsonify({"message": "User deleted"}), 200
+
+    return jsonify({"message": "User and their workspaces deleted"}), 200
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()

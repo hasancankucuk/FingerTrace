@@ -100,7 +100,7 @@ export default function Dashboard() {
     <div className="max-w-4xl mx-auto space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Get started</CardTitle>
+          <CardTitle>Get Started</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Platform */}

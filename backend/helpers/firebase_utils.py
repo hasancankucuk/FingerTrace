@@ -25,13 +25,17 @@ def _user_record_to_dict(user):
 
 
 def create_user(email, password, name=None):
-    user = auth.create_user(
-        email=email,
-        password=password,
-        display_name=name,
-        email_verified=False,
+    try:
+        user = auth.create_user(
+            email=email,
+            password=password,
+            display_name=name,
+            email_verified=False,
         disabled=False,
-    )
+        )
+    except Exception as e:
+        print("Error creating user:", e)
+        return None
     return _user_record_to_dict(user)
 
 

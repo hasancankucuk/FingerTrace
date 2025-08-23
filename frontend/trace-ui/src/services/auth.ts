@@ -1,100 +1,79 @@
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from '@/store/useAuthStore';
+import { httpRequest } from './http';
+import type { AuthResponse } from '@/models/AuthResponse';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const registerUser = async (email: string, password: string, name: string) => {
-  try {
-    const res = await fetch("http://localhost:5000/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
-    });
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Registration failed");
-
-    const { uid, access_token } = result as { uid?: string; access_token?: string };
-
-    return { uid, access_token };
-  } catch (error: any) {
-    console.error("Register error:", error);
-    throw new Error(error?.message || "Registration failed");
-  }
+export const getToken = (): string | undefined => {
+  return localStorage.getItem("access_token") || useAuthStore.getState().token || undefined;
 };
+
+export const registerUser = (email: string, password: string, name: string) =>
+  httpRequest<AuthResponse>('http://localhost:5000/register', {
+    method: 'POST',
+    body: { email, password, name },
+  });
 
 export const loginUser = async (email: string, password: string) => {
-  try {
-    const res = await fetch("http://localhost:5000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const result = await httpRequest<{ uid?: string; access_token?: string; error?: string }>(
+    'http://localhost:5000/login',
+    {
+      method: 'POST',
+      body: { email, password },
+    }
+  );
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Login failed");
-
-    const { uid, access_token } = result as { uid?: string; access_token?: string };
-    if (access_token) useAuthStore.setState({ token: access_token });
-
-    return { uid, access_token };
-  } catch (error: any) {
-    console.error("Login error:", error);
-    throw new Error(error?.message || "Login failed");
+  if (result.access_token) {
+    localStorage.setItem('access_token', result.access_token);
+    useAuthStore.setState({ token: result.access_token });
   }
+
+  return result;
 };
-
-export const getToken = () => useAuthStore.getState().token;
-
 export const getAuthHeaders = () => {
   const token = getToken();
-  const headers = new Headers({ "Content-Type": "application/json" });
-  if (token) headers.append("Authorization", `Bearer ${token}`);
-  return headers;
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 export const getCurrentUser = async () => {
-  const headers = getAuthHeaders();
-  const res = await fetch(`http://localhost:5000/user`, {  method: "GET", headers: headers });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || "Failed to fetch user");
-  }
-  return res.json();
+  const token = getToken();
+  if (!token) throw new Error('No token found');
+
+  const user = await httpRequest<{ email: string; name: string; phone?: string }>(
+    'http://localhost:5000/user',
+    { method: 'GET', token }
+  );
+  return user;
 };
 
-export const logout = () => localStorage.removeItem("access_token");
+export const logout = () => {
+  localStorage.removeItem('access_token');
+  useAuthStore.setState({ token: null });
+};
 
 export const updateUser = async (name: string, email: string) => {
-  const headers = getAuthHeaders();
-  const res = await fetch(`http://localhost:5000/user`, {
-    method: "PUT",
-    headers: headers,
-    body: JSON.stringify({ name, email }),
+  const token = getToken();
+  if (!token) throw new Error('No token found');
+
+  return httpRequest<{ message: string }>('http://localhost:5000/user', {
+    method: 'PUT',
+    token,
+    body: { name, email },
   });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || "Failed to update user");
-  }
-  return res.json();
 };
 
 export const deleteUser = async () => {
-  const headers = getAuthHeaders();
-  const res = await fetch(`http://localhost:5000/user`, {
-    method: "DELETE",
-    headers: headers,
+  const token = getToken();
+  if (!token) throw new Error('No token found');
+
+  return httpRequest<{ message: string }>('http://localhost:5000/user', {
+    method: 'DELETE',
+    token,
   });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || "Failed to delete user");
-  }
-  return res.json();
 };
 
-
 export const resetPassword = (email: string) => {
-  return fetch(`http://localhost:5000/forgot`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
+  return httpRequest<{ message: string }>('http://localhost:5000/forgot', {
+    method: 'POST',
+    body: { email },
   });
 };

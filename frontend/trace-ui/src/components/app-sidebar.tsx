@@ -9,7 +9,6 @@ import {
   IconFingerprint,
 } from "@tabler/icons-react";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -22,26 +21,46 @@ import {
 } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/services/auth";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getWorkspaces } from "@/services/workspaces";
+import type { User } from "@/models/UserInterface";
+import type { WorkspacesType } from "@/models/Workspaces";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = React.useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [user, setUser] = useState<User>({ name: "", email: "", phone: "" });
+  const [workspaces, setWorkspaces] = useState<WorkspacesType[]>([]);
 
   useEffect(() => {
-    getCurrentUser()
-      .then((res) => setUser(res))
-      .catch(() => {
-        toast.error("Error fetching data");
-      });
+    const fetchData = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser({
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.phone ?? "",
+        });
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Error fetching user data";
+        toast.error(message);
+      }
+
+      try {
+        const ws = await getWorkspaces();
+        setWorkspaces(ws);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Error fetching workspaces";
+        toast.error(message);
+      }
+    };
+
+    fetchData();
   }, []);
+  
   const data = {
     user,
+    workspaces,
     navMain: [
       { title: "Get Started", url: "/", icon: IconQuestionMark },
       { title: "Analysis", url: "/analysis", icon: IconEye },
@@ -85,8 +104,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 : "hover:bg-gray-100 text-gray-700",
           }))}
         />
-
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
       <SidebarFooter>

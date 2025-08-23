@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +27,7 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const result = await loginUser(email, password);
       if (result?.access_token) {
@@ -33,9 +36,9 @@ export function LoginForm({
       } else {
         toast.error("Invalid credentials");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err?.message || "Login failed");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Login failed";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -44,9 +47,11 @@ export function LoginForm({
   return (
     <>
       <Toaster />
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className={cn("flex flex-col gap-6 py-6", className)} {...props}>
         <Card>
           <CardHeader className="text-center">
+            <CardTitle className="text-xl">Login to your account</CardTitle>
+            <CardDescription>Enter your details to get started</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>

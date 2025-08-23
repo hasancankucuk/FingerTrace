@@ -1,51 +1,52 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const getAllFingerprints = async () => {
-  try {
-    const res = await fetch("http://localhost:5000/fingerprints", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+import { getToken } from "./auth";
+import { httpRequest } from "./http";
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Failed to retrieve fingerprints");
+export type FingerprintType = any;
 
-    return result;
-  } catch (error: any) {
-    console.error("Fingerprint retrieval error:", error);
-    throw new Error(error?.message || "Failed to retrieve fingerprints");
-  }
-}
+export const getAllFingerprints = async (): Promise<FingerprintType[]> => {
+  return httpRequest<FingerprintType[]>("http://localhost:5000/fingerprints", {
+    method: "GET",
+    token: getToken()
+  });
+};
 
-export const getFingerprintById = async (id: string) => {
-  try {
-    const res = await fetch(`http://localhost:5000/fingerprints/${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+export const getFingerprintById = async (id: string): Promise<FingerprintType> => {
+  return httpRequest<FingerprintType>(`http://localhost:5000/fingerprints/${id}`, {
+    method: "GET",
+    token: getToken(),
+  });
+};
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Failed to retrieve fingerprint");
+export const getMergedFingerprints = async (workspaceId?: string): Promise<FingerprintType[]> => {
+  const base = "http://localhost:5000/fingerprints/merged";
+  const url = workspaceId ? `${base}?workspace_id=${encodeURIComponent(workspaceId)}` : base;
 
-    return result;
-  } catch (error: any) {
-    console.error("Fingerprint retrieval error:", error);
-    throw new Error(error?.message || "Failed to retrieve fingerprint");
-  }
-}
+  return httpRequest<FingerprintType[]>(url, {
+    method: "GET",
+    token: getToken()
+  });
+};
 
-export const getMergedFingerprints = async (workspaceId?: string) => {
-  try {
-    const base = "http://localhost:5000/fingerprints/merged";
-    const url = workspaceId ? `${base}?workspace_id=${encodeURIComponent(workspaceId)}` : base;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Failed to retrieve merged fingerprints");
-    return result;
-  } catch (error: any) {
-    console.error("Merged fingerprint retrieval error:", error);
-    throw new Error(error?.message || "Failed to retrieve merged fingerprints");
-  }
-}
+export const createFingerprint = async (data: any): Promise<{ message: string; id: string }> => {
+  return httpRequest<{ message: string; id: string }>("http://localhost:5000/fingerprints", {
+    method: "POST",
+    body: data,
+    token: getToken()
+  });
+};
+
+export const updateFingerprint = async (id: string, data: any): Promise<{ message: string }> => {
+  return httpRequest<{ message: string }>(`http://localhost:5000/fingerprints/${id}`, {
+    method: "PUT",
+    body: data,
+    token: getToken()
+  });
+};
+
+export const deleteFingerprint = async (id: string): Promise<{ message: string }> => {
+  return httpRequest<{ message: string }>(`http://localhost:5000/fingerprints/${id}`, {
+    method: "DELETE",
+    token: getToken()
+  });
+};

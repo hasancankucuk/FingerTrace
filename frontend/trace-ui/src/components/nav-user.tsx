@@ -4,7 +4,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 
 export function NavUser({
   user,
@@ -36,8 +37,10 @@ export function NavUser({
   const navigate = useNavigate();
 
   const signOut = () => {
-    useAuthStore.setState({ token: null });
     localStorage.removeItem("selectedWorkspace");
+    localStorage.removeItem("access_token");
+    useAuthStore.setState({ token: null });
+    useWorkspaceStore.setState({ workspace: null });
     navigate("/login");
   };
 
@@ -53,7 +56,6 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                 <AvatarFallback className="rounded-lg">
-                  {console.log(user)}
                   {user.name
                     ? user.name
                         .split(" ")
@@ -81,7 +83,7 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                   <AvatarFallback className="rounded-lg">
                     {user.name
                       ? user.name

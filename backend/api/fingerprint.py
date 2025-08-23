@@ -1,24 +1,38 @@
+from helpers.jwt_token_helper import jwt_protected
 from helpers.map_device_type import map_device_type
 from flask import Blueprint, request, jsonify
-from helpers.firebase_utils import firestore_set, firestore_get, firestore_update, firestore_delete, firestore_get_all
+from helpers.firebase_utils import (
+    firestore_set,
+    firestore_get,
+    firestore_update,
+    firestore_delete,
+    firestore_get_all,
+)
+
+from datetime import datetime
 
 fingerprint_bp = Blueprint('fingerprint', __name__)
 
+# --- LIST FINGERPRINTS ---
 @fingerprint_bp.route('/fingerprints', methods=['GET'])
-def list_fingerprints():
+@jwt_protected
+def list_fingerprints(current_user):
     docs = firestore_get_all('fingerprints')
     return jsonify(docs), 200
 
+# --- GET SINGLE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['GET'])
-def get_fingerprint(doc_id):
+@jwt_protected
+def get_fingerprint(current_user, doc_id):
     doc = firestore_get('fingerprints', doc_id)
     if doc:
         return jsonify(doc), 200
     return jsonify({'error': 'Not found'}), 404
 
+# --- CREATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
-def create_fingerprint():
-    from datetime import datetime
+@jwt_protected
+def create_fingerprint(current_user):
     data = request.json or {}
     doc_id = data.get('id')
     if not doc_id:
@@ -44,6 +58,8 @@ def create_fingerprint():
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
+    data['created_by'] = current_user
+
     firestore_set('fingerprints', doc_id, data)
 
     return jsonify({
@@ -53,21 +69,27 @@ def create_fingerprint():
         'workspace': data.get('workspace')
     }), 201
 
+# --- UPDATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['PUT'])
-def update_fingerprint(doc_id):
-    from datetime import datetime
+@jwt_protected
+def update_fingerprint(current_user, doc_id):
     data = request.json
     data['updated_at'] = datetime.utcnow().isoformat()
+    data['updated_by'] = current_user
     firestore_update('fingerprints', doc_id, data)
     return jsonify({'message': 'Fingerprint updated'}), 200
 
+# --- DELETE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['DELETE'])
-def delete_fingerprint(doc_id):
+@jwt_protected
+def delete_fingerprint(current_user, doc_id):
     firestore_delete('fingerprints', doc_id)
     return jsonify({'message': 'Fingerprint deleted'}), 200
 
+# --- LIST MERGED FINGERPRINTS ---
 @fingerprint_bp.route('/fingerprints/merged', methods=['GET'])
-def list_merged_fingerprints():
+@jwt_protected
+def list_merged_fingerprints(current_user):
     fingerprints = firestore_get_all('fingerprints')
     deviceinfo_list = firestore_get_all('deviceinfo')
 

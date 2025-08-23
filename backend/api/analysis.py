@@ -1,3 +1,4 @@
+from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, jsonify, request, g
 import random
 import datetime
@@ -8,6 +9,7 @@ from helpers.get_country_from_timezone import get_country_from_timezone
 analysis_bp = Blueprint("analysis", __name__)
 
 @analysis_bp.route("/analysis", methods=["GET"])
+@jwt_protected
 def analysis():
     from helpers.firebase_utils import firestore_get_all
     try:

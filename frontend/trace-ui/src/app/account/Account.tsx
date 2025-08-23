@@ -4,19 +4,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import {
-  deleteUser,
   getCurrentUser,
   getToken,
   updateUser,
 } from "@/services/auth";
 import { toast, Toaster } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/store/useAuthStore";
+import { DeleteAccountModal } from "./DeleteAccountModal";
 
 export const Account = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const navigate = useNavigate();
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -43,19 +41,7 @@ export const Account = () => {
   };
 
   const deleteAccount = async () => {
-    try {
-      await deleteUser()
-        .then(() => {
-          toast("Account deleted successfully");
-          useAuthStore.getState().logout();
-          navigate("/");
-        })
-        .catch(() => {
-          toast.error("Failed to delete account");
-        });
-    } catch {
-      toast.error("Failed to delete account");
-    }
+    setShowDeleteAccountModal(true);
   };
   return (
     <>
@@ -110,6 +96,12 @@ export const Account = () => {
           </CardContent>
         </Card>
       </div>
+      {showDeleteAccountModal && (
+        <DeleteAccountModal
+          showModal={showDeleteAccountModal}
+          setShowModal={setShowDeleteAccountModal}
+        />
+      )}
     </>
   );
 };
