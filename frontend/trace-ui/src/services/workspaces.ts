@@ -1,11 +1,14 @@
+
 import { httpRequest } from "./http";
 import { getToken } from "./auth";
 import type { WorkspacesType } from "@/models/Workspaces";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.REACT_APP_API_URL;
+
 export const createWorkspace = async (workspaceData: WorkspacesType) => {
   const token = getToken();
   return httpRequest<{ message: string; id: string }>(
-    "http://localhost:5000/api/workspaces",
+  `${API_BASE_URL}/api/workspaces`,
     {
       method: "POST",
       token,
@@ -16,7 +19,7 @@ export const createWorkspace = async (workspaceData: WorkspacesType) => {
 
 export const getWorkspaces = async () => {
   const token = getToken();
-  return httpRequest<WorkspacesType[]>("http://localhost:5000/api/workspaces", {
+  return httpRequest<WorkspacesType[]>(`${API_BASE_URL}/api/workspaces`, {
     method: "GET",
     token,
   });
@@ -25,7 +28,7 @@ export const getWorkspaces = async () => {
 export const getWorkspace = async (workspaceId: string) => {
   const token = getToken();
   return httpRequest<WorkspacesType>(
-    `http://localhost:5000/api/workspaces/${workspaceId}`,
+    `${API_BASE_URL}/api/workspaces/${workspaceId}`,
     { method: "GET", token }
   );
 };
@@ -33,7 +36,7 @@ export const getWorkspace = async (workspaceId: string) => {
 export const deleteWorkspace = async (workspaceId: string) => {
   const token = getToken();
   return httpRequest<{ message: string }>(
-    `http://localhost:5000/api/workspaces/${workspaceId}`,
+    `${API_BASE_URL}/api/workspaces/${workspaceId}`,
     { method: "DELETE", token }
   );
 };

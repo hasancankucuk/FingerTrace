@@ -60,13 +60,15 @@ def list_api_keys(current_user):
     keys = firestore_get_all("api_keys") or []
     workspace_id = request.args.get("workspace_id")
     user = get_user(current_user)
-    keys = [key for key in keys if key.get("created_by") == user["email"]]
 
-    if workspace_id:
-        keys = [key for key in keys if key.get("workspace_id") == workspace_id]
+    keys = [
+        key for key in keys
+        if isinstance(key, dict)
+        and key.get("created_by") == user["email"]
+        and (workspace_id is None or key.get("workspace_id") == workspace_id)
+    ]
 
     return jsonify(keys), 200
-
 @api_keys_bp.route("/api-keys/<key_id>", methods=["DELETE"])
 @jwt_protected
 def delete_api_key(current_user, key_id):

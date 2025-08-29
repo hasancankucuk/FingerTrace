@@ -2,12 +2,15 @@
 import { getToken } from "./auth";
 import { httpRequest } from "./http";
 
-export const getApiKeys = async () => {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.REACT_APP_API_URL;
+
+
+export const getApiKeys = async (workspaceId: string) => {
   const token = getToken();
   if (!token) throw new Error("No token found");
 
-  return httpRequest<{workspace_id: string}>(
-    'http://localhost:5000/api-keys', {
+  return httpRequest<{workspaceId: string}>(
+    `${API_BASE_URL}/api-keys?workspace_id=${encodeURIComponent(workspaceId)}`, {
     method: "GET",
     token,
   });
@@ -30,7 +33,7 @@ export const createApiKey = async (
   const token = getToken();
   if (!token) throw new Error("No token found");
 
-  const res = await fetch("http://localhost:5000/api-keys", {
+  const res = await fetch(`${API_BASE_URL}/api-keys`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(payload),
@@ -47,11 +50,15 @@ export const createApiKey = async (
   return body;
 };
 
-export const deleteApiKey = async (key: string) => {
+export const deleteApiKey = async (key: string, workspaceId?: string) => {
   const token = getToken();
   if (!token) throw new Error("No token found");
 
-  const res = await fetch(`http://localhost:5000/api-keys/${encodeURIComponent(key)}`, {
+  const url = workspaceId
+    ? `${API_BASE_URL}/api-keys/${encodeURIComponent(key)}?workspace_id=${encodeURIComponent(workspaceId)}`
+    : `${API_BASE_URL}/api-keys/${encodeURIComponent(key)}`;
+
+  const res = await fetch(url, {
     method: "DELETE",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
   });
