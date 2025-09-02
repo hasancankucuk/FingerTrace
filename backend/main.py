@@ -1,15 +1,8 @@
 from datetime import timedelta
 from flask import Flask # type: ignore
 from flask_cors import CORS # type: ignore
-from .auth import auth_bp
-from .login import login_bp
-from .fingerprint import fingerprint_bp
-from .health import health_bp
-from .analysis import analysis_bp
-from .api_keys import api_keys_bp
-from .workspaces import workspaces_bp
-
 from flask_jwt_extended import JWTManager # type: ignore
+from api.routes import auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp, api_keys_bp, workspaces_bp
 
 ACCESS_EXPIRES = timedelta(hours=1)
 
@@ -28,8 +21,5 @@ app.register_blueprint(analysis_bp)
 app.register_blueprint(api_keys_bp)
 app.register_blueprint(workspaces_bp)
 
-def main():
-    app.run(debug=True, host="0.0.0.0", port=5000, use_reloader=False, threaded=True)
-
 if __name__ == '__main__':
-    main()
+    app.run(host='0.0.0.0', port=5000, use_reloader=False)

@@ -2,8 +2,11 @@ from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token # type: ignore
 import os
 import requests # type: ignore
+from dotenv import load_dotenv
+
 
 login_bp = Blueprint('login', __name__)
+load_dotenv()
 
 @login_bp.route('/login', methods=['POST'])
 def login():
@@ -15,6 +18,7 @@ def login():
         return jsonify({"message": "Email and password are required"}), 400
 
     api_key = os.environ.get('FIREBASE_API_KEY')
+
     if not api_key:
         return jsonify({"message": "Missing Firebase API key"}), 500
 

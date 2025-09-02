@@ -1,9 +1,11 @@
 from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, jsonify
 import os
+from dotenv import load_dotenv
 
 health_bp = Blueprint("health", __name__)
 
+load_dotenv()
 @health_bp.route("/health", methods=["GET"])
 @jwt_protected
 def health_check(current_user):

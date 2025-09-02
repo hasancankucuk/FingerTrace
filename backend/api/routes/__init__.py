@@ -1,0 +1,7 @@
+from api.routes.analysis import analysis_bp
+from api.routes.api_keys import api_keys_bp
+from api.routes.auth import auth_bp
+from api.routes.fingerprint import fingerprint_bp
+from api.routes.health import health_bp
+from api.routes.login import login_bp
+from api.routes.workspaces import workspaces_bp

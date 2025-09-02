@@ -2,7 +2,8 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { httpRequest } from './http';
 import type { AuthResponse } from '@/models/AuthResponse';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.REACT_APP_API_URL;
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getToken = (): string | undefined => {
   return localStorage.getItem("access_token") || useAuthStore.getState().token || undefined;

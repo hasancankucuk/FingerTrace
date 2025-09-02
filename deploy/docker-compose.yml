@@ -3,7 +3,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: fingertrace-backend
     working_dir: /app/backend
     environment:
       - FLASK_ENV=development
@@ -17,20 +17,19 @@ services:
       - "5000:5000" # Flask 
     volumes:
       - ../backend:/app/backend
-    command: ["/bin/sh", "/app/backend/start.sh"]
+    entrypoint: ["/bin/sh", "-c", "chmod +x /app/backend/start.sh && exec /bin/sh /app/backend/start.sh"]
 
   frontend:
-    image: node:18
-    container_name: frontend
+    image: node:lts-trixie-slim
+    container_name: fingertrace-frontend
     working_dir: /frontend
     volumes:
-      - ../frontend:/frontend
-      - /frontend/node_modules
+      - ../frontend/trace-ui:/frontend
     ports:
       - "3000:3000"
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - DOPPLER_TOKEN=${DOPPLER_TOKEN}
+      - DOPPLER_TOKEN=${DOPPLER_TOKEN_FE}
       - DOPPLER_PROJECT=finger-trace-frontend
       - DOPPLER_CONFIG=dev
     command: >-
@@ -39,9 +38,10 @@ services:
       curl -Ls https://cli.doppler.com/install.sh | sh &&
       echo 'Creating .env file with Doppler CLI...' &&
       rm -rf .env &&
-      doppler secrets download --no-file --format env | grep -E '^(REACT_APP_|NODE_)' > /tmp/env_temp &&
+      doppler secrets download --no-file --format env | grep -E '^(REACT_APP_|NODE_|VITE_)' > /tmp/env_temp &&
       mv /tmp/env_temp .env &&
       echo 'Environment file created:' && ls -la .env && cat .env &&
+      rm -r node_modules &&
       npm install &&
-      npm start
+      npm run dev -- --host 0.0.0.0
       "
