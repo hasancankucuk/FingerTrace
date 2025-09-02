@@ -56,6 +56,7 @@ services:
       - backend
       - frontend
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./certs:/etc/nginx/certs:ro
+    - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    - /etc/letsencrypt/live/apiv2.hasancan.dev/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+    - /etc/letsencrypt/live/apiv2.hasancan.dev/privkey.pem:/etc/nginx/certs/privkey.pem:ro
     restart: unless-stopped
