@@ -1,3 +1,4 @@
+import hashlib
 from helpers.api_key_helper import api_key_required
 from helpers.jwt_token_helper import jwt_protected
 from helpers.map_device_type import map_device_type
@@ -35,9 +36,15 @@ def get_fingerprint(current_user, doc_id):
 @api_key_required
 def create_fingerprint(current_user):
     data = request.json or {}
-    doc_id = data.get('fingerprint')
-    if not doc_id:
+
+    browser_fp = data.get('fingerprint')
+    if not browser_fp:
         return jsonify({'error': 'Missing fingerprint'}), 400
+
+    ja3_fp = request.headers.get('X-JA3', '')
+
+    combined_string = f"{browser_fp}:{ja3_fp}"
+    doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
 
     workspace_id = data.get('workspace_id') or data.get('ws_id')
     workspace_name = None
@@ -60,13 +67,15 @@ def create_fingerprint(current_user):
     data['created_at'] = now
     data['updated_at'] = now
 
+    data['fingerprint'] = doc_id
+
     firestore_set('fingerprints', doc_id, data)
 
     return jsonify({
         'message': 'Fingerprint created',
         'id': doc_id,
         'workspace_id': data.get('workspace_id'),
-        'workspace': data.get('workspace')
+        'workspace': data.get('workspace'),
     }), 201
 
 # --- UPDATE FINGERPRINT ---
