@@ -12,7 +12,7 @@ services:
       - PYTHONPATH=/app
       - DOPPLER_TOKEN=${DOPPLER_TOKEN}
       - DOPPLER_PROJECT=finger-trace-backend
-      - DOPPLER_CONFIG=dev
+      - DOPPLER_CONFIG=prd
     ports:
       - "5000:5000" # Flask 
     volumes:
@@ -31,7 +31,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - DOPPLER_TOKEN=${DOPPLER_TOKEN_FE}
       - DOPPLER_PROJECT=finger-trace-frontend
-      - DOPPLER_CONFIG=dev
+      - DOPPLER_CONFIG=prd
     command: >-
       sh -c "
       apt-get update && apt-get install -y curl gnupg &&
