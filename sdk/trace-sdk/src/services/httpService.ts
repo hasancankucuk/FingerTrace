@@ -1,6 +1,6 @@
 export const fetchData = async (endpoint: string): Promise<any> => {
     try {
-        const response = await fetch(`https://api.hasancan.dev/api/v1/${endpoint}`);
+        const response = await fetch(`http://159.223.16.108/api/${endpoint}`);
         if (!response.ok) {
             throw new Error(`Error fetching data from ${endpoint}: ${response.statusText}`);
         }
@@ -12,7 +12,7 @@ export const fetchData = async (endpoint: string): Promise<any> => {
 
 export const postData = async (endpoint: string, data: unknown): Promise<any> => {
     try {
-        const response = await fetch(`https://api.hasancan.dev/api/v1/${endpoint}`, {
+        const response = await fetch(`http://159.223.16.108/api/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

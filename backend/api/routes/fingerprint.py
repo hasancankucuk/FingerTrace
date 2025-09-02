@@ -1,3 +1,4 @@
+from helpers.api_key_helper import api_key_required
 from helpers.jwt_token_helper import jwt_protected
 from helpers.map_device_type import map_device_type
 from flask import Blueprint, request, jsonify
@@ -31,8 +32,8 @@ def get_fingerprint(current_user, doc_id):
 
 # --- CREATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
-@jwt_protected
-def create_fingerprint(current_user):
+@api_key_required
+def create_fingerprint(current_user):  # burada current_user api key sahibi
     data = request.json or {}
     doc_id = data.get('id')
     if not doc_id:
@@ -58,7 +59,7 @@ def create_fingerprint(current_user):
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
-    data['created_by'] = current_user
+    data['created_by'] = current_user  # burada api key sahibinin id'si
 
     firestore_set('fingerprints', doc_id, data)
 
@@ -68,7 +69,6 @@ def create_fingerprint(current_user):
         'workspace_id': data.get('workspace_id'),
         'workspace': data.get('workspace')
     }), 201
-
 # --- UPDATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['PUT'])
 @jwt_protected
