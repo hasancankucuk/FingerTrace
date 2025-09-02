@@ -18,7 +18,7 @@ export const postData = async (endpoint: string, data: unknown, workspaceId: str
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ "id": data, "workspace": workspaceId, "api_key": apiKey }),
+            body: JSON.stringify({ "fingerprint": data, "workspace": workspaceId, "api_key": apiKey }),
         });
         if (!response.ok) {
             throw new Error(`Error posting data to ${endpoint}: ${response.statusText}`);
@@ -29,8 +29,8 @@ export const postData = async (endpoint: string, data: unknown, workspaceId: str
     }
 };
 
-export const postAttributes = async (endpoint: string, data: Record<string, any>, fingerprint: string): Promise<any> => {
-    const payload = { ...data, fingerprint };
+export const postAttributes = async (endpoint: string, data: Record<string, any>, fingerprint: string, workspaceId: string, apiKey: string): Promise<any> => {
+    const payload = { ...data, fingerprint, workspace: workspaceId, api_key: apiKey };
     try {
         const response = await fetch(`http://159.223.16.108:5000/${endpoint}`, {
             method: 'POST',

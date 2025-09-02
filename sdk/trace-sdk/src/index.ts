@@ -106,7 +106,7 @@ const browserAttributes = {
 
     try {
         await postData('fingerprints', fingerprint, workspaceId, apiKey);
-        await postAttributes('device_info', browserAttributes, fingerprint);
+        await postAttributes('deviceinfo', browserAttributes, fingerprint, workspaceId, apiKey);
 
     } catch (error) {
         console.error('Error posting data:', error);
