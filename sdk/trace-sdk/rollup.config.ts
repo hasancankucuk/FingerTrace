@@ -26,7 +26,10 @@ const config: RollupOptions[] = [
     ],
     plugins: [
       resolve(),
-      commonjs(),
+      commonjs({
+        include: 'node_modules/**',
+        requireReturnsDefault: 'preferred'
+      }),
       json(),
       typescript({
         tsconfig: './tsconfig.json',
@@ -35,7 +38,7 @@ const config: RollupOptions[] = [
       terser()
     ]
   },
-  // Browser build
+  // Browser build (IIFE)
   {
     input: 'src/index.ts',
     output: {
@@ -46,6 +49,10 @@ const config: RollupOptions[] = [
     },
     plugins: [
       resolve(),
+      commonjs({
+        include: 'node_modules/**',
+        requireReturnsDefault: 'preferred'
+      }),
       json(),
       typescript({
         tsconfig: './tsconfig.json',

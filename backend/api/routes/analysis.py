@@ -1,5 +1,5 @@
 from helpers.jwt_token_helper import jwt_protected
-from flask import Blueprint, jsonify, request, g
+from flask import Blueprint, jsonify, request
 import random
 import datetime
 

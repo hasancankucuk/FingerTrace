@@ -13,6 +13,17 @@ import { MediaSupport } from "./models";
 import { postData, postAttributes } from "./services/httpService";
 import * as murmurhash from 'murmurhash';
 
+let workspaceId: string;
+let apiKey: string;
+
+const SetWorkspaceId = (id: string) => {
+    workspaceId = id;
+}
+
+const SetApiKey = (key: string) => {
+    apiKey = key;
+}
+
 const generateFingerprints = async (): Promise<string> => {
     const audioPrint = new Promise<string>((resolve, reject) => {
         getAudioHash.run((fingerprint: string) => {
@@ -60,8 +71,8 @@ const generateFingerprints = async (): Promise<string> => {
     ];
 
 
-    const fingerprint: string = murmurhash.v3(
-        [audioPrint, webGlPrint, canvasPrint, browserAttributes, videoAttributes, MathFingerprint(), getWebGLInfo(), getWebGLShaderPrecision(), getWebGLRendererInfo()].join('|')
+    const fingerprint: string = (murmurhash as any).v3(
+        [audioPrint, webGlPrint, canvasPrint, browserAttributes, videoAttributes, availableFonts, MathFingerprint, getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision(), getWebGLShaderPrecision()]
     ).toString();
     return fingerprint;
 }
@@ -94,7 +105,7 @@ const browserAttributes = {
     };
 
     try {
-        await postData('fingerprint', fingerprint);
+        await postData('fingerprints', fingerprint, workspaceId, apiKey);
         await postAttributes('device_info', browserAttributes, fingerprint);
 
     } catch (error) {
@@ -108,5 +119,7 @@ const browserAttributes = {
 }
 
 export {
-    FingerprintSDK
+    FingerprintSDK,
+    SetWorkspaceId,
+    SetApiKey
 };

@@ -1,4 +1,4 @@
-import * as SparkMD5 from 'spark-md5';
+import SparkMD5 from 'spark-md5';
 import type { WebGLBufferWithItems } from '../../models/index';
 
 
@@ -90,7 +90,7 @@ export function generateWebGLHash(): { hash: string, rawData: string | null } | 
     } catch (e) {
         console.log('Error: ', e);
     }
-
+    
     return {
         hash: SparkMD5.hash(result[0]),
         rawData: result[0] || null

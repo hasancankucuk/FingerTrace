@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const fetchData = async (endpoint: string): Promise<any> => {
     try {
-        const response = await fetch(`http://159.223.16.108/api/${endpoint}`);
+        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`);
         if (!response.ok) {
             throw new Error(`Error fetching data from ${endpoint}: ${response.statusText}`);
         }
@@ -10,14 +11,14 @@ export const fetchData = async (endpoint: string): Promise<any> => {
     }
 };
 
-export const postData = async (endpoint: string, data: unknown): Promise<any> => {
+export const postData = async (endpoint: string, data: unknown, workspaceId: string, apiKey: string): Promise<any> => {
     try {
-        const response = await fetch(`http://159.223.16.108/api/${endpoint}`, {
+        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ "fingerprint": data }),
+            body: JSON.stringify({ "id": data, "workspace": workspaceId, "api_key": apiKey }),
         });
         if (!response.ok) {
             throw new Error(`Error posting data to ${endpoint}: ${response.statusText}`);
@@ -31,7 +32,7 @@ export const postData = async (endpoint: string, data: unknown): Promise<any> =>
 export const postAttributes = async (endpoint: string, data: Record<string, any>, fingerprint: string): Promise<any> => {
     const payload = { ...data, fingerprint };
     try {
-        const response = await fetch(`https://api.hasancan.dev/api/v1/${endpoint}`, {
+        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

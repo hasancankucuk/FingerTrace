@@ -33,11 +33,11 @@ def get_fingerprint(current_user, doc_id):
 # --- CREATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
 @api_key_required
-def create_fingerprint(current_user):  # burada current_user api key sahibi
+def create_fingerprint(current_user):
     data = request.json or {}
-    doc_id = data.get('id')
+    doc_id = data.get('fingerprint')
     if not doc_id:
-        return jsonify({'error': 'Missing id'}), 400
+        return jsonify({'error': 'Missing fingerprint'}), 400
 
     workspace_id = data.get('workspace_id') or data.get('ws_id')
     workspace_name = None
@@ -59,7 +59,6 @@ def create_fingerprint(current_user):  # burada current_user api key sahibi
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
-    data['created_by'] = current_user  # burada api key sahibinin id'si
 
     firestore_set('fingerprints', doc_id, data)
 
@@ -69,6 +68,7 @@ def create_fingerprint(current_user):  # burada current_user api key sahibi
         'workspace_id': data.get('workspace_id'),
         'workspace': data.get('workspace')
     }), 201
+
 # --- UPDATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['PUT'])
 @jwt_protected
@@ -136,3 +136,5 @@ def list_merged_fingerprints(current_user):
         return jsonify({"message": "No data"}), 200
 
     return jsonify(merged_data), 200
+
+

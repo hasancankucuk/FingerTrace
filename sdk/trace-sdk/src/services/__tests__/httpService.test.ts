@@ -30,7 +30,8 @@ describe('HTTP Service', () => {
             } as Response)
         );
 
-        const response = await postData('fingerprint', mockData);
+        // Fixed: Added missing workspaceId and apiKey arguments
+        const response = await postData('fingerprint', mockData, 'test-workspace', 'test-api-key');
         expect(response).toEqual(mockResponse);
     });
 
@@ -47,7 +48,8 @@ describe('HTTP Service', () => {
             } as Response)
         );
 
-        const response = await postAttributes('deviceinfo', mockAttributes);
+        // Fixed: Added missing fingerprint argument
+        const response = await postAttributes('deviceinfo', mockAttributes, 'test-fingerprint');
         expect(response).toEqual(mockResponse);
     });
 });
