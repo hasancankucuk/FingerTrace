@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const fetchData = async (endpoint: string): Promise<any> => {
     try {
-        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`);
+        const response = await fetch(`https://159.223.16.108:5000/${endpoint}`);
         if (!response.ok) {
             throw new Error(`Error fetching data from ${endpoint}: ${response.statusText}`);
         }
@@ -13,7 +13,7 @@ export const fetchData = async (endpoint: string): Promise<any> => {
 
 export const postData = async (endpoint: string, data: unknown, workspaceId: string, apiKey: string): Promise<any> => {
     try {
-        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`, {
+        const response = await fetch(`https://159.223.16.108:5000/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export const postData = async (endpoint: string, data: unknown, workspaceId: str
 export const postAttributes = async (endpoint: string, data: Record<string, any>, fingerprint: string, workspaceId: string, apiKey: string): Promise<any> => {
     const payload = { ...data, fingerprint, workspace: workspaceId, api_key: apiKey };
     try {
-        const response = await fetch(`http://159.223.16.108:5000/${endpoint}`, {
+        const response = await fetch(`https://159.223.16.108:5000/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

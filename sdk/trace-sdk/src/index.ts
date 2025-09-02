@@ -34,7 +34,6 @@ const generateFingerprints = async (): Promise<string> => {
             }
         }, true);
     });
-
     const webGlPrint = generateWebGLHash();
     const canvasPrint = getCanvasHash();
     const videoAttributes = {
@@ -51,29 +50,27 @@ const generateFingerprints = async (): Promise<string> => {
         WEBM: canPlay(MediaSupport.WEBM),
         HLS: canPlay(MediaSupport.HLS)
     };
-
     const availableFonts = await getAvailableFonts();
+    const mathPrint = MathFingerprint();
 
-    const browserAttributes = [
-        getDeviceType(),
-        getPlatform(),
-        getUserAgent(),
-        getVendor(),
-        checkWebPSupport(),
-        getBrowserFeatureSupport(),
-        getColorDepth(),
-        getColorGamut(),
-        getFeaturePolicies(),
-        getNavigatorProperties(),
-        getTimeZone(),
-        getBarVisibility(),
-        availableFonts
-    ];
+    const hash1 = murmurhash.v3([audioPrint, webGlPrint, canvasPrint].join('|'));
+    const hash2 = murmurhash.v3([videoAttributes, availableFonts, mathPrint].join('|'));
+    const hash3 = murmurhash.v3([getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision()].join('|'));
 
+    let fingerprint = (hash1.toString(36) + hash2.toString(36) + hash3.toString(36));
 
-    const fingerprint: string = (murmurhash as any).v3(
-        [audioPrint, webGlPrint, canvasPrint, browserAttributes, videoAttributes, availableFonts, MathFingerprint, getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision(), getWebGLShaderPrecision()]
-    ).toString();
+    if (fingerprint.length > 30) {
+        fingerprint = fingerprint.slice(0, 30);
+    } else if (fingerprint.length < 30) {
+        let idx = 0;
+        while (fingerprint.length < 30) {
+            const extra = murmurhash.v3(fingerprint + idx).toString(36);
+            fingerprint += extra;
+            idx++;
+        }
+        fingerprint = fingerprint.slice(0, 30);
+    }
+
     return fingerprint;
 }
 
@@ -86,7 +83,7 @@ export default async function FingerprintSDK() {
     const fingerprint = await generateFingerprints();
     const incognitoStatus = await isIncognito();
 
-const browserAttributes = {
+    const browserAttributes = {
         fingerprint: fingerprint,
         device_type: getDeviceType() ? getDeviceType().toString() : 'unknown',
         platform: getPlatform(),

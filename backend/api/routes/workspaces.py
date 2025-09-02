@@ -10,7 +10,9 @@ workspaces_bp = Blueprint("workspaces", __name__)
 @jwt_protected
 def get_workspaces(current_user):
     try:
+        user = get_user(current_user)
         workspaces = firestore_get_all("workspaces")
+        workspaces = [ws for ws in workspaces if ws.get("created_by") == user["email"]]
         return jsonify(workspaces), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -38,7 +40,7 @@ def create_workspace(current_user):
         if not workspace_name or workspace_name.strip() == "":
             return jsonify({"error": "Workspace name is required"}), 400
 
-        existing_names = [ws["name"] for ws in firestore_get_all("workspaces")]
+        existing_names = [ws["name"] for ws in firestore_get_all("workspaces") if ws.get("created_by") == user["email"]]
         if workspace_name in existing_names:
             return jsonify({"error": "Workspace name must be unique"}), 400
 

@@ -1,6 +1,8 @@
 import { createWorkspace } from "@/services/workspaces";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CreateWorkspaceKeyModal } from "./WorkspaceKeyModal";
+
 
 export default function CreateWorkspaceModal({
   open,
@@ -14,6 +16,8 @@ export default function CreateWorkspaceModal({
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [showWorkspaceKeyModal, setShowWorkspaceKeyModal] = useState(false);
 
   if (!open) return null;
 
@@ -26,10 +30,13 @@ export default function CreateWorkspaceModal({
     setError(null);
 
     try {
-      await createWorkspace({ name: name.trim() });
+      const res = await createWorkspace({ name: name.trim() });
+      // try to read id from response, fallback to name if absent
+      const id = (res && (res.id || (res as any).workspaceId)) ?? name.trim();
+      setWorkspaceId(id);
+      setShowWorkspaceKeyModal(true);
       toast.success("Workspace created!");
-      onClose();
-      if (onCreated) await onCreated();
+      // if (onCreated) await onCreated();
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -42,6 +49,7 @@ export default function CreateWorkspaceModal({
   };
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -75,5 +83,14 @@ export default function CreateWorkspaceModal({
         </div>
       </div>
     </div>
+    {showWorkspaceKeyModal && workspaceId && (
+      <CreateWorkspaceKeyModal
+        showModal={showWorkspaceKeyModal}
+        setShowModal={setShowWorkspaceKeyModal}
+        onCreated={onCreated}
+        workspaceId={workspaceId}
+      />
+    )}
+    </>
   );
 }

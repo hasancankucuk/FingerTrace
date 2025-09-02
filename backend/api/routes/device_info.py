@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from flask import Blueprint, jsonify, request
-from backend.helpers.firebase_utils import firestore_set
+from helpers.firebase_utils import firestore_set
 from helpers.api_key_helper import api_key_required
 
 

@@ -15,12 +15,15 @@ import { toast, Toaster } from "sonner";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { ApiKey } from "@/utils/apiHelpers";
 import { isApiKey, isApiKeyArray, isObject, getErrorMessage } from "@/utils/apiHelpers";
+import { ApiKeyModal } from "./ApiKeyModal";
 
 export const ApiKeys = () => {
   const { workspace } = useWorkspace();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [newApiKey, setNewApiKey] = useState<ApiKey | null>(null);
   const [form, setForm] = useState({
     name: "",
     environment: "production",
@@ -76,10 +79,12 @@ export const ApiKeys = () => {
         console.warn("API key creation response:", rawResponse);
         return;
       }
+      setNewApiKey(newKey);
       setApiKeys((keys) => [newKey, ...keys]);
       setShowForm(false);
       setForm({ name: "", environment: "production", status: "active" });
       toast.success("API key created");
+      setShowApiKey(true);
     } catch (err) {
       toast.error(getErrorMessage(err) || "Failed to create API key");
       console.error("API key creation error:", err);
@@ -151,6 +156,14 @@ export const ApiKeys = () => {
                   {loading ? "Creating..." : "Create"}
                 </Button>
               </div>
+            )}
+
+            {showApiKey  && (
+              <ApiKeyModal
+                showModal={showApiKey}
+                setShowModal={setShowApiKey}
+                apiKey={newApiKey}
+              />
             )}
           </CardHeader>
           <CardContent>
