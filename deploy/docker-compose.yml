@@ -6,15 +6,15 @@ services:
     container_name: fingertrace-backend
     working_dir: /app/backend
     environment:
-      - FLASK_ENV=development
+      - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
       - PORT=5000
       - PYTHONPATH=/app
       - DOPPLER_TOKEN=${DOPPLER_TOKEN}
       - DOPPLER_PROJECT=finger-trace-backend
       - DOPPLER_CONFIG=prd
-    ports:
-      - "5000:5000" # Flask 
+    expose:
+      - "5000" # expose to internal network only
     volumes:
       - ../backend:/app/backend
     entrypoint: ["/bin/sh", "-c", "chmod +x /app/backend/start.sh && exec /bin/sh /app/backend/start.sh"]
@@ -45,3 +45,16 @@ services:
       npm install &&
       npm run dev -- --host 0.0.0.0
       "
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: fingertrace-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+    restart: unless-stopped
