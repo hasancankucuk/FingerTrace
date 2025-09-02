@@ -1,6 +1,8 @@
 
 
 from datetime import datetime
+import hashlib
+from math import comb
 from flask import Blueprint, jsonify, request
 from helpers.firebase_utils import firestore_set
 from helpers.api_key_helper import api_key_required
@@ -33,5 +35,11 @@ def create_device_info(current_user):
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
 
-    firestore_set('deviceinfo', device_info.get("fingerprint"), device_info)
+    ja3_fp = request.headers.get('X-JA3', '')
+
+    combined_string = f"{device_info.get('fingerprint')}:{ja3_fp}"
+    print( "combined_string:", combined_string)
+    doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
+
+    firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201
