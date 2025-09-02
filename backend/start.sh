@@ -2,25 +2,16 @@
 
 echo "Setting up environment..."
 
-# Doppler CLI üzerinden .env oluştur
-python -c "
-try:
-    from scripts.doppler_env import main as create_env
-    create_env()
-    print('.env file created via Doppler')
-except Exception as e:
-    print(f'Doppler env creation failed: {e}')
-"
+echo "Downloading Doppler CLI"
 
-# .env içeriğini export et (Flask'in görebilmesi için)
-set -o allexport
-if [ -f /app/backend/.env ]; then
-    source /app/backend/.env
-fi
-set +o allexport
-
-echo "Environment variables loaded:"
-echo "FIREBASE_API_KEY=${FIREBASE_API_KEY}" # debug, gizli kalmasını istersen kaldırabilirsin
+sh -c "
+apt-get update && apt-get install -y curl gnupg &&
+curl -Ls https://cli.doppler.com/install.sh | sh &&
+echo 'Creating .env file with Doppler CLI...' &&
+rm -f .env &&
+doppler secrets download --no-file --format env > .env &&
+echo 'Environment file created:' && ls -la .env && cat .env
+" &&
 
 echo "Starting backend API..."
 PYTHONPATH=/app python main.py

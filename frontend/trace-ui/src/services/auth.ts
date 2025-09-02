@@ -3,7 +3,7 @@ import { httpRequest } from './http';
 import type { AuthResponse } from '@/models/AuthResponse';
 
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
 export const getToken = (): string | undefined => {
   return localStorage.getItem("access_token") || useAuthStore.getState().token || undefined;

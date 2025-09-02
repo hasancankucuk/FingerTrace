@@ -1,7 +1,7 @@
 import type { HealthResponse } from "@/models/HealthResponse";
 import { httpRequest } from "./http";
 import { getToken } from "./auth";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
 export const checkHealth = async (): Promise<HealthResponse> => {
   try {
