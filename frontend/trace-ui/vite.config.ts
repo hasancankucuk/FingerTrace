@@ -11,7 +11,8 @@ export default defineConfig({
       ignored: ['**/node_modules/**', '**/.git/**']
     },
     host: true,
-    port: 3000
+    port: 3000,
+    allowedHosts: ['apiv2.hasancan.dev'],
   },
   plugins: [react(), tailwindcss()],
   resolve: {
