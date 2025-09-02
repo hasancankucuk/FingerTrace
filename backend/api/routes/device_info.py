@@ -40,6 +40,7 @@ def create_device_info(current_user):
     combined_string = f"{device_info.get('fingerprint')}:{ja3_fp}"
     print( "combined_string:", combined_string)
     doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
+    device_info['fingerprint'] = doc_id
 
     firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201
