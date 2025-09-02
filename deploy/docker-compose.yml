@@ -41,7 +41,7 @@ services:
       doppler secrets download --no-file --format env | grep -E '^(REACT_APP_|NODE_|VITE_)' > /tmp/env_temp &&
       mv /tmp/env_temp .env &&
       echo 'Environment file created:' && ls -la .env && cat .env &&
-      rm -r node_modules &&
+      rm -rf node_modules &&
       npm install &&
       npm run dev -- --host 0.0.0.0
       "
