@@ -47,9 +47,7 @@ services:
       "
 
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: openresty/openresty:alpine
     container_name: fingertrace-nginx
     ports:
       - "80:80"
@@ -61,3 +59,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - /etc/letsencrypt/live/apiv2.hasancan.dev/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/apiv2.hasancan.dev/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+    command: >-
+      sh -c "apk add --no-cache luarocks lua5.1 && \
+      ln -sf /usr/bin/luarocks-5.1 /usr/bin/luarocks && \
+      luarocks install lua-resty-ja3 && \
+      openresty -g 'daemon off;'"
