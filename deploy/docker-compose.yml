@@ -12,7 +12,7 @@ services:
       - PYTHONPATH=/app
       - DOPPLER_TOKEN=${DOPPLER_TOKEN}
       - DOPPLER_PROJECT=finger-trace-backend
-      - DOPPLER_CONFIG=prd
+      - DOPPLER_CONFIG=$MODE
     expose:
       - "5000" # expose to internal network only
     volumes:
@@ -31,7 +31,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - DOPPLER_TOKEN=${DOPPLER_TOKEN_FE}
       - DOPPLER_PROJECT=finger-trace-frontend
-      - DOPPLER_CONFIG=prd
+      - DOPPLER_CONFIG=$MODE
     command: >-
       sh -c "
       apt-get update && apt-get install -y curl gnupg &&

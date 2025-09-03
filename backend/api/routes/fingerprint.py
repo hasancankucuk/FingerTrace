@@ -101,8 +101,6 @@ def delete_fingerprint(current_user, doc_id):
 def list_merged_fingerprints(current_user):
     fingerprints = firestore_get_all('fingerprints')
     deviceinfo_list = firestore_get_all('deviceinfo')
-    print("fingerprints:", fingerprints)
-
     workspace_id = request.args.get("workspace_id")
     workspace_keys = ("workspace_id", "workspace", "ws_id")
 
@@ -120,7 +118,6 @@ def list_merged_fingerprints(current_user):
         fingerprints = [f for f in fingerprints if in_workspace_rec(f)]
 
     fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints if isinstance(fp, dict) and fp.get('fingerprint')}
-    print("fingerprints_dict:", fingerprints_dict)
     merged_data = []
     for device in deviceinfo_list:
         fp = device.get('fingerprint')

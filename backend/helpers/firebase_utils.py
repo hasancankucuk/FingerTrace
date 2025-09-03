@@ -1,17 +1,24 @@
 import os
+
+from dotenv import load_dotenv
 import firebase_admin # type: ignore
 from firebase_admin import credentials, auth, firestore # type: ignore
+load_dotenv()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIREBASE_CRED_PATH = os.path.join(BASE_DIR, "fingerprintio.json")
+FIREBASE_CREDS = os.getenv('FIREBASE_CREDS')
 
-# initialize only once and fail fast with useful error
 if not firebase_admin._apps:
-    if not os.path.exists(FIREBASE_CRED_PATH):
-        raise RuntimeError(f"Firebase credentials not found at {FIREBASE_CRED_PATH}")
-    cred = credentials.Certificate(FIREBASE_CRED_PATH)
-    firebase_admin.initialize_app(cred)
-
+    try:
+        import json
+        if isinstance(FIREBASE_CREDS, str):
+            cred_dict = json.loads(FIREBASE_CREDS)
+        else:
+            cred_dict = FIREBASE_CREDS
+        
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        raise RuntimeError(f"Firebase initialization failed: {e}")
 
 def _user_record_to_dict(user):
     if user is None:

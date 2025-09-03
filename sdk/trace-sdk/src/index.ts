@@ -6,6 +6,7 @@ import { getPlatform } from "./collection/browser/platform";
 import { getUserAgent } from "./collection/browser/userAgent";
 import { getVendor } from "./collection/browser/vendor";
 import { getCanvasHash } from "./collection/canvas/canvasHash";
+import { getClientRects } from "./collection/clientRects/getClientRects";
 import { MathFingerprint } from "./collection/math";
 import { getWebGLInfo, getWebGLRendererInfo, getWebGLShaderPrecision } from "./collection/webgl";
 import { generateWebGLHash } from "./collection/webgl/webglHash";
@@ -52,8 +53,9 @@ const generateFingerprints = async (): Promise<string> => {
     };
     const availableFonts = await getAvailableFonts();
     const mathPrint = MathFingerprint();
+    const clientRectFp = getClientRects();
 
-    const hash1 = murmurhash.v3([audioPrint, webGlPrint, canvasPrint].join('|'));
+    const hash1 = murmurhash.v3([audioPrint, webGlPrint, canvasPrint, clientRectFp].join('|'));
     const hash2 = murmurhash.v3([videoAttributes, availableFonts, mathPrint].join('|'));
     const hash3 = murmurhash.v3([getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision()].join('|'));
 

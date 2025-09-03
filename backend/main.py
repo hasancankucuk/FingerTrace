@@ -1,14 +1,16 @@
 from datetime import timedelta
+import os
 from flask import Flask # type: ignore
 from flask_cors import CORS # type: ignore
 from flask_jwt_extended import JWTManager # type: ignore
 from api.routes import auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp, api_keys_bp, workspaces_bp, deviceinfo_bp
-
+from dotenv import load_dotenv
+load_dotenv()
 ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-app.config['JWT_SECRET_KEY'] = 'H9jGsv4lykGeRToN3DQ3-322PH2MmcGu8Wm4AN7os2E'
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 
 jwt = JWTManager(app)
