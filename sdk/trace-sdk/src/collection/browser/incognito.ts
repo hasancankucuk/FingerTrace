@@ -35,44 +35,7 @@ declare global {
       };
   
       const isMSIE = (): boolean => (navigator as any).msSaveBlob !== undefined && assertEvalToString(39);
-  
-      const newSafariTest = (): void => {
-        const tmpName = String(Math.random());
-        try {
-          const db = window.indexedDB.open(tmpName, 1);
-          db.onupgradeneeded = (i) => {
-            const request = i.target as IDBOpenDBRequest;
-            const res = request.result;
-            try {
-              res.createObjectStore('test', { autoIncrement: true }).put(new Blob());
-              __callback(false);
-            } catch (e) {
-              const message = e instanceof Error ? e.message : String(e);
-              __callback(message.includes('BlobURLs are not yet supported'));
-            } finally {
-              res.close();
-              window.indexedDB.deleteDatabase(tmpName);
-            }
-          };
-        } catch {
-          __callback(false);
-        }
-      };      
 
-      const oldSafariTest = (): void => {
-        try {
-          (window as any).openDatabase(null, null, null, null);
-          window.localStorage.setItem('test', '1');
-          window.localStorage.removeItem('test');
-          __callback(false);
-        } catch {
-          __callback(true);
-        }
-      };
-  
-      const safariPrivateTest = (): void => {
-        navigator.maxTouchPoints !== undefined ? newSafariTest() : oldSafariTest();
-      };
   
       const getQuotaLimit = (): number => {
         const { performance } = window as any;
@@ -108,7 +71,7 @@ declare global {
         __callback(window.indexedDB === undefined);
       };
   
-      const main = (): void => {
+      const main = async (): Promise<void> => {
         if (process.env.NODE_ENV === 'test') {
           // Return mock value for tests
           __callback(false);
@@ -117,7 +80,11 @@ declare global {
   
         if (isSafari()) {
           browserName = 'Safari';
-          safariPrivateTest();
+          try {
+            await navigator.storage.getDirectory();
+          } catch {
+            __callback(true);
+          }
         } else if (isChrome()) {
           browserName = identifyChromium();
           chromePrivateTest(); 

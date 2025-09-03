@@ -63,14 +63,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     workspaces,
     navMain: [
       { title: "Get Started", url: "/", icon: IconQuestionMark },
-      { title: "Analysis", url: "/analysis", icon: IconEye },
       { title: "API Keys", url: "/api-keys", icon: IconKey },
+      { title: "Identification", url: "/identification", icon: IconFingerprint },
+      { title: "Analysis", url: "/analysis", icon: IconEye },
       { title: "Health", url: "/health", icon: IconActivityHeartbeat },
-      {
-        title: "Identification",
-        url: "/identification",
-        icon: IconFingerprint,
-      },
       // { title: "Integration", url: "/integration", icon: IconFileDescription },
     ],
     navSecondary: [],

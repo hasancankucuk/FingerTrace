@@ -10,7 +10,7 @@ analysis_bp = Blueprint("analysis", __name__)
 
 @analysis_bp.route("/analysis", methods=["GET"])
 @jwt_protected
-def analysis():
+def analysis(current_user):
     from helpers.firebase_utils import firestore_get_all
     try:
         days = int(request.args.get("days", 7))
