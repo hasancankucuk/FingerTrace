@@ -23,9 +23,11 @@ RUN cd /tmp && \
         --add-dynamic-module=../nginx-ssl-fingerprint \
         --with-http_ssl_module \
         --with-stream_ssl_module \
+        --with-stream \
         --prefix=/usr/local/nginx-with-ja3 && \
-    make modules && \
-    cp objs/ngx_ssl_fingerprint_module.so /usr/lib/nginx/modules/
+    make && \
+    make install && \
+    cp /usr/local/nginx-with-ja3/modules/ngx_ssl_fingerprint_module.so /usr/lib/nginx/modules/
 
 # Enable the module
 RUN echo "load_module /usr/lib/nginx/modules/ngx_ssl_fingerprint_module.so;" > /etc/nginx/modules-enabled/ssl_fingerprint.conf
