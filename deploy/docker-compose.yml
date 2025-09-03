@@ -47,7 +47,9 @@ services:
       "
 
   nginx:
-    image: nginx:stable-alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: fingertrace-nginx
     ports:
       - "80:80"
