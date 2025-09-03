@@ -24,6 +24,8 @@ RUN cd /tmp && \
         --with-http_ssl_module \
         --with-stream_ssl_module \
         --with-stream \
+        --with-http_v2_module \
+        --with-cc-opt="-Wno-error" \
         --prefix=/usr/local/nginx-with-ja3 && \
     make && \
     make install && \
