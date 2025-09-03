@@ -31,6 +31,35 @@ def get_fingerprint(current_user, doc_id):
         return jsonify(doc), 200
     return jsonify({'error': 'Not found'}), 404
 
+def _parse_ja3(ja3_str: str):
+    """
+    Parse a JA3 string and compute MD5 hash.
+    Format: SSLVersion,CipherSuites,Extensions,EllipticCurves,ECPointFormats
+    """
+    if not ja3_str:
+        return None
+    try:
+        parts = ja3_str.split(',')
+        ssl_version = parts[0] if len(parts) > 0 else ""
+        ciphers = parts[1].split('-') if len(parts) > 1 and parts[1] != "" else []
+        extensions = parts[2].split('-') if len(parts) > 2 and parts[2] != "" else []
+        curves = parts[3].split('-') if len(parts) > 3 and parts[3] != "" else []
+        ec_point_formats = parts[4].split('-') if len(parts) > 4 and parts[4] != "" else []
+
+        ja3_hash = hashlib.md5(ja3_str.encode()).hexdigest()
+
+        return {
+            "ja3": ja3_str,
+            "ja3_hash": ja3_hash,
+            "ssl_version": ssl_version,
+            "ciphers": ciphers,
+            "extensions": extensions,
+            "elliptic_curves": curves,
+            "ec_point_formats": ec_point_formats,
+        }
+    except Exception:
+        return {"ja3": ja3_str, "ja3_hash": hashlib.md5(ja3_str.encode()).hexdigest()}
+
 # --- CREATE FINGERPRINT ---
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
 @api_key_required
@@ -42,6 +71,13 @@ def create_fingerprint(current_user):
         return jsonify({'error': 'Missing fingerprint'}), 400
 
     ja3_fp = request.headers.get('X-JA3', '')
+    print("ja3_fp:", ja3_fp)
+    # Parse and attach JA3 info if present
+    if ja3_fp:
+        parsed = _parse_ja3(ja3_fp)
+        data['ja3'] = parsed.get('ja3') if isinstance(parsed, dict) else ja3_fp
+        data['ja3_hash'] = parsed.get('ja3_hash') if isinstance(parsed, dict) else hashlib.md5(ja3_fp.encode()).hexdigest()
+        data['ja3_parsed'] = parsed
 
     combined_string = f"{browser_fp}:{ja3_fp}"
     doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
@@ -76,6 +112,7 @@ def create_fingerprint(current_user):
         'id': doc_id,
         'workspace_id': data.get('workspace_id'),
         'workspace': data.get('workspace'),
+        'ja3_hash': data.get('ja3_hash')
     }), 201
 
 # --- UPDATE FINGERPRINT ---
@@ -121,6 +158,8 @@ def list_merged_fingerprints(current_user):
     merged_data = []
     for device in deviceinfo_list:
         fp = device.get('fingerprint')
+        print("fp:", fp, fingerprints_dict)
+
         if fp and fp in fingerprints_dict:
             fp_data = fingerprints_dict[fp]
             merged_entry = {
