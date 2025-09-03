@@ -46,23 +46,23 @@ services:
       npm run dev -- --host 0.0.0.0
       "
 
-  openresty:
-    image: openresty/openresty:alpine
-    container_name: fingertrace-openresty
+  nginx:
+    image: nginx:stable-alpine
+    container_name: fingertrace-nginx
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./nginx/conf.d:/usr/local/openresty/nginx/conf/conf.d:ro
-      - /etc/letsencrypt/live/apiv2.hasancan.dev/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
-      - /etc/letsencrypt/live/apiv2.hasancan.dev/privkey.pem:/etc/nginx/certs/privkey.pem:ro
     depends_on:
       - backend
       - frontend
-    command: >
-      sh -c "
-      apk add --no-cache build-base curl lua5.3 luarocks &&
-      luarocks install lua-resty-ja3 &&
-      openresty -g 'daemon off;'
-      "
-    restart: unless-stopped
+    volumes:
+    - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    - /etc/letsencrypt/live/apiv2.hasancan.dev/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+    - /etc/letsencrypt/live/apiv2.hasancan.dev/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+    configs:
+      my_nginx_conf:
+        file: ./deploy/nginx/conf.d/apiv2.hasancan.dev.conf
+
+configs:
+  my_nginx_conf:
+    file: ./deploy/nginx/conf.d/apiv2.hasancan.dev.conf
