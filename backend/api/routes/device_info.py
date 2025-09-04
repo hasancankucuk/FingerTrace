@@ -38,7 +38,7 @@ def create_device_info(current_user):
     ja3_fp = request.headers.get('X-JA3', '')
 
     combined_string = f"{device_info.get('fingerprint')}:{ja3_fp}"
-    print( "combined_string:", combined_string)
+
     doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
     device_info['fingerprint'] = doc_id
 
