@@ -1,9 +1,14 @@
 local _M = {}
 
 function _M.get_ja3_hash()
-    -- Simple fingerprint based on User-Agent and IP
-    local ua = ngx.req.get_headers()["User-Agent"] or ""
-    local hash = ngx.md5(ua .. ngx.var.remote_addr)
+    -- Get User-Agent and IP
+    local ua = ngx.req.get_headers()["User-Agent"] or "unknown"
+    local ip = ngx.var.remote_addr or "unknown"
+
+    -- Create a simple hash
+    local combined = ua .. "|" .. ip .. "|" .. ngx.time()
+    local hash = ngx.md5(combined)
+
     return hash
 end
 
