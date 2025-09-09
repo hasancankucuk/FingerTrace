@@ -274,19 +274,4 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-### react ###
-.DS_*
-logs
-**/*.backup.*
-**/*.back.*
-
-node_modules
-bower_components
-
-*.sublime*
-
-psd
-thumb
-sketch
-
 # End of https://www.toptal.com/developers/gitignore/api/python,flask,react,git
