@@ -21,7 +21,7 @@ export function Stepper({ steps }: StepperProps) {
     <div className="w-full max-w-xl mx-auto space-y-6">
       {/* Step indicators */}
       <div className="flex justify-between items-center">
-        {steps.map((step, i) => (
+        {steps.map((_, i) => (
           <div key={i} className="flex-1 flex items-center">
             <div
               className={cn(

@@ -40,7 +40,7 @@ import { getToken } from "./auth";
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
-export const getAnalysis = async (days: number, workspaceId?: string, apiKey?: string) => {
+export const getAnalysis = async (days: number, workspaceId?: string) => {
   const params = new URLSearchParams();
   params.set("days", String(Math.max(1, Math.min(days, 365))));
   if (workspaceId) params.set("workspace_id", String(workspaceId));

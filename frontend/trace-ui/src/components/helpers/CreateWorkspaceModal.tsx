@@ -87,7 +87,7 @@ export default function CreateWorkspaceModal({
       <CreateWorkspaceKeyModal
         showModal={showWorkspaceKeyModal}
         setShowModal={setShowWorkspaceKeyModal}
-        onCreated={onCreated}
+        onCreated={onCreated ?? (() => {})}
         workspaceId={workspaceId}
       />
     )}

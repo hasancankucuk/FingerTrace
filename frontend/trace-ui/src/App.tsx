@@ -8,7 +8,7 @@ import {
 import Dashboard from "./app/dashboard/Dashboard";
 import LoginPage from "./app/login/Login";
 import SignupPage from "./app/signup/Signup";
-import { ApiKeys } from "./app/api-keys/ApiKeys";
+import { ApiKeys } from "./app/api_keys/ApiKeys";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 import { Health } from "./app/health/Health";
