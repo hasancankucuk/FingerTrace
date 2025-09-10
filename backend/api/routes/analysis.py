@@ -1,3 +1,4 @@
+from backend.helpers.firebase_utils import get_user
 from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, jsonify, request
 import random
@@ -19,6 +20,17 @@ def analysis(current_user):
         fingerprints = firestore_get_all("fingerprints")
         deviceinfo = firestore_get_all("deviceinfo")
 
+        user = get_user(current_user)
+        user_fingerprints = [
+            fp for fp in fingerprints 
+            if isinstance(fp, dict) and fp.get("created_by") == user.get("email")
+        ]
+        
+        user_deviceinfo = [
+            d for d in deviceinfo 
+            if isinstance(d, dict) and d.get("created_by") == user.get("email")
+        ]
+
         today = datetime.date.today()
         api_usage = []
         api_usage_labels = []
@@ -27,7 +39,7 @@ def analysis(current_user):
             api_usage_labels.append(str(day))
             count = sum(
                 1
-                for fp in fingerprints
+                for fp in user_fingerprints
                 if isinstance(fp, dict) and "created_at" in fp and str(fp["created_at"])[:10] == str(day)
             )
             api_usage.append(count)
@@ -45,14 +57,14 @@ def analysis(current_user):
                 ids.add(str(key_tuple))
             return len(ids)
 
-        unique_visitors = count_unique_visitors_from_fps(fingerprints)
+        unique_visitors = count_unique_visitors_from_fps(user_fingerprints)
 
-        events_per_visitor = round(len(fingerprints) / unique_visitors, 2) if unique_visitors else 0
+        events_per_visitor = round(len(user_fingerprints) / unique_visitors, 2) if unique_visitors else 0
 
         top_browsers = top_n(
             [
                 (d.get('browser') or get_browser_from_ua(d.get('user_agent') or ""))
-                for d in deviceinfo
+                for d in user_deviceinfo
             ]
         )
         top_timezones = top_n(

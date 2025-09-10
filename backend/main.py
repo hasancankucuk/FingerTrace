@@ -58,11 +58,6 @@ app.register_blueprint(deviceinfo_bp)
 app.register_blueprint(contact_bp)
 app.register_blueprint(test_bp)
 
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    return jsonify({"status": "ok", "service": "FingerTrace API"}), 200
-
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"error": "Not found"}), 404

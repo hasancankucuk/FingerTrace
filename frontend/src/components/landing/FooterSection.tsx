@@ -1,4 +1,5 @@
 import { Separator } from "@/components/ui/separator"
+import { IconInnerShadowTop } from "@tabler/icons-react"
 import { useNavigate } from "react-router-dom"
 
 const footerSections = [
@@ -48,8 +49,8 @@ export const FooterSection = () => {
 					{/* Brand Section */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
-							<div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-								<span className="text-primary-foreground font-bold text-xs">FT</span>
+							<div className="h-6 w-6  flex items-center justify-center">
+              					<IconInnerShadowTop className="!size-7" />
 							</div>
 							<span className="font-bold">FingerTrace</span>
 						</div>

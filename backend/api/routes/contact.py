@@ -28,7 +28,7 @@ def send_async_email(app, mail, msg):
 @contact_bp.route('/contact', methods=['POST'])
 def contact():
     try:
-        from main import mail  # main.py'den mail instance'ını al
+        from main import mail
         data = request.json or {}
         name = data.get('name')
         email = data.get('email')

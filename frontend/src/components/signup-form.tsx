@@ -108,11 +108,11 @@ async function submit(e: React.FormEvent) {
 
         <div className="text-muted-foreground text-center text-xs">
           By continuing you agree to our{" "}
-          <a className="underline" href="#">
+          <a className="underline" href="/terms">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a className="underline" href="#">
+          <a className="underline" href="/privacy">
             Privacy Policy
           </a>
           .
