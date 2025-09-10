@@ -87,7 +87,7 @@ export default async function FingerprintSDK() {
 
     const browserAttributes = {
         fingerprint: fingerprint,
-        device_type: getDeviceType() ? getDeviceType().toString() : 'unknown',
+        device_type: getDeviceType() ? getDeviceType().toString() : 'desktop/laptop',
         platform: getPlatform(),
         user_agent: getUserAgent(),
         vendor: getVendor(),

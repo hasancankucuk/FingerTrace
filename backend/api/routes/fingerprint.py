@@ -12,6 +12,7 @@ from helpers.firebase_utils import (
 )
 
 from datetime import datetime
+import re
 
 fingerprint_bp = Blueprint('fingerprint', __name__)
 
@@ -132,13 +133,79 @@ def delete_fingerprint(current_user, doc_id):
     firestore_delete('fingerprints', doc_id)
     return jsonify({'message': 'Fingerprint deleted'}), 200
 
-# --- LIST MERGED FINGERPRINTS ---
+def _apply_sorting(data, sort_field, sort_direction):
+    """Apply sorting to the data"""
+    if not sort_field or not data:
+        return data
+    
+    reverse = sort_direction.lower() == 'desc'
+    
+    try:
+        return sorted(data, key=lambda x: str(x.get(sort_field, '')).lower(), reverse=reverse)
+    except Exception as e:
+        print(f"Sorting error: {e}")
+        return data
+
+def _apply_filtering(data, search_query):
+    """Apply global search filtering to the data"""
+    if not search_query or not data:
+        return data
+    
+    search_query = search_query.lower()
+    filtered_data = []
+    
+    for item in data:
+        # Search across all string fields
+        searchable_fields = [
+            'request_id', 'fingerprint', 'device_type', 'platform', 
+            'time_zone', 'user_agent', 'color_depth', 'color_gamut'
+        ]
+        
+        found = False
+        for field in searchable_fields:
+            value = str(item.get(field, '')).lower()
+            if search_query in value:
+                found = True
+                break
+        
+        if found:
+            filtered_data.append(item)
+    
+    return filtered_data
+
+def _apply_pagination(data, page, page_size):
+    """Apply pagination to the data"""
+    if not data:
+        return [], 0, 0
+    
+    total_items = len(data)
+    total_pages = (total_items + page_size - 1) // page_size
+    
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    
+    paginated_data = data[start_index:end_index]
+    
+    return paginated_data, total_items, total_pages
+
+# --- LIST MERGED FINGERPRINTS WITH PAGINATION ---
 @fingerprint_bp.route('/fingerprints/merged', methods=['GET'])
 @jwt_protected
 def list_merged_fingerprints(current_user):
+    workspace_id = request.args.get("workspace_id")
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("page_size", 10))
+    sort_field = request.args.get("sort_field", "created_at")
+    sort_direction = request.args.get("sort_direction", "desc")
+    search_query = request.args.get("search", "")
+    
+    if page < 1:
+        page = 1
+    if page_size < 1 or page_size > 100:
+        page_size = 10
+    
     fingerprints = firestore_get_all('fingerprints')
     deviceinfo_list = firestore_get_all('deviceinfo')
-    workspace_id = request.args.get("workspace_id")
     workspace_keys = ("workspace_id", "workspace", "ws_id")
 
     if workspace_id:
@@ -151,37 +218,90 @@ def list_merged_fingerprints(current_user):
                     return True
             return False
 
-        deviceinfo_list = [d for d in deviceinfo_list if in_workspace_rec(d)]
-        fingerprints = [f for f in fingerprints if in_workspace_rec(f)]
+        deviceinfo_filtered = [d for d in deviceinfo_list if in_workspace_rec(d)]
+        fingerprints_filtered = [f for f in fingerprints if in_workspace_rec(f)]
+    else:
+        deviceinfo_filtered = deviceinfo_list
+        fingerprints_filtered = fingerprints
 
-    fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints if isinstance(fp, dict) and fp.get('fingerprint')}
+    fingerprints_dict = {}
+    for fp in fingerprints_filtered:
+        if isinstance(fp, dict) and fp.get('fingerprint'):
+            fingerprints_dict[fp.get('fingerprint')] = fp
+
     merged_data = []
-    for device in deviceinfo_list:
+    matched_count = 0
+    unmatched_count = 0
+    
+    for device in deviceinfo_filtered:
         fp = device.get('fingerprint')
-        print("fp:", fp, fingerprints_dict)
-
+        
         if fp and fp in fingerprints_dict:
             fp_data = fingerprints_dict[fp]
-            merged_entry = {
-                "request_id": fp_data.get("id", ""),
-                "fingerprint": fp or "",
-                "created_at": device.get("created_at", "") or fp_data.get("created_at", ""),
-                "updated_at": device.get("updated_at", "") or fp_data.get("updated_at", ""),
-                "device_type": map_device_type(device.get("device_type")),
-                "platform": device.get("platform", ""),
-                "time_zone": device.get("time_zone", "") or fp_data.get("time_zone", ""),
-                "user_agent": device.get("user_agent", "") or fp_data.get("user_agent", ""),
-                "color_depth": device.get("color_depth", "") or fp_data.get("color_depth", ""),
-                "color_gamut": device.get("color_gamut", "") or fp_data.get("color_gamut", ""),
-                "bar_visibility": device.get("bar_visibility", "") or fp_data.get("bar_visibility", ""),
-                "browser_feature_support": device.get("browser_feature_support", "") or fp_data.get("browser_feature_support", ""),
-            }
-            merged_data.append(merged_entry)
+            matched_count += 1
+        else:
+            fp_data = {}
+            unmatched_count += 1
+        
+        merged_entry = {
+            "request_id": fp_data.get("id", device.get("id", "")),
+            "fingerprint": fp or "",
+            "created_at": device.get("created_at", "") or fp_data.get("created_at", ""),
+            "updated_at": device.get("updated_at", "") or fp_data.get("updated_at", ""),
+            "device_type": map_device_type(device.get("device_type")),
+            "platform": device.get("platform", ""),
+            "time_zone": device.get("time_zone", "") or fp_data.get("time_zone", ""),
+            "user_agent": device.get("user_agent", "") or fp_data.get("user_agent", ""),
+            "color_depth": device.get("color_depth", "") or fp_data.get("color_depth", ""),
+            "color_gamut": device.get("color_gamut", "") or fp_data.get("color_gamut", ""),
+            "bar_visibility": device.get("bar_visibility", "") or fp_data.get("bar_visibility", ""),
+            "browser_feature_support": device.get("browser_feature_support", "") or fp_data.get("browser_feature_support", ""),
+        }
+        merged_data.append(merged_entry)
 
-    print("merged_data:", merged_data)
     if not merged_data:
-        return jsonify({"message": "No data"}), 200
+        return jsonify({
+            "data": [],
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total_items": 0,
+                "total_pages": 0,
+                "has_next": False,
+                "has_prev": False
+            },
+            "message": "No data"
+        }), 200
 
-    return jsonify(merged_data), 200
+    original_count = len(merged_data)
+    if search_query:
+        merged_data = _apply_filtering(merged_data, search_query)
+    
+    merged_data = _apply_sorting(merged_data, sort_field, sort_direction)
+    
+    # Apply pagination
+    paginated_data, total_items, total_pages = _apply_pagination(merged_data, page, page_size)
+    
+    # Prepare response
+    response = {
+        "data": paginated_data,
+        "pagination": {
+            "page": page,
+            "page_size": page_size,
+            "total_items": total_items,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
+    
+    if search_query:
+        response["search"] = {
+            "query": search_query,
+            "filtered_items": total_items,
+            "total_items": original_count
+        }
+    
+    return jsonify(response), 200
 
 
