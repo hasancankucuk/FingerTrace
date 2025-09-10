@@ -28,7 +28,7 @@ def generate_reference_id(email):
 @contact_bp.route('/contact', methods=['POST'])
 def submit_contact_form():
     try:
-        from app import mail  # import the Mail() instance from main.py
+        from main import mail  # app yerine main olarak değiştir
         data = request.get_json()
 
         required_fields = ['name', 'email', 'subject', 'message', 'inquiry_type']
@@ -113,17 +113,42 @@ FingerTrace Team
 
     except Exception as e:
         print(f"Error in contact form: {e}")
+        import traceback
+        traceback.print_exc()  # Detaylı hata görmek için ekle
         return jsonify({'error': 'Internal server error'}), 500
 
 
 @contact_bp.route('/contact/test', methods=['GET'])
 def test_email_config():
-    smtp_user = current_app.config['MAIL_USERNAME']
-    smtp_pass = current_app.config['MAIL_PASSWORD']
+    smtp_user = current_app.config.get('MAIL_USERNAME')
+    smtp_pass = current_app.config.get('MAIL_PASSWORD')
 
     return jsonify({
         'smtp_configured': bool(smtp_user and smtp_pass),
         'smtp_user': smtp_user if smtp_user else 'Not configured',
-        'smtp_server': current_app.config['MAIL_SERVER'],
-        'smtp_port': current_app.config['MAIL_PORT']
+        'smtp_server': current_app.config.get('MAIL_SERVER'),
+        'smtp_port': current_app.config.get('MAIL_PORT'),
+        'mail_use_tls': current_app.config.get('MAIL_USE_TLS'),
+        'mail_default_sender': current_app.config.get('MAIL_DEFAULT_SENDER')
     })
+
+# Test mail gönderme endpoint'i ekle
+@contact_bp.route('/contact/test-send', methods=['POST'])
+def test_send_email():
+    try:
+        from main import mail
+        
+        test_msg = Message(
+            subject="Test Email from FingerTrace",
+            sender=current_app.config['MAIL_DEFAULT_SENDER'],
+            recipients=["hasancankucuk793@gmail.com"],
+            body="This is a test email to verify mail configuration works."
+        )
+        
+        mail.send(test_msg)
+        return jsonify({'message': 'Test email sent successfully'}), 200
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Failed to send test email: {str(e)}'}), 500
