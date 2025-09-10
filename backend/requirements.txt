@@ -1,6 +1,7 @@
 Flask-JWT-Extended
 Flask
 flask-cors
+Flask-Mail
 firebase-admin
 pycountry
 pytz
