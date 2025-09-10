@@ -12,7 +12,12 @@ export default defineConfig({
     },
     host: true,
     port: 3000,
-    allowedHosts: ['apiv2.hasancan.dev'],
+    allowedHosts: [
+      'api.fingertrace.app',
+      'apiv2.hasancan.dev',
+      'localhost',
+      '127.0.0.1'
+    ]
   },
   plugins: [react(), tailwindcss()],
   resolve: {

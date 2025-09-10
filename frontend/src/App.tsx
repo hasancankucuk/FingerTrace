@@ -18,6 +18,14 @@ import { Account } from "./app/account/Account";
 import { useAuthStore } from "./store/useAuthStore";
 import type { AuthState } from "./models/Authstate";
 import { ForgotPassword } from "./app/login/ForgotPassword";
+import { Landing } from "./app/landing/Landing";
+import { Documentation } from "./app/landing/Documentation";
+import { Terms } from "./app/legal/Terms";
+import { Privacy } from "./app/legal/Privacy";
+import { Security } from "./app/legal/Security";
+import { Features } from "./app/landing/Features";
+import { Contact } from "./app/landing/Contact";
+
 
 function SidebarLayout() {
   return (
@@ -52,6 +60,18 @@ function App() {
     <BrowserRouter>
       <SidebarProvider>
         <Routes>
+          {/* Public landing pages */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/docs" element={<Documentation />} />
+          <Route path="/contact" element={<Contact />} />
+
+
+          {/* Legal pages */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/security" element={<Security />} />
+
           {/* Pages without sidebar */}
           <Route element={<NoSidebarLayout />}>
             <Route path="/login" element={<LoginPage />} />
@@ -68,7 +88,6 @@ function App() {
               <Route path="/health" element={<Health />} />
               <Route path="/identification" element={<Identification />} />
               <Route path="/security" element={<div>Security Page</div>} />
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/account" element={<Account />} />
             </Route>
           </Route>
