@@ -69,6 +69,10 @@ function App() {
           <Route path="/contact" element={<Contact />} />
 
 
+          {/* Blog routes */}
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+
           {/* Legal pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
@@ -94,9 +98,6 @@ function App() {
             </Route>
           </Route>
 
-          {/* Blog routes */}
-          <Route path="/blog" element={<BlogList />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
         </Routes>
       </SidebarProvider>
     </BrowserRouter>
