@@ -1,6 +1,6 @@
 from datetime import timedelta
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
-    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp
+    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, test_bp
 )
 
 
@@ -30,6 +30,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
 
+# Mail instance - bu global olmalı
 mail = Mail(app)
 jwt = JWTManager(app)
 
@@ -42,21 +43,26 @@ app.register_blueprint(analysis_bp)
 app.register_blueprint(api_keys_bp)
 app.register_blueprint(workspaces_bp)
 app.register_blueprint(deviceinfo_bp)
-app.register_blueprint(contact_bp, url_prefix="/api")
+app.register_blueprint(contact_bp)
+app.register_blueprint(test_bp)
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    from datetime import datetime
-    from flask import jsonify
-    return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+    return jsonify({"status": "ok", "service": "FingerTrace API"}), 200
 
 @app.errorhandler(404)
 def not_found(error):
-    return {'error': 'Endpoint not found'}, 404
+    return jsonify({"error": "Not found"}), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return {'error': 'Internal server error'}, 500
+    return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, use_reloader=False)
+    print("Mail configuration:")
+    print(f"MAIL_SERVER: {app.config['MAIL_SERVER']}")
+    print(f"MAIL_PORT: {app.config['MAIL_PORT']}")
+    print(f"MAIL_USERNAME: {app.config['MAIL_USERNAME']}")
+    print(f"MAIL_PASSWORD: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Not set'}")
+    
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
