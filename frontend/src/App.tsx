@@ -25,6 +25,9 @@ import { Privacy } from "./app/legal/Privacy";
 import { Security } from "./app/legal/Security";
 import { Features } from "./app/landing/Features";
 import { Contact } from "./app/landing/Contact";
+import { BlogList } from "./app/blog/BlogList";
+import { BlogPost } from "./app/blog/BlogPost";
+
 
 
 function SidebarLayout() {
@@ -71,6 +74,8 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/security" element={<Security />} />
+          <Route path="/status" element={<Health />} />
+
 
           {/* Pages without sidebar */}
           <Route element={<NoSidebarLayout />}>
@@ -85,12 +90,15 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/api-keys" element={<ApiKeys />} />
               <Route path="/analysis" element={<Analysis />} />
-              <Route path="/health" element={<Health />} />
               <Route path="/identification" element={<Identification />} />
               <Route path="/security" element={<div>Security Page</div>} />
               <Route path="/account" element={<Account />} />
             </Route>
           </Route>
+
+          {/* Blog routes */}
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
         </Routes>
       </SidebarProvider>
     </BrowserRouter>

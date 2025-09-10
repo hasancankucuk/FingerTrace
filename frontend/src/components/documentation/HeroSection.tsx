@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Play, Sparkles } from "lucide-react"
+import { Play, Sparkles } from "lucide-react"
 
 interface HeroSectionProps {
   onQuickStart?: () => void
@@ -12,7 +12,6 @@ export const HeroSection = ({ onQuickStart }: HeroSectionProps) => {
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         <div className="text-center space-y-6">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <BookOpen className="h-8 w-8 text-primary" />
             <Badge variant="outline" className="px-3 py-1">
               <Sparkles className="h-3 w-3 mr-1" />
               Documentation

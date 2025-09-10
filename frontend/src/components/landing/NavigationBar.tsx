@@ -9,6 +9,14 @@ export const NavigationBar = () => {
 
   const isActive = (path: string) => location.pathname === path
 
+  const navItems = [
+    { name: "Features", href: "/features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Documentation", href: "/docs" },
+    { name: "Blog", href: "/blog" },
+    { name: "Health", href: "/health" },
+  ]
+
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
@@ -22,12 +30,15 @@ export const NavigationBar = () => {
           </Badge>
         </div>
         <div className="flex items-center gap-4">
-          <Button 
-            variant={isActive('/docs') ? 'default' : 'ghost'} 
-            onClick={() => navigate('/docs')}
-          >
-            Documentation
-          </Button>
+          {navItems.map((item) => (
+            <Button 
+              key={item.name}
+              variant={isActive(item.href) ? 'default' : 'ghost'} 
+              onClick={() => navigate(item.href)}
+            >
+              {item.name}
+            </Button>
+          ))}
           <Button variant="outline" onClick={() => navigate('/login')}>
             Sign In
           </Button>

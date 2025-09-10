@@ -86,16 +86,8 @@ export const FooterSection = () => {
 						© 2025 FingerTrace. All rights reserved.
 					</p>
 					<div className="flex gap-4 text-sm text-muted-foreground">
-						<a href="#" className="hover:text-foreground transition-colors">
+						<a href="/status" className="hover:text-foreground transition-colors">
 							Status
-						</a>
-						<a
-							href="https://github.com/hasancankucuk/fingertrace"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="hover:text-foreground transition-colors"
-						>
-							GitHub
 						</a>
 					</div>
 				</div>

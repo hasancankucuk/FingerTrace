@@ -66,7 +66,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       { title: "API Keys", url: "/api-keys", icon: IconKey },
       { title: "Identification", url: "/identification", icon: IconFingerprint },
       { title: "Analysis", url: "/analysis", icon: IconEye },
-      { title: "Health", url: "/health", icon: IconActivityHeartbeat },
     ],
     navSecondary: [],
   };
