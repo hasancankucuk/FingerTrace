@@ -59,8 +59,8 @@ services:
       - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
       - ./nginx/ja3.lua:/etc/nginx/ja3.lua:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - /etc/letsencrypt/live/apiv2.hasancan.dev/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
-      - /etc/letsencrypt/live/apiv2.hasancan.dev/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - /etc/letsencrypt/live/api.fingertrace.app/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/api.fingertrace.app/privkey.pem:/etc/nginx/certs/privkey.pem:ro
     command: >-
       sh -c "mkdir -p /usr/local/openresty/lualib/resty && \
       cp /etc/nginx/ja3.lua /usr/local/openresty/lualib/resty/ja3.lua && \
