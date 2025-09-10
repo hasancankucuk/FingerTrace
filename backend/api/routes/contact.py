@@ -3,7 +3,7 @@ from flask_mail import Message
 from datetime import datetime
 from threading import Thread
 import re
-from main import app, mail
+from backend.main import app, mail
 
 RECIPIENT_MAP = {
     'general': 'support@fingertrace.app',
