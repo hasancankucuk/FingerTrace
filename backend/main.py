@@ -39,6 +39,7 @@ app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = "fingertraaceapp@gmail.com"
 app.config['MAIL_PASSWORD'] = "adff sxyw saoj vvvx"
+app.config['MAIL_DEFAULT_SENDER'] = "fingertraaceapp@gmail.com"
 
 
 # Mail instance - bu global olmalı
