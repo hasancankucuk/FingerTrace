@@ -44,7 +44,6 @@ app.config['MAIL_DEFAULT_SENDER'] = "fingertraaceapp@gmail.com"
 
 # Mail instance - bu global olmalı
 mail = Mail(app)
-print(mail)
 jwt = JWTManager(app)
 
 # Blueprints

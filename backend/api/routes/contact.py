@@ -6,7 +6,7 @@ import re
 
 RECIPIENT_MAP = {
     'general': 'support@fingertrace.app',
-    'technical': 'tech@fingertrace.app',
+    'technical': 'support@fingertrace.app',
     'security': 'security@fingertrace.app',
     'enterprise': 'enterprise@fingertrace.app',
     'partnership': 'partnership@fingertrace.app',
@@ -17,26 +17,18 @@ RECIPIENT_MAP = {
 
 contact_bp = Blueprint('contact_bp', __name__)
 
-def send_async_email(mail, msg):
-    """Mail instance'i parametre olarak al"""
-    def send_message():
-        with current_app.app_context():
-            try:
-                mail.send(msg)
-                print(f"Email sent successfully to {msg.recipients}")
-            except Exception as e:
-                print(f"Error sending email: {e}")
-    
-    thread = Thread(target=send_message)
-    thread.daemon = True
-    thread.start()
+def send_async_email(app, mail, msg):
+    """App instance'i parametre olarak al ve context oluştur"""
+    with app.app_context():
+        try:
+            mail.send(msg)
+        except Exception as e:
+            print(f"Error sending email: {e}")
 
 @contact_bp.route('/contact', methods=['POST'])
 def contact():
     try:
-        # Mail instance'i current_app üzerinden al
-        from main import mail  # Local import - circular import'u önler
-        
+        from main import mail  # main.py'den mail instance'ını al
         data = request.json or {}
         name = data.get('name')
         email = data.get('email')
@@ -73,8 +65,11 @@ Reference ID: {reference_id}
 Submitted at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         """
 
-        # Mail instance'i parametre olarak geç
-        send_async_email(mail, msg)
+        # App instance'i al ve thread'e geç
+        app = current_app._get_current_object()
+        thread = Thread(target=send_async_email, args=(app, mail, msg))
+        thread.daemon = True
+        thread.start()
 
         return jsonify({'success': True, 'reference_id': reference_id}), 200
         

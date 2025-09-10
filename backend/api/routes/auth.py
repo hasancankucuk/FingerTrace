@@ -29,8 +29,6 @@ def user():
     uid = get_jwt_identity()
     user = get_user(uid)
 
-    print(user)
-
     return jsonify({
         "email": user["email"],
         "name": user["display_name"],
