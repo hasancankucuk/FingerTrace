@@ -29,6 +29,7 @@ export function LoginForm({
     setLoading(true);
 
     try {
+      debugger;
       const result = await loginUser(email, password);
       if (result?.access_token) {
         useAuthStore.setState({ token: result.access_token });
