@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os
-from flask import Flask, jsonify
+from threading import Thread
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
@@ -24,23 +25,20 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 
 # Mail config
-app.config['MAIL_SERVER'] = os.getenv('SMTP_HOST')
-app.config['MAIL_PORT'] = int(os.getenv('SMTP_PORT', 465))
-app.config['MAIL_USE_SSL'] =  True
-app.config['MAIL_USERNAME'] = os.getenv('SMTP_USER')
-app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASS')
-
 # app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+# app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+# app.config['MAIL_USE_SSL'] =  True
 # app.config['MAIL_USERNAME'] = os.getenv('SMTP_USER', 'fingertraaceapp@gmail.com')
 # app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASS', 'adff sxyw saoj vvvx')
 # app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
 
 
 
-# app.config['MAIL_PORT'] = 465
-# app.config['MAIL_USE_SSL'] = True
-# app.config['MAIL_USERNAME'] = "fingertraaceapp@gmail.com"
-# app.config['MAIL_PASSWORD'] = "adff sxyw saoj vvvx"
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = "fingertraaceapp@gmail.com"
+app.config['MAIL_PASSWORD'] = "adff sxyw saoj vvvx"
 
 
 # Mail instance - bu global olmalı
@@ -59,6 +57,7 @@ app.register_blueprint(workspaces_bp)
 app.register_blueprint(deviceinfo_bp)
 app.register_blueprint(contact_bp)
 app.register_blueprint(test_bp)
+
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
