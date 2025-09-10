@@ -6,3 +6,4 @@ from api.routes.health import health_bp
 from api.routes.login import login_bp
 from api.routes.workspaces import workspaces_bp
 from api.routes.device_info import deviceinfo_bp
+from api.routes.contact import contact_bp
