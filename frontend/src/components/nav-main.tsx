@@ -29,7 +29,6 @@ export function NavMain({ items }: { items: { title: string; url: string; icon?:
     try {
       const data = await getWorkspaces();
       setWorkspaces(data ?? []);
-      // Eğer selectedWorkspace yoksa ilk workspace’i seç
       if (data?.length && !selectedWorkspace) {
         setWorkspace(data[0]);
       }

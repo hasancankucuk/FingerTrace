@@ -10,7 +10,7 @@ from flask_mail import Mail, Message
 
 from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
-    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, test_bp
+    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, blog_bp
 )
 
 
@@ -56,7 +56,7 @@ app.register_blueprint(api_keys_bp)
 app.register_blueprint(workspaces_bp)
 app.register_blueprint(deviceinfo_bp)
 app.register_blueprint(contact_bp)
-app.register_blueprint(test_bp)
+app.register_blueprint(blog_bp, )
 
 @app.errorhandler(404)
 def not_found(error):

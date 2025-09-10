@@ -2,8 +2,6 @@ import type { AuthState } from "@/models/Authstate";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({

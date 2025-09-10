@@ -9,13 +9,14 @@ export interface BlogPost {
     avatar?: string;
     bio?: string;
   };
-  publishedAt: string;
-  updatedAt?: string;
+  published_at?: string; // Make optional
+  updated_at?: string;
+  created_at: string; // Required
   tags: string[];
   category: string;
-  readTime: number; // in minutes
+  read_time: number; // in minutes
   featured: boolean;
-  coverImage?: string;
+  cover_image?: string;
   status: 'draft' | 'published' | 'archived';
 }
 

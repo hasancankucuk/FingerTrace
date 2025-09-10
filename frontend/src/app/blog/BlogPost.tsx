@@ -34,7 +34,8 @@ export const BlogPost = () => {
     }
   };
 
-  const formatDate = (date: string) => {
+  const formatDate = (date?: string) => {
+    if (!date) return "Unknown date";
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -124,10 +125,10 @@ export const BlogPost = () => {
         </div>
 
         {/* Cover Image */}
-        {post.coverImage && (
+        {post.cover_image && (
           <div className="mb-8 rounded-lg overflow-hidden">
             <img
-              src={post.coverImage}
+              src={post.cover_image}
               alt={post.title}
               className="w-full h-64 md:h-96 object-cover"
             />
@@ -157,12 +158,12 @@ export const BlogPost = () => {
             
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>{formatDate(post.publishedAt)}</span>
+              <span>{formatDate(post.published_at)}</span>
             </div>
             
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              <span>{post.readTime} min read</span>
+              <span>{post.read_time} min read</span>
             </div>
             
             <Button

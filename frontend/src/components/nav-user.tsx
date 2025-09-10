@@ -39,6 +39,7 @@ export function NavUser({
   const signOut = () => {
     localStorage.removeItem("selectedWorkspace");
     localStorage.removeItem("access_token");
+    // localStorage.removeItem("auth-storage");
     useAuthStore.setState({ token: null });
     useWorkspaceStore.setState({ workspace: null });
     navigate("/login");

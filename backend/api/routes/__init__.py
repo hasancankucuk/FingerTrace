@@ -7,4 +7,4 @@ from api.routes.login import login_bp
 from api.routes.workspaces import workspaces_bp
 from api.routes.device_info import deviceinfo_bp
 from api.routes.contact import contact_bp
-from api.routes.test import test_bp
+from api.routes.blog import blog_bp

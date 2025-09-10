@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   IconKey,
   IconInnerShadowTop,
-  IconActivityHeartbeat,
   IconEye,
   IconQuestionMark,
   IconFingerprint,
@@ -66,6 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       { title: "API Keys", url: "/api-keys", icon: IconKey },
       { title: "Identification", url: "/identification", icon: IconFingerprint },
       { title: "Analysis", url: "/analysis", icon: IconEye },
+      
     ],
     navSecondary: [],
   };

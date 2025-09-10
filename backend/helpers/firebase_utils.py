@@ -20,6 +20,10 @@ if not firebase_admin._apps:
     except Exception as e:
         raise RuntimeError(f"Firebase initialization failed: {e}")
 
+
+
+db = firestore.client()
+
 def _user_record_to_dict(user):
     if user is None:
         return None
@@ -78,30 +82,56 @@ def firebase_reset_password(email):
 
 
 def firestore_set(collection, document_id, data):
-    db = firestore.client()
+    
     db.collection(collection).document(document_id).set(data)
 
 
 def firestore_get(collection, document_id):
-    db = firestore.client()
+    
     doc = db.collection(collection).document(document_id).get()
     return doc.to_dict() if doc.exists else None
 
 
 def firestore_update(collection, document_id, data):
-    db = firestore.client()
+    
     db.collection(collection).document(document_id).update(data)
 
 
 def firestore_delete(collection, document_id):
-    db = firestore.client()
+    
     db.collection(collection).document(document_id).delete()
 
 
 def firestore_get_all(collection):
-    db = firestore.client()
+    
     docs = db.collection(collection).stream()
     return [doc.to_dict() for doc in docs]
+
+def firestore_add(collection_name, data, doc_id=None):
+    try:
+        
+        if doc_id:
+            db.collection(collection_name).document(doc_id).set(data)
+            return doc_id
+        else:
+            doc_ref = db.collection(collection_name).add(data)
+            return doc_ref[1].id  # Return the document ID
+    except Exception as e:
+        print(f"Error adding document to {collection_name}: {e}")
+        raise e
+
+def firestore_get_by_id(collection_name, doc_id):
+    """Get a specific document by ID from a Firestore collection"""
+    try:
+        doc = db.collection(collection_name).document(doc_id).get()
+        if doc.exists:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            return data
+        return None
+    except Exception as e:
+        print(f"Error getting document {doc_id} from {collection_name}: {e}")
+        return None
 
 
 def firebase_verify_id_token(id_token):
@@ -110,3 +140,45 @@ def firebase_verify_id_token(id_token):
         return decoded_token
     except Exception as e:
         return {"error": str(e)}
+
+def firestore_query(collection_name, field, operator, value):
+    """Query documents in a Firestore collection"""
+    try:
+        docs = db.collection(collection_name).where(field, operator, value).stream()
+        results = []
+        for doc in docs:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            results.append(data)
+        return results
+    except Exception as e:
+        print(f"Error querying {collection_name}: {e}")
+        return []
+
+def firestore_get_with_pagination(collection_name, limit=10, start_after=None, order_by=None):
+    """Get documents with pagination"""
+    try:
+        query = db.collection(collection_name)
+        
+        if order_by:
+            query = query.order_by(order_by)
+        
+        if start_after:
+            query = query.start_after(start_after)
+        
+        query = query.limit(limit)
+        
+        docs = query.stream()
+        results = []
+        last_doc = None
+        
+        for doc in docs:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            results.append(data)
+            last_doc = doc
+        
+        return results, last_doc
+    except Exception as e:
+        print(f"Error getting paginated documents from {collection_name}: {e}")
+        return [], None

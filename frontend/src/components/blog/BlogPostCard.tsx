@@ -11,7 +11,8 @@ interface BlogPostCardProps {
 }
 
 export const BlogPostCard = ({ post, featured = false }: BlogPostCardProps) => {
-  const formatDate = (date: string) => {
+  const formatDate = (date?: string) => {
+    if (!date) return "Unknown date";
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -23,10 +24,10 @@ export const BlogPostCard = ({ post, featured = false }: BlogPostCardProps) => {
     <Card className={`group hover:shadow-lg transition-all duration-300 ${
       featured ? 'col-span-2 row-span-2' : ''
     }`}>
-      {post.coverImage && (
+      {post.cover_image && (
         <div className="relative overflow-hidden">
           <img
-            src={post.coverImage}
+            src={post.cover_image}
             alt={post.title}
             className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
               featured ? 'h-64' : 'h-48'
@@ -44,11 +45,11 @@ export const BlogPostCard = ({ post, featured = false }: BlogPostCardProps) => {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {formatDate(post.publishedAt)}
+            {formatDate(post.published_at)}
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            {post.readTime} min read
+            {post.read_time} min read
           </div>
         </div>
         

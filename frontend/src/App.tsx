@@ -15,7 +15,6 @@ import { Health } from "./app/health/Health";
 import { Analysis } from "./app/analysis/Analysis";
 import { Identification } from "./app/identification/Identification";
 import { Account } from "./app/account/Account";
-import { useAuthStore } from "./store/useAuthStore";
 import type { AuthState } from "./models/Authstate";
 import { ForgotPassword } from "./app/login/ForgotPassword";
 import { Landing } from "./app/landing/Landing";
@@ -27,8 +26,7 @@ import { Features } from "./app/landing/Features";
 import { Contact } from "./app/landing/Contact";
 import { BlogList } from "./app/blog/BlogList";
 import { BlogPost } from "./app/blog/BlogPost";
-
-
+import { useAuthStore } from "./store/useAuthStore";
 
 function SidebarLayout() {
   return (
@@ -59,6 +57,7 @@ function PrivateRoute() {
 }
 
 function App() {
+  
   return (
     <BrowserRouter>
       <SidebarProvider>
@@ -91,7 +90,6 @@ function App() {
               <Route path="/api-keys" element={<ApiKeys />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/identification" element={<Identification />} />
-              <Route path="/security" element={<div>Security Page</div>} />
               <Route path="/account" element={<Account />} />
             </Route>
           </Route>
