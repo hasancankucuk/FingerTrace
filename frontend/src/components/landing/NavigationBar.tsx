@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useNavigate, useLocation } from "react-router-dom"
-import { IconInnerShadowTop, IconInnerShadowTopFilled } from "@tabler/icons-react"
+import { IconInnerShadowTop } from "@tabler/icons-react"
 
 export const NavigationBar = () => {
   const navigate = useNavigate()

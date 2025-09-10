@@ -1,6 +1,5 @@
 import { SignupForm } from "@/components/signup-form"
 import { IconInnerShadowTop } from "@tabler/icons-react"
-import { GalleryVerticalEnd } from "lucide-react"
 
 export default function SignupPage() {
   return (
