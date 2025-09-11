@@ -1,6 +1,6 @@
 {
   "name": "trace-sdk",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "type": "module",
   "files": [
     "dist"
@@ -16,10 +16,27 @@
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "fingerprinting",
+    "browser",
+    "device",
+    "tracking",
+    "analytics",
+    "fraud-prevention",
+    "security",
+    "canvas",
+    "webgl",
+    "audio",
+    "incognito-detection"
+  ],
+  "author": "Hasan Can Kucuk",
   "license": "ISC",
-  "description": "Browser fingerprinting library",
+  "description": "A comprehensive browser fingerprinting library that generates unique device fingerprints and detects incognito/private browsing mode",
+  "homepage": "https://fingertrace.app",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browser": "dist/trace-sdk.min.js",
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@rollup/plugin-commonjs": "^24.0.0",

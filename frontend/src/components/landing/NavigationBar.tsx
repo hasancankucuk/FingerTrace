@@ -10,11 +10,11 @@ export const NavigationBar = () => {
   const isActive = (path: string) => location.pathname === path
 
   const navItems = [
-    { name: "Features", href: "/features" },
-    { name: "Pricing", href: "/pricing" },
     { name: "Documentation", href: "/docs" },
-    { name: "Blog", href: "/blog" },
-    { name: "Health", href: "/health" },
+    // { name: "Features", href: "/features" },
+    // { name: "Pricing", href: "/pricing" },
+    // { name: "Blog", href: "/blog" },
+    // { name: "Health", href: "/health" },
   ]
 
   return (
