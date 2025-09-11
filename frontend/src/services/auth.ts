@@ -17,12 +17,16 @@ export const registerUser = (email: string, password: string, name: string) =>
     body: { email, password, name },
   });
 
-export const loginUser = async (email: string, password: string) => {
+export const loginUser = async (email: string, password: string, turnstileToken?: string) => {
+  const payload: any = { email, password };
+  if (turnstileToken) {
+    payload.turnstile_token = turnstileToken;
+  }
   const result = await httpRequest<{ uid?: string; access_token?: string; error?: string }>(
     `${API_BASE_URL}/login`,
     {
       method: 'POST',
-      body: { email, password },
+      body: payload,
     }
   );
 
@@ -83,7 +87,7 @@ export const resetPassword = (email: string) => {
 };
 
 
-export const sendPasswordResetEmails = async (email: string, ) => {
+export const sendPasswordResetEmails = async (email: string,) => {
   try {
     await sendPasswordResetEmail(auth, email, {
       url: "https://fingertrace.app/login",

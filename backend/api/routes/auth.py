@@ -1,8 +1,13 @@
 from helpers.firebase_utils import create_user, firebase_reset_password, firestore_get_all, get_user, firebase_update_user, firebase_delete_user, firestore_update, firestore_delete
 from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity # type: ignore
+import os
+from dotenv import load_dotenv
+import requests
 
+load_dotenv()
 auth_bp = Blueprint('auth', __name__)
+
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
