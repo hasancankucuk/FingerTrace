@@ -27,7 +27,6 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
   const isLoadingRef = useRef(false);
   const isRenderedRef = useRef(false);
 
-  // Callback'leri stable hale getir
   const stableOnVerify = useCallback((token: string) => {
     onVerify?.(token);
   }, [onVerify]);
@@ -64,16 +63,13 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
     }
 
     try {
-      // Önceki widget'i temizle
       if (widgetIdRef.current) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
       }
 
-      // Container'ı temizle
       containerRef.current.innerHTML = '';
 
-      // Yeni widget render et
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
         theme,
@@ -95,15 +91,12 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
   const loadTurnstileScript = useCallback(() => {
     if (isLoadingRef.current) return;
     
-    // Script zaten yüklü mü kontrol et
     if (typeof window !== 'undefined' && window.turnstile) {
       initializeTurnstile();
       return;
     }
 
-    // Script DOM'da var mı kontrol et
     if (document.querySelector('script[src*="turnstile"]')) {
-      // Script var ama window.turnstile yok, bekle
       const checkTurnstile = () => {
         if (window.turnstile) {
           initializeTurnstile();
@@ -150,14 +143,12 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
       return;
     }
 
-    // Component mount olduğunda bir kez çalıştır
     const timer = setTimeout(() => {
       loadTurnstileScript();
     }, 100);
 
     return () => {
       clearTimeout(timer);
-      // Cleanup
       if (widgetIdRef.current && typeof window !== 'undefined' && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);
