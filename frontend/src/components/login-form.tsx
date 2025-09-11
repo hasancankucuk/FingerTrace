@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { loginUser } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -32,30 +32,42 @@ export function LoginForm({
 
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-  const handleTurnstileVerify = (token: string) => {
-    setTurnstileToken(token);
-    setTurnstileVerified(true);
-    console.log("Turnstile verified:", token);
-  };
+  // Callback'leri stable hale getir
+  const handleTurnstileVerify = useCallback(
+    (token: string) => {
+      console.log("Turnstile verified:", token);
+      setTurnstileToken(token);
+      setTurnstileVerified(true);
+    },
+    []
+  );
 
-  const handleTurnstileError = (error: string) => {
-    console.error("Turnstile error:", error);
-    setTurnstileToken(null);
-    setTurnstileVerified(false);
-    toast.error("CAPTCHA verification failed. Please try again.");
-  };
+  const handleTurnstileError = useCallback(
+    (error: string) => {
+      console.error("Turnstile error:", error);
+      setTurnstileToken(null);
+      setTurnstileVerified(false);
+      toast.error("CAPTCHA verification failed. Please try again.");
+    },
+    []
+  );
 
-  const handleTurnstileExpire = () => {
+  const handleTurnstileExpire = useCallback(() => {
     console.log("Turnstile expired");
     setTurnstileToken(null);
     setTurnstileVerified(false);
     toast.warning("CAPTCHA expired. Please verify again.");
-  };
+  }, []);
+
+  const resetTurnstile = useCallback(() => {
+    turnstileRef.current?.reset();
+    setTurnstileVerified(false);
+    setTurnstileToken(null);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // CAPTCHA kontrolü
     if (!turnstileVerified || !turnstileToken) {
       toast.error("Please complete the CAPTCHA verification");
       return;
@@ -64,7 +76,7 @@ export function LoginForm({
     setLoading(true);
 
     try {
-      const result = await loginUser(email, password);
+      const result = await loginUser(email, password, turnstileToken);
 
       if (result?.access_token) {
         useAuthStore.setState({ token: result.access_token });
@@ -72,28 +84,16 @@ export function LoginForm({
         navigate("/dashboard");
       } else {
         toast.error("Invalid credentials");
-        // CAPTCHA'yı sıfırla
-        turnstileRef.current?.reset();
-        setTurnstileVerified(false);
-        setTurnstileToken(null);
+        resetTurnstile();
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Login failed";
       toast.error(message);
-
-      // CAPTCHA'yı sıfırla
-      turnstileRef.current?.reset();
-      setTurnstileVerified(false);
-      setTurnstileToken(null);
+      resetTurnstile();
     } finally {
       setLoading(false);
     }
   };
-
-  // Site key kontrolü
-  if (!siteKey) {
-    console.error("Turnstile site key not configured");
-  }
 
   return (
     <>
@@ -107,84 +107,74 @@ export function LoginForm({
           <CardContent>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-6">
-                <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="grid gap-3">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                      <a
-                        href="/forgot-password"
-                        className="ml-auto text-sm underline-offset-4 hover:underline"
-                      >
-                        Forgot your password?
-                      </a>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-
-                  {/* Turnstile CAPTCHA */}
-                  {siteKey && (
-                    <div className="grid gap-3">
-                      <Label>Security Verification</Label>
-                      <div className="flex justify-center">
-                        <Turnstile
-                          ref={turnstileRef}
-                          siteKey={siteKey}
-                          onVerify={handleTurnstileVerify}
-                          onError={handleTurnstileError}
-                          onExpire={handleTurnstileExpire}
-                          theme="auto"
-                          size="normal"
-                        />
-                      </div>
-                      {turnstileVerified && (
-                        <p className="text-sm text-green-600 text-center">
-                          ✓ Verification completed
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={loading || !turnstileVerified}
-                  >
-                    {loading ? "Logging in..." : "Login"}
-                  </Button>
+                {/* Email ve Password alanları aynı */}
+                <div className="grid gap-3">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                  />
                 </div>
-                <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
-                  <a href="signup" className="underline underline-offset-4">
-                    Sign up
-                  </a>
+
+                <div className="grid gap-3">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <a
+                      href="/forgot-password"
+                      className="ml-auto text-sm underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </a>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                  />
                 </div>
+
+                {/* Turnstile - sadece site key varsa göster */}
+                {siteKey && (
+                  <div className="grid gap-3">
+                    <Label>Security Verification</Label>
+                    <div className="flex justify-center">
+                      <Turnstile
+                        ref={turnstileRef}
+                        siteKey={siteKey}
+                        onVerify={handleTurnstileVerify}
+                        onError={handleTurnstileError}
+                        onExpire={handleTurnstileExpire}
+                        theme="auto"
+                        size="normal"
+                      />
+                    </div>
+                    {turnstileVerified && (
+                      <p className="text-sm text-green-600 text-center">
+                        ✓ Verification completed
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || (siteKey && !turnstileVerified)}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
               </div>
             </form>
           </CardContent>
         </Card>
-        <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-          By clicking continue, you agree to our{" "}
-          <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
-        </div>
       </div>
     </>
   );

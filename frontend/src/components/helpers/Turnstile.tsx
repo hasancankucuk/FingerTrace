@@ -1,4 +1,4 @@
-import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from "react";
 
 export interface TurnstileRef {
   getToken: () => string | null;
@@ -24,6 +24,21 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const isLoadingRef = useRef(false);
+  const isRenderedRef = useRef(false);
+
+  // Callback'leri stable hale getir
+  const stableOnVerify = useCallback((token: string) => {
+    onVerify?.(token);
+  }, [onVerify]);
+
+  const stableOnError = useCallback((error: string) => {
+    onError?.(error);
+  }, [onError]);
+
+  const stableOnExpire = useCallback(() => {
+    onExpire?.();
+  }, [onExpire]);
 
   useImperativeHandle(ref, () => ({
     getToken: () => {
@@ -37,62 +52,141 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({
         window.turnstile.reset(widgetIdRef.current);
       }
     }
-  }));
+  }), []);
 
-  useEffect(() => {
-    const loadTurnstile = () => {
-      if (document.querySelector('script[src*="turnstile"]')) {
-        initializeTurnstile();
-        return;
-      }
+  const initializeTurnstile = useCallback(() => {
+    if (!containerRef.current || 
+        !siteKey || 
+        typeof window === 'undefined' || 
+        !window.turnstile ||
+        isRenderedRef.current) {
+      return;
+    }
 
-      const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-      script.async = true;
-      script.onload = initializeTurnstile;
-      document.head.appendChild(script);
-    };
-
-    const initializeTurnstile = () => {
-      if (!containerRef.current || typeof window === 'undefined' || !window.turnstile) {
-        return;
-      }
-
+    try {
+      // Önceki widget'i temizle
       if (widgetIdRef.current) {
         window.turnstile.remove(widgetIdRef.current);
+        widgetIdRef.current = null;
       }
+
+      // Container'ı temizle
+      containerRef.current.innerHTML = '';
 
       // Yeni widget render et
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
         theme,
         size,
-        callback: (token: string) => {
-          onVerify?.(token);
-        },
-        'error-callback': (error: string) => {
-          onError?.(error);
-        },
-        'expired-callback': () => {
-          onExpire?.();
-        },
+        callback: stableOnVerify,
+        'error-callback': stableOnError,
+        'expired-callback': stableOnExpire,
       });
+
+      isRenderedRef.current = true;
+      console.log('Turnstile widget rendered:', widgetIdRef.current);
+
+    } catch (error) {
+      console.error('Turnstile initialization error:', error);
+      stableOnError('Initialization failed');
+    }
+  }, [siteKey, theme, size, stableOnVerify, stableOnError, stableOnExpire]);
+
+  const loadTurnstileScript = useCallback(() => {
+    if (isLoadingRef.current) return;
+    
+    // Script zaten yüklü mü kontrol et
+    if (typeof window !== 'undefined' && window.turnstile) {
+      initializeTurnstile();
+      return;
+    }
+
+    // Script DOM'da var mı kontrol et
+    if (document.querySelector('script[src*="turnstile"]')) {
+      // Script var ama window.turnstile yok, bekle
+      const checkTurnstile = () => {
+        if (window.turnstile) {
+          initializeTurnstile();
+        } else {
+          setTimeout(checkTurnstile, 100);
+        }
+      };
+      checkTurnstile();
+      return;
+    }
+
+    isLoadingRef.current = true;
+
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    
+    script.onload = () => {
+      isLoadingRef.current = false;
+      // Script yüklendi ama API hazır olmayabilir
+      const waitForTurnstile = () => {
+        if (window.turnstile) {
+          initializeTurnstile();
+        } else {
+          setTimeout(waitForTurnstile, 100);
+        }
+      };
+      waitForTurnstile();
     };
 
-    loadTurnstile();
+    script.onerror = () => {
+      isLoadingRef.current = false;
+      console.error('Failed to load Turnstile script');
+      stableOnError('Failed to load CAPTCHA');
+    };
+
+    document.head.appendChild(script);
+  }, [initializeTurnstile, stableOnError]);
+
+  useEffect(() => {
+    if (!siteKey) {
+      console.error('Turnstile site key is required');
+      return;
+    }
+
+    // Component mount olduğunda bir kez çalıştır
+    const timer = setTimeout(() => {
+      loadTurnstileScript();
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
+      // Cleanup
       if (widgetIdRef.current && typeof window !== 'undefined' && window.turnstile) {
-        window.turnstile.remove(widgetIdRef.current);
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch (error) {
+          console.error('Error removing Turnstile widget:', error);
+        }
       }
+      isRenderedRef.current = false;
     };
-  }, [siteKey, theme, size, onVerify, onError, onExpire]);
+  }, []); // Sadece mount/unmount'da çalışsın
 
-  return <div ref={containerRef} className="cf-turnstile-container" />;
+  // Site key değişirse widget'i yeniden render et
+  useEffect(() => {
+    if (isRenderedRef.current && siteKey) {
+      isRenderedRef.current = false;
+      initializeTurnstile();
+    }
+  }, [siteKey, initializeTurnstile]);
+
+  return (
+    <div className="turnstile-container">
+      <div ref={containerRef} className="cf-turnstile" />
+    </div>
+  );
 });
 
 Turnstile.displayName = 'Turnstile';
 
+// Global type declaration
 declare global {
   interface Window {
     turnstile: {
