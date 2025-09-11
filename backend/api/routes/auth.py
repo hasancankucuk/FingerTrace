@@ -86,8 +86,8 @@ def forgot_password():
         return jsonify({"error": "Missing email"}), 400
 
     try:
-        firebase_reset_password(email)
+        response = firebase_reset_password(email)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-    return jsonify({"message": "Password reset email sent"}), 200
+    return jsonify({"message": "Password reset email sent", "reset_link": response.get("reset_link")}), 200

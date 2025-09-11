@@ -1,6 +1,8 @@
 import { useAuthStore } from '@/store/useAuthStore';
 import { httpRequest } from './http';
 import type { AuthResponse } from '@/models/AuthResponse';
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
 
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
@@ -79,3 +81,22 @@ export const resetPassword = (email: string) => {
     body: { email },
   });
 };
+
+
+export const sendPasswordResetEmails = async (email: string, ) => {
+  try {
+    await sendPasswordResetEmail(auth, email, {
+      url: "https://fingertrace.app/login",
+      handleCodeInApp: false
+    });
+    console.log(`Password reset email sent to: ${email}`);
+    return {
+      email,
+      reset: true,
+      message: "Password reset email sent successfully by Firebase"
+    };
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    throw error;
+  }
+}

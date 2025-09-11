@@ -82,34 +82,25 @@ def firebase_delete_user(uid):
         return None
 
 def firebase_reset_password(email):
-    """Firebase'in otomatik email gönderme sistemini kullan"""
+    """Generate Firebase password reset link (Firebase sends mail only via Client SDK)"""
     try:
-        # Firebase'in kendi email gönderme sistemi
-        # Bu fonksiyon email'i otomatik gönderir
-        
-        # Custom action code settings
         action_code_settings = auth.ActionCodeSettings(
             url='https://fingertrace.app/login',
             handle_code_in_app=False
         )
-        
-        # Bu method otomatik email gönderir
-        auth.generate_email_verification_link(email)  # Verification için
-        
-        # Password reset için Firebase'in client SDK'sını kullanmamız gerekiyor
-        # Admin SDK sadece link generate eder, email göndermez
-        
-        print(f"Password reset process initiated for: {email}")
+
+        reset_link = auth.generate_password_reset_link(email, action_code_settings)
+
+        print(f"Password reset link generated for: {email}")
         return {
             "email": email,
             "reset": True,
-            "message": "Password reset email will be sent automatically by Firebase"
+            "reset_link": reset_link,
         }
-        
+
     except Exception as e:
         print(f"Error: {e}")
         return {"error": str(e)}
-
 
 def firestore_set(collection, document_id, data):
     try:

@@ -11,7 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import { resetPassword } from "@/services/auth";
+import { sendPasswordResetEmails } from "@/services/auth";
+
+type PasswordResetResponse = {
+  email?: string;
+  reset?: boolean;
+  message?: string;
+  link?: string;
+  error?: string;
+};
 
 export const ForgotPassword = ({ className }: { className?: string }) => {
   const [email, setEmail] = useState("");
@@ -21,45 +29,47 @@ export const ForgotPassword = ({ className }: { className?: string }) => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      const value = email.trim();
-      if (!value) {
-        toast.error("Please enter your email");
-        return;
-      }
-
       setLoading(true);
       try {
-        const res = await resetPassword(value);
+        const response: PasswordResetResponse = await sendPasswordResetEmails(email);
+        if (response?.error) {
+          const errorMessage = response.error;
 
-        // support services that return Response or a simple object
-        let ok = true;
-        let body: unknown = null;
-        if (res instanceof Response) {
-          const text = await res.text();
-          try {
-            body = text ? JSON.parse(text) : null;
-          } catch {
-            body = text;
+          if (errorMessage.includes("User not found")) {
+            setSent(true);
+            toast.success("If this email exists, a reset link has been sent.");
+          } else if (errorMessage.includes("UNAUTHORIZED_DOMAIN")) {
+            toast.error(
+              "Email service temporarily unavailable. Please try again later."
+            );
+          } else {
+            toast.error("Failed to send reset email. Please try again.");
           }
-          ok = res.ok;
+        } else if (response?.reset || response?.message) {
+          setSent(true);
+          toast.success("If this email exists, a reset link has been sent.");
         } else {
-          body = res;
-          ok = true;
+          setSent(true);
+          toast.success("If this email exists, a reset link has been sent.");
         }
-
-        if (!ok) {
-          const msg =
-            (body as any)?.message ??
-            String(body) ??
-            "Failed to send reset email";
-          throw new Error(msg);
-        }
-
-        setSent(true);
-        toast.success("If this email exists, a reset link has been sent.");
       } catch (err: unknown) {
         console.error("Forgot password error:", err);
-        toast.error((err as any)?.message || "Failed to send reset email");
+
+        if (err instanceof Error) {
+          const errorMessage = err.message.toLowerCase();
+
+          if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
+            toast.error(
+              "Network error. Please check your connection and try again."
+            );
+          } else if (errorMessage.includes("unauthorized")) {
+            toast.error("Service temporarily unavailable. Please try again later.");
+          } else {
+            toast.error("Failed to send reset email. Please try again.");
+          }
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
@@ -87,9 +97,24 @@ export const ForgotPassword = ({ className }: { className?: string }) => {
 
           <CardContent>
             {sent ? (
-              <div className="text-sm text-muted-foreground">
-                If an account with that email exists, we've sent password reset
-                instructions. Check your inbox.
+              <div className="space-y-4">
+                <div className="text-sm text-muted-foreground text-center">
+                  If an account with that email exists, we've sent password reset
+                  instructions. Check your inbox and spam folder.
+                </div>
+
+                <div className="text-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSent(false);
+                      setEmail("");
+                    }}
+                    className="text-sm"
+                  >
+                    Try different email
+                  </Button>
+                </div>
               </div>
             ) : (
               <form
@@ -107,6 +132,7 @@ export const ForgotPassword = ({ className }: { className?: string }) => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
+                    disabled={loading}
                   />
                 </div>
 
@@ -128,7 +154,7 @@ export const ForgotPassword = ({ className }: { className?: string }) => {
                   Remembered your password?{" "}
                   <a
                     href="/login"
-                    className="underline underline-offset-4"
+                    className="underline underline-offset-4 hover:text-primary"
                   >
                     Back to login
                   </a>
@@ -140,11 +166,11 @@ export const ForgotPassword = ({ className }: { className?: string }) => {
 
         <div className="text-muted-foreground text-center text-xs">
           By continuing you agree to our{" "}
-          <a className="underline" href="#">
+          <a className="underline hover:text-primary" href="#">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a className="underline" href="#">
+          <a className="underline hover:text-primary" href="#">
             Privacy Policy
           </a>
           .
