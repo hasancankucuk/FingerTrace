@@ -38,9 +38,6 @@ import {
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
   type ColumnDef,
   type SortingState,
