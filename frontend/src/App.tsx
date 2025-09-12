@@ -9,7 +9,7 @@ import Dashboard from "./app/dashboard/Dashboard";
 import LoginPage from "./app/login/Login";
 import SignupPage from "./app/signup/Signup";
 import { ApiKeys } from "./app/api_keys/ApiKeys";
-import { SidebarProvider } from "./components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 import { Health } from "./app/health/Health";
 import { Analysis } from "./app/analysis/Analysis";
@@ -32,6 +32,7 @@ function SidebarLayout() {
   return (
     <div className="flex h-screen w-full bg-gray-50">
       <AppSidebar className="h-full flex-shrink-0" collapsible="icon" />
+      <SidebarTrigger/>
       <main className="flex-1 flex flex-col overflow-y-auto bg-gray-50">
         <div className="p-4 flex-1">
           <Outlet />

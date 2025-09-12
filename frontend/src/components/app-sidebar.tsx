@@ -57,18 +57,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     fetchData();
   }, []);
   
+  const navMainItems = [
+    // Get Started sadece workspace yoksa göster
+    ...(workspaces.length <= 0 ? [{ title: "Get Started", url: "/dashboard", icon: IconQuestionMark }] : []),
+    { title: "Identification", url: "/identification", icon: IconFingerprint },
+    { title: "API Keys", url: "/api-keys", icon: IconKey },
+    { title: "Analysis", url: "/analysis", icon: IconEye },
+  ];
+
   const data = {
     user,
     workspaces,
-    navMain: [
-      { title: "Get Started", url: "/dashboard", icon: IconQuestionMark },
-      { title: "API Keys", url: "/api-keys", icon: IconKey },
-      { title: "Identification", url: "/identification", icon: IconFingerprint },
-      { title: "Analysis", url: "/analysis", icon: IconEye },
-      
-    ],
+    navMain: navMainItems,
     navSecondary: [],
   };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

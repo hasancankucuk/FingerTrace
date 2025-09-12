@@ -82,7 +82,6 @@ export function Identification() {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Convert tanstack table sorting to API format
         const sortField = sorting[0]?.id || "created_at";
         const sortDirection = sorting[0]?.desc ? "desc" : "asc";
 
