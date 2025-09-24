@@ -27,6 +27,7 @@ import { Contact } from "./app/landing/Contact";
 import { BlogList } from "./app/blog/BlogList";
 import { BlogPost } from "./app/blog/BlogPost";
 import { useAuthStore } from "./store/useAuthStore";
+import { ChatBot } from "@/components/ChatBot/ChatBot";
 
 function SidebarLayout() {
   return (
@@ -58,50 +59,52 @@ function PrivateRoute() {
 }
 
 function App() {
-  
   return (
-    <BrowserRouter>
-      <SidebarProvider>
-        <Routes>
-          {/* Public landing pages */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/docs" element={<Documentation />} />
-          <Route path="/contact" element={<Contact />} />
+    <div className="App">
+      <BrowserRouter>
+        <SidebarProvider>
+          <Routes>
+            {/* Public landing pages */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/docs" element={<Documentation />} />
+            <Route path="/contact" element={<Contact />} />
 
 
-          {/* Blog routes */}
-          <Route path="/blog" element={<BlogList />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
+            {/* Blog routes */}
+            <Route path="/blog" element={<BlogList />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
 
-          {/* Legal pages */}
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/security" element={<Security />} />
-          <Route path="/status" element={<Health />} />
+            {/* Legal pages */}
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/security" element={<Security />} />
+            <Route path="/status" element={<Health />} />
 
 
-          {/* Pages without sidebar */}
-          <Route element={<NoSidebarLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-          </Route>
-
-          {/* Protected pages with sidebar */}
-          <Route element={<PrivateRoute />}>
-            <Route element={<SidebarLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/api-keys" element={<ApiKeys />} />
-              <Route path="/analysis" element={<Analysis />} />
-              <Route path="/identification" element={<Identification />} />
-              <Route path="/account" element={<Account />} />
+            {/* Pages without sidebar */}
+            <Route element={<NoSidebarLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
-          </Route>
 
-        </Routes>
-      </SidebarProvider>
-    </BrowserRouter>
+            {/* Protected pages with sidebar */}
+            <Route element={<PrivateRoute />}>
+              <Route element={<SidebarLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/api-keys" element={<ApiKeys />} />
+                <Route path="/analysis" element={<Analysis />} />
+                <Route path="/identification" element={<Identification />} />
+                <Route path="/account" element={<Account />} />
+              </Route>
+            </Route>
+
+          </Routes>
+        </SidebarProvider>
+      </BrowserRouter>
+      <ChatBot />
+    </div>
   );
 }
 
