@@ -17,7 +17,14 @@ export default defineConfig({
       'chat.fingertrace.app',
       'localhost',
       '127.0.0.1'
-    ]
+    ],
+    proxy: {
+      '/api/chat': {
+        target: 'https://chat.fingertrace.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/chat/, '/ask-trace')
+      }
+    }
   },
   plugins: [react(), tailwindcss()],
   resolve: {

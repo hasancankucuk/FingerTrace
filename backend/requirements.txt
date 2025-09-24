@@ -9,3 +9,4 @@ requests
 dotenv
 gunicorn
 ja3
+uvicorn[standard]

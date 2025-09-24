@@ -1,9 +1,11 @@
+version: '3.8'
+
 services:
-  backend:
+  backend:  # Changed from fingertrace-backend
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: fingertrace-backend
+    container_name: fingertrace-backend  # Keep container name as is
     working_dir: /app/backend
     environment:
       - FLASK_ENV=production
@@ -14,14 +16,16 @@ services:
       - DOPPLER_PROJECT=finger-trace-backend
       - DOPPLER_CONFIG=$MODE
     expose:
-      - "5000" # expose to internal network only
+      - "5000"
     volumes:
       - ../backend:/app/backend
     entrypoint: ["/bin/sh", "-c", "chmod +x /app/backend/start.sh && exec /bin/sh /app/backend/start.sh"]
+    networks:
+      - fingertrace-shared
 
-  frontend:
+  frontend:  # Changed from fingertrace-frontend
     image: node:lts-trixie-slim
-    container_name: fingertrace-frontend
+    container_name: fingertrace-frontend  # Keep container name as is
     working_dir: /frontend
     volumes:
       - ../frontend:/frontend
@@ -45,6 +49,8 @@ services:
       npm install &&
       npm run dev -- --host 0.0.0.0
       "
+    networks:
+      - fingertrace-shared
 
   nginx:
     image: openresty/openresty:alpine
@@ -53,8 +59,8 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - backend
-      - frontend
+      - backend        # Changed from fingertrace-backend
+      - frontend       # Changed from fingertrace-frontend
     volumes:
       - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
       - ./nginx/ja3.lua:/etc/nginx/ja3.lua:ro
@@ -65,3 +71,9 @@ services:
       sh -c "mkdir -p /usr/local/openresty/lualib/resty && \
       cp /etc/nginx/ja3.lua /usr/local/openresty/lualib/resty/ja3.lua && \
       openresty -g 'daemon off;'"
+    networks:
+      - fingertrace-shared
+
+networks:
+  fingertrace-shared:
+    external: true

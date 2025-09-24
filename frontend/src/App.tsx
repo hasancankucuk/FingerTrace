@@ -28,6 +28,7 @@ import { BlogList } from "./app/blog/BlogList";
 import { BlogPost } from "./app/blog/BlogPost";
 import { useAuthStore } from "./store/useAuthStore";
 import { SimpleChatBot } from "@/components/ChatBot/SimpleChatBot";
+import { BotAnalytics } from "./components/analytics/BotAnalysis";
 
 function SidebarLayout() {
   return (
@@ -69,6 +70,7 @@ function App() {
             <Route path="/features" element={<Features />} />
             <Route path="/docs" element={<Documentation />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/bot-analytics" element={<BotAnalytics />} />
 
 
             {/* Blog routes */}
