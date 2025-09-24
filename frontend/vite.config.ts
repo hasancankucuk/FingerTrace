@@ -14,6 +14,7 @@ export default defineConfig({
     port: 3000,
     allowedHosts: [
       'api.fingertrace.app',
+      'chat.fingertrace.app',
       'localhost',
       '127.0.0.1'
     ]

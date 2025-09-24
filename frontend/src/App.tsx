@@ -27,7 +27,7 @@ import { Contact } from "./app/landing/Contact";
 import { BlogList } from "./app/blog/BlogList";
 import { BlogPost } from "./app/blog/BlogPost";
 import { useAuthStore } from "./store/useAuthStore";
-import { ChatBot } from "@/components/ChatBot/ChatBot";
+import { SimpleChatBot } from "@/components/ChatBot/SimpleChatBot";
 
 function SidebarLayout() {
   return (
@@ -103,7 +103,7 @@ function App() {
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
-      <ChatBot />
+      <SimpleChatBot />
     </div>
   );
 }
