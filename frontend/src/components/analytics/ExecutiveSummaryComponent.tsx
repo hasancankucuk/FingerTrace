@@ -32,12 +32,28 @@ type ExecutiveSummaryType = {
 type ExecutiveDashboardProps = {
   executiveDashboard: {
     executive_summary?: ExecutiveSummaryType;
-  };
+  },
+  loading: boolean;
 };
 
-export const ExecutiveSummaryComponent = ({ executiveDashboard }: ExecutiveDashboardProps) => {
+export const ExecutiveSummaryComponent = ({ executiveDashboard, loading }: ExecutiveDashboardProps) => {
   const summary = executiveDashboard?.executive_summary;
-
+    if (loading) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                        <CardHeader>
+                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
   return (
     <Card>
       <CardHeader>

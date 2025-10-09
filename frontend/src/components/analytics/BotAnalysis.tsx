@@ -6,7 +6,10 @@ import {
     getPerformanceTrends,
     getABTestResults,
     getExecutiveDashboard,
-    getCrossPlatformPerformance
+    getCrossPlatformPerformance,
+    getSessionMetrics,
+    getSessionHeatMap,
+    listAllABTests
 } from "@/services/tracey";
 import { SessionMetricsComponent } from "./SessionMetrics";
 import { HeatMap } from "./Heatmap";
@@ -19,6 +22,8 @@ import { AnomaliesComponent } from "./AnomaliesComponent";
 import { StatisticsComponent } from "./StatisticsComponent";
 import { TrendsComponent } from "./TrendsComponent";
 import { TestingComponent } from "./TestingComponent";
+import { Button } from "../ui/button";
+import type { SessionMetrics } from "@/models/AnalysisInterfaces";
 
 export const BotAnalytics = () => {
     const [anomalies, setAnomalies] = useState<any>(null);
@@ -29,6 +34,9 @@ export const BotAnalytics = () => {
     const [abTestResults, setAbTestResults] = useState<any>(null);
     const [currentTestId, setCurrentTestId] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [metrics, setMetrics] = useState<SessionMetrics | null>(null);
+    const [heatmap, setHeatmap] = useState<{ heatmap: string } | null>(null);
+    const [allTests, setAllTests] = useState<any>(null);
 
     useEffect(() => {
         fetchAllData();
@@ -42,13 +50,19 @@ export const BotAnalytics = () => {
                 statisticalResult,
                 trendsResult,
                 executiveResult,
-                crossPlatformResult
+                crossPlatformResult,
+                metricsResult,
+                heatMapResult,
+                allTestsResult,
             ] = await Promise.all([
                 detectDialogueAnomalies(),
                 getStatisticalDialogueTesting(),
                 getPerformanceTrends(),
                 getExecutiveDashboard(),
-                getCrossPlatformPerformance()
+                getCrossPlatformPerformance(),
+                getSessionMetrics(),
+                getSessionHeatMap(),
+                listAllABTests().catch(() => null)
             ]);
 
             setAnomalies(anomaliesResult);
@@ -56,6 +70,9 @@ export const BotAnalytics = () => {
             setTrends(trendsResult);
             setExecutiveDashboard(executiveResult);
             setCrossPlatformData(crossPlatformResult);
+            setMetrics(metricsResult)
+            setHeatmap(heatMapResult);
+            setAllTests(allTestsResult);
 
             if (currentTestId) {
                 const testResults = await getABTestResults(currentTestId);
@@ -67,7 +84,7 @@ export const BotAnalytics = () => {
             setLoading(false);
         }
     };
-    
+
     return (
         <div className="max-w-full mx-auto space-y-6 p-4 md:p-6">
             {/* Dashboard Header */}
@@ -80,23 +97,31 @@ export const BotAnalytics = () => {
 
             {/* Tabs */}
             <Tabs defaultValue="overview" className="space-y-4">
-                <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-1 sm:gap-2 overflow-x-auto">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="executive">Executive</TabsTrigger>
-                    <TabsTrigger value="cross-platform">Platforms</TabsTrigger>
-                    <TabsTrigger value="anomalies">Anomalies</TabsTrigger>
-                    <TabsTrigger value="statistics">Statistics</TabsTrigger>
-                    <TabsTrigger value="trends">Trends</TabsTrigger>
-                    <TabsTrigger value="testing">Testing</TabsTrigger>
-                    <TabsTrigger value="session-metrics">Session Metrics</TabsTrigger>
-                    <TabsTrigger value="heat-map">Heat Map</TabsTrigger>
-                    <TabsTrigger value="user-segmentation">User Segmentation</TabsTrigger>
-                </TabsList>
+                <div className="overflow-x-auto">
+                    <TabsList className="flex flex-nowrap min-w-max gap-1 p-1 bg-muted rounded-lg">
+                        <TabsTrigger value="overview" className="whitespace-nowrap px-4 py-2 min-w-fit">Overview</TabsTrigger>
+                        <TabsTrigger value="executive" className="whitespace-nowrap px-4 py-2 min-w-fit">Executive</TabsTrigger>
+                        <TabsTrigger value="cross-platform" className="whitespace-nowrap px-4 py-2 min-w-fit">Platforms</TabsTrigger>
+                        <TabsTrigger value="anomalies" className="whitespace-nowrap px-4 py-2 min-w-fit">Anomalies</TabsTrigger>
+                        <TabsTrigger value="statistics" className="whitespace-nowrap px-4 py-2 min-w-fit">Statistics</TabsTrigger>
+                        <TabsTrigger value="trends" className="whitespace-nowrap px-4 py-2 min-w-fit">Trends</TabsTrigger>
+                        <TabsTrigger value="testing" className="whitespace-nowrap px-4 py-2 min-w-fit">Testing</TabsTrigger>
+                        <TabsTrigger value="session-metrics" className="whitespace-nowrap px-4 py-2 min-w-fit">Session Metrics</TabsTrigger>
+                        <TabsTrigger value="heat-map" className="whitespace-nowrap px-4 py-2 min-w-fit">Heat Map</TabsTrigger>
+                        <TabsTrigger value="user-segmentation" className="whitespace-nowrap px-4 py-2 min-w-fit">User Segmentation</TabsTrigger>
+                    </TabsList>
+                </div>
 
+
+
+                <div className="flex justify-end items-end">
+                    <Button onClick={fetchAllData} disabled={loading}>
+                        {loading ? 'Refreshing...' : 'Refresh Data'}
+                    </Button>
+                </div>
                 {/* Tab Contents */}
                 <TabsContent value="overview" className="space-y-4">
                     <OverviewComponent
-                        fetchAllData={fetchAllData}
                         loading={loading}
                         executiveDashboard={executiveDashboard}
                         crossPlatformData={crossPlatformData}
@@ -106,23 +131,38 @@ export const BotAnalytics = () => {
                 </TabsContent>
 
                 <TabsContent value="executive" className="space-y-4">
-                    <ExecutiveSummaryComponent executiveDashboard={executiveDashboard} />
+                    <ExecutiveSummaryComponent
+                        executiveDashboard={executiveDashboard}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="cross-platform" className="space-y-4">
-                    <CrossPlatformComponent crossPlatformData={crossPlatformData} />
+                    <CrossPlatformComponent
+                        crossPlatformData={crossPlatformData}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="anomalies" className="space-y-4">
-                    <AnomaliesComponent anomalies={anomalies} />
+                    <AnomaliesComponent
+                        anomalies={anomalies}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="statistics" className="space-y-4">
-                    <StatisticsComponent statistical={statistical} />
+                    <StatisticsComponent
+                        statistical={statistical}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="trends" className="space-y-4">
-                    <TrendsComponent trends={trends} />
+                    <TrendsComponent
+                        trends={trends}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="testing" className="space-y-4">
@@ -133,15 +173,25 @@ export const BotAnalytics = () => {
                         abTestResults={abTestResults}
                         setAbTestResults={setAbTestResults}
                         fetchAllData={fetchAllData}
+                        allTests={allTests}
+                        dialogueAnomalies={anomalies}
+                        statisticalData={statistical}
+                        performanceTrends={trends}
                     />
                 </TabsContent>
 
                 <TabsContent value="session-metrics" className="space-y-4">
-                    <SessionMetricsComponent />
+                    <SessionMetricsComponent
+                        metrics={metrics}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="heat-map" className="space-y-4">
-                    <HeatMap />
+                    <HeatMap
+                        data={heatmap}
+                        loading={loading}
+                    />
                 </TabsContent>
 
                 <TabsContent value="user-segmentation" className="space-y-4">

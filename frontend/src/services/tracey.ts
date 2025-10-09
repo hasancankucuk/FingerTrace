@@ -278,7 +278,7 @@ export const getFeedbackSummary = async () => {
     return await response.json();
 }
 
-// A/B Testing endpoints
+
 export const setupABTest = async (testConfig: any) => {
     const response = await fetch(`https://api.fingertrace.app/ab-test/setup`, {
         method: "POST",
@@ -310,6 +310,66 @@ export const getABTestResults = async (testId: string) => {
     return await response.json();
 }
 
+export const listAllABTests = async () => {
+    const response = await fetch(`https://api.fingertrace.app/ab-test/list`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+export const getABTestSummary = async () => {
+    const response = await fetch(`https://api.fingertrace.app/ab-test/summary`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+export const deleteABTest = async (testId: string) => {
+    const response = await fetch(`https://api.fingertrace.app/ab-test/${testId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+export const updateABTestStatus = async (testId: string, status: "active" | "paused" | "completed") => {
+    const response = await fetch(`https://api.fingertrace.app/ab-test/${testId}/status?status=${status}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
 export const assignTestVariant = async (testId: string, sessionId: string) => {
     const response = await fetch(`https://api.fingertrace.app/ab-test/assign/${testId}/${sessionId}`, {
         method: "POST",
@@ -325,7 +385,6 @@ export const assignTestVariant = async (testId: string, sessionId: string) => {
     return await response.json();
 }
 
-// Add the new record result endpoint
 export const recordABTestResult = async (resultData: any) => {
     const response = await fetch(`https://api.fingertrace.app/ab-test/record-result`, {
         method: "POST",
@@ -342,7 +401,7 @@ export const recordABTestResult = async (resultData: any) => {
     return await response.json();
 }
 
-// Update Dialogue Testing endpoints
+
 export const detectDialogueAnomalies = async () => {
     const response = await fetch(`https://api.fingertrace.app/dialogue-testing/anomaly-detection`, {
         method: "POST",
@@ -388,14 +447,102 @@ export const getPerformanceTrends = async () => {
     return await response.json();
 }
 
-// Legacy testing endpoints (kept for backward compatibility)
+export const createAdvancedABTest = async (testConfig: {
+    test_name: string;
+    variant_a: string;
+    variant_b: string;
+    traffic_split: number;
+    start_date: Date;
+    end_date: Date;
+    target_metric?: string;
+    minimum_sample_size?: number;
+    confidence_level?: number;
+}) => {
+    return await setupABTest(testConfig);
+}
+
+export const getABTestWithStatistics = async (testId: string) => {
+    try {
+        const [results, summary] = await Promise.all([
+            getABTestResults(testId),
+            getABTestSummary()
+        ]);
+
+        return {
+            ...results,
+            summary: summary.tests?.find((t: any) => t.id === testId) || null
+        };
+    } catch (error) {
+        console.error('Error fetching A/B test with statistics:', error);
+        throw error;
+    }
+}
+
+export const getABTestPerformanceComparison = async (testId: string) => {
+    try {
+        const results = await getABTestResults(testId);
+        
+        if (!results.variant_a_performance || !results.variant_b_performance) {
+            return null;
+        }
+
+        const variantA = results.variant_a_performance;
+        const variantB = results.variant_b_performance;
+
+        return {
+            response_time_improvement: ((variantA.avg_response_time - variantB.avg_response_time) / variantA.avg_response_time) * 100,
+            satisfaction_improvement: ((variantB.avg_satisfaction - variantA.avg_satisfaction) / variantA.avg_satisfaction) * 100,
+            conversion_improvement: ((variantB.conversion_rate - variantA.conversion_rate) / variantA.conversion_rate) * 100,
+            sample_size_ratio: variantB.sample_size / variantA.sample_size,
+            statistical_power: results.confidence_level || 0,
+            recommendation: results.winner ? `Deploy Variant ${results.winner}` : "Continue testing"
+        };
+    } catch (error) {
+        console.error('Error getting A/B test performance comparison:', error);
+        return null;
+    }
+}
+
+export const pauseABTest = async (testId: string) => {
+    return await updateABTestStatus(testId, "paused");
+}
+
+export const resumeABTest = async (testId: string) => {
+    return await updateABTestStatus(testId, "active");
+}
+
+export const completeABTest = async (testId: string) => {
+    return await updateABTestStatus(testId, "completed");
+}
+
+export const bulkRecordABTestResults = async (testId: string, results: Array<{
+    session_id: string;
+    variant: string;
+    response_time: number;
+    satisfaction: number;
+    conversion: boolean;
+}>) => {
+    const promises = results.map(result => 
+        recordABTestResult({
+            test_id: testId,
+            ...result
+        })
+    );
+
+    try {
+        await Promise.all(promises);
+        return { status: "success", recorded_count: results.length };
+    } catch (error) {
+        console.error('Error bulk recording A/B test results:', error);
+        throw error;
+    }
+}
+
 export const createABTest = async (testConfig: any) => {
-    // Redirect to new endpoint
     return await setupABTest(testConfig);
 }
 
 export const getTestingAnalytics = async () => {
-    // Return combined testing analytics
     try {
         const [anomalies, statistical, trends] = await Promise.all([
             detectDialogueAnomalies(),

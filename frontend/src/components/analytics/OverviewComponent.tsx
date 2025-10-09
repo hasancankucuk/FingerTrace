@@ -1,10 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Activity, AlertTriangle, Monitor, Users } from "lucide-react";
 
 interface OverviewComponentProps {
-    fetchAllData: () => void;
     loading: boolean;
     executiveDashboard: any;
     crossPlatformData: any;
@@ -12,7 +10,7 @@ interface OverviewComponentProps {
     statistical: any;
 }
 
-export const OverviewComponent = ({ fetchAllData, loading, executiveDashboard, crossPlatformData, anomalies, statistical }: OverviewComponentProps) => {
+export const OverviewComponent = ({ loading, executiveDashboard, crossPlatformData, anomalies, statistical }: OverviewComponentProps) => {
     
     const getPerformanceScore = () => {
         if (!statistical?.response_time_stats) return 0;
@@ -34,15 +32,26 @@ export const OverviewComponent = ({ fetchAllData, loading, executiveDashboard, c
         return 'Poor';
     };
 
+
+    if (loading) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                        <CardHeader>
+                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <>
-
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Analytics Overview</h2>
-                <Button onClick={fetchAllData} disabled={loading}>
-                    {loading ? 'Refreshing...' : 'Refresh Data'}
-                </Button>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

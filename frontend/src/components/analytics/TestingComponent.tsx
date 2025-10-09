@@ -1,8 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, TestTube } from "lucide-react";
-import { assignTestVariant, getABTestResults, recordABTestResult, setupABTest } from "@/services/tracey";
+import { Loader2} from "lucide-react";
+import {
+    assignTestVariant,
+    getABTestResults,
+    recordABTestResult,
+    setupABTest,
+    deleteABTest,
+    pauseABTest,
+    resumeABTest,
+    completeABTest,
+    bulkRecordABTestResults,
+    getABTestPerformanceComparison
+} from "@/services/tracey";
+import { useState, useEffect } from "react";
+import { HeaderAction } from "./AB-Test/HeaderAction";
+import { TestOverview } from "./AB-Test/TestOverview";
+import { AllTests } from "./AB-Test/AllTests";
+import { CurrentTests } from "./AB-Test/CurrentTests";
+import { PerformanceComparision } from "./AB-Test/PerformanceComparision";
+import { DialogueTesting } from "./AB-Test/DialogueTesting";
+import { ABTestResults } from "./AB-Test/ABResults";
 
 type VariantPerformance = {
     sample_size: number;
@@ -22,10 +41,15 @@ type ABTestResults = {
 type TestingComponentProps = {
     currentTestId?: string;
     setCurrentTestId: (id: string) => void;
-    loading?: boolean;
+    loading: boolean;
     abTestResults?: ABTestResults;
     setAbTestResults: (results: ABTestResults) => void;
     fetchAllData: () => void;
+    // Ana fetch'ten gelen yeni data
+    allTests?: any;
+    dialogueAnomalies?: any;
+    statisticalData?: any;
+    performanceTrends?: any;
 };
 
 export const TestingComponent = ({
@@ -34,9 +58,32 @@ export const TestingComponent = ({
     loading,
     abTestResults,
     setAbTestResults,
-    fetchAllData
+    fetchAllData,
+    allTests,
+    dialogueAnomalies,
+    statisticalData,
+    performanceTrends
 }: TestingComponentProps) => {
+    const [performanceComparison, setPerformanceComparison] = useState<any>(null);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+    // Performance comparison'ı currentTestId değiştiğinde güncelle
+    useEffect(() => {
+        if (currentTestId && abTestResults) {
+            loadPerformanceComparison();
+        }
+    }, [currentTestId, abTestResults]);
+
+    const loadPerformanceComparison = async () => {
+        if (!currentTestId) return;
+
+        try {
+            const comparison = await getABTestPerformanceComparison(currentTestId);
+            setPerformanceComparison(comparison);
+        } catch (error) {
+            console.error('Error loading performance comparison:', error);
+        }
+    };
 
     const recordTestResult = async (variant: string, responseTime: number, satisfaction: number) => {
         if (!currentTestId) {
@@ -54,13 +101,18 @@ export const TestingComponent = ({
         };
 
         try {
+            setActionLoading(`record-${variant}`);
             await recordABTestResult(resultData);
             console.log('Test result recorded:', resultData);
 
             const updatedResults = await getABTestResults(currentTestId);
             setAbTestResults(updatedResults);
+
+            await loadPerformanceComparison();
         } catch (error) {
             console.error('Error recording test result:', error);
+        } finally {
+            setActionLoading(null);
         }
     };
 
@@ -70,23 +122,40 @@ export const TestingComponent = ({
             return;
         }
 
-        const variants = ['A', 'B'];
-        const promises = [];
+        try {
+            setActionLoading('simulate');
+            const variants = ['A', 'B'];
+            const bulkResults = [];
 
-        for (let i = 0; i < 10; i++) {
-            const variant = variants[Math.floor(Math.random() * variants.length)];
-            const responseTime = Math.random() * 5 + 1; // 1-6 seconds
-            const satisfaction = Math.random() * 2 + 3; // 3-5 rating
+            for (let i = 0; i < 20; i++) {
+                const variant = variants[Math.floor(Math.random() * variants.length)];
+                const responseTime = Math.random() * 4 + 1; // 1-5 seconds
+                const satisfaction = Math.random() * 2 + 3; // 3-5 rating
 
-            promises.push(recordTestResult(variant, responseTime, satisfaction));
+                bulkResults.push({
+                    session_id: `bulk_session_${Date.now()}_${i}`,
+                    variant: variant,
+                    response_time: parseFloat(responseTime.toFixed(2)),
+                    satisfaction: parseFloat(satisfaction.toFixed(1)),
+                    conversion: satisfaction > 3.5
+                });
+            }
+
+            await bulkRecordABTestResults(currentTestId, bulkResults);
+            console.log('Bulk test data recorded:', bulkResults.length, 'results');
+
+            // Ana fetch'i çağır
+            fetchAllData();
+        } catch (error) {
+            console.error('Error simulating test data:', error);
+        } finally {
+            setActionLoading(null);
         }
-
-        await Promise.all(promises);
-        console.log('Simulated test data recorded');
     };
 
     const assignVariant = async (testId: string, variant: string) => {
         try {
+            setActionLoading(`assign-${variant}`);
             const sessionId = `session_${Date.now()}`;
             const result = await assignTestVariant(testId, sessionId);
             console.log('Variant assigned:', result);
@@ -94,19 +163,26 @@ export const TestingComponent = ({
             await recordTestResult(variant, Math.random() * 3 + 1, Math.random() * 2 + 3);
         } catch (error) {
             console.error('Error assigning variant:', error);
+        } finally {
+            setActionLoading(null);
         }
     };
+
     const createNewABTest = async () => {
         const testConfig = {
-            test_name: "Response Variant Test",
+            test_name: `Response Variant Test ${Date.now()}`,
             variant_a: "Standard Response",
             variant_b: "Enhanced Response",
             traffic_split: 0.5,
             start_date: new Date(),
-            end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            target_metric: "satisfaction",
+            minimum_sample_size: 50,
+            confidence_level: 0.95
         };
 
         try {
+            setActionLoading('create');
             const result = await setupABTest(testConfig);
 
             if (result.test_id) {
@@ -115,149 +191,158 @@ export const TestingComponent = ({
                 setAbTestResults(testResults);
             }
 
+            // Ana fetch'i çağır
             fetchAllData();
         } catch (error) {
             console.error('Error creating A/B test:', error);
+        } finally {
+            setActionLoading(null);
         }
     };
 
+    const handleTestStatusUpdate = async (testId: string, status: "active" | "paused" | "completed") => {
+        try {
+            setActionLoading(`status-${status}`);
 
-    return (
-        <div className="space-y-4">
-            {/* Header Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-                <h2 className="text-2xl font-bold">A/B Testing & Performance Analysis</h2>
-                <div className="flex flex-wrap gap-2">
-                    <Button onClick={createNewABTest} variant="outline">
-                        <TestTube className="h-4 w-4 mr-2" />
-                        Create A/B Test
-                    </Button>
-                    <Button onClick={simulateTestData} variant="outline" disabled={!currentTestId}>
-                        <Play className="h-4 w-4 mr-2" />
-                        Simulate Data
-                    </Button>
-                    <Button onClick={fetchAllData} disabled={loading}>
-                        {loading ? "Refreshing..." : "Refresh Data"}
-                    </Button>
+            if (status === "paused") {
+                await pauseABTest(testId);
+            } else if (status === "active") {
+                await resumeABTest(testId);
+            } else if (status === "completed") {
+                await completeABTest(testId);
+            }
+
+            if (testId === currentTestId) {
+                const updatedResults = await getABTestResults(testId);
+                setAbTestResults(updatedResults);
+            }
+
+            // Ana fetch'i çağır
+            fetchAllData();
+        } catch (error) {
+            console.error('Error updating test status:', error);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleDeleteTest = async (testId: string) => {
+        if (!confirm('Are you sure you want to delete this test? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            setActionLoading('delete');
+            await deleteABTest(testId);
+
+            if (testId === currentTestId) {
+                setCurrentTestId('');
+                setAbTestResults(undefined);
+                setPerformanceComparison(null);
+            }
+
+            // Ana fetch'i çağır
+            fetchAllData();
+        } catch (error) {
+            console.error('Error deleting test:', error);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="space-y-4">
+                {/* Loading Header */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-2">
+                    <div className="h-8 bg-gray-200 rounded w-80 animate-pulse"></div>
+                    <div className="flex flex-wrap gap-2">
+                        <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+                        <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+                    </div>
                 </div>
-            </div>
 
-            {/* Current Test Status */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Current A/B Test Status</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                        Active test: {currentTestId ? `Test ID: ${currentTestId}` : "No active test"}
-                    </p>
-                </CardHeader>
-                <CardContent>
-                    {currentTestId ? (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <Badge variant="default">Active</Badge>
-                                <span className="text-sm">Response Variant Test</span>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Button variant="outline" onClick={() => assignVariant(currentTestId, "A")}>
-                                    Test Variant A
-                                </Button>
-                                <Button variant="outline" onClick={() => assignVariant(currentTestId, "B")}>
-                                    Test Variant B
-                                </Button>
-                            </div>
+                {/* Loading Test Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="animate-pulse text-center p-4 bg-gray-50 rounded">
+                            <div className="h-8 bg-gray-200 rounded w-16 mx-auto mb-2"></div>
+                            <div className="h-4 bg-gray-200 rounded w-20 mx-auto"></div>
                         </div>
-                    ) : (
-                        <div className="text-center text-muted-foreground py-8">
-                            No active A/B test. Create one to start testing.
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                    ))}
+                </div>
 
-            {/* A/B Test Results */}
-            {abTestResults && (
+                {/* Loading Current Test Status */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>A/B Test Results</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                            Statistical analysis of variant performance
-                        </p>
+                        <div className="h-6 bg-gray-200 rounded w-48 animate-pulse mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded w-64 animate-pulse"></div>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {/* Test Summary */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="text-center p-4 bg-blue-50 rounded">
-                                    <div className="text-2xl font-bold text-blue-600">
-                                        {abTestResults.statistical_significance ? "YES" : "NO"}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">Statistical Significance</div>
-                                </div>
-                                <div className="text-center p-4 bg-green-50 rounded">
-                                    <div className="text-2xl font-bold text-green-600">
-                                        {(abTestResults.confidence_level * 100).toFixed(1)}%
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">Confidence Level</div>
-                                </div>
-                                <div className="text-center p-4 bg-purple-50 rounded">
-                                    <div className="text-2xl font-bold text-purple-600">
-                                        {abTestResults.winner || "TBD"}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">Winner</div>
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+                                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
                             </div>
-
-                            {/* Variant Comparison */}
-                            <div>
-                                <h4 className="font-semibold mb-3">Variant Performance Comparison</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {["A", "B"].map((variant) => {
-                                        const data = variant === "A"
-                                            ? abTestResults.variant_a_performance
-                                            : abTestResults.variant_b_performance;
-
-                                        return (
-                                            <div key={variant} className="p-4 border rounded">
-                                                <h5 className="font-medium mb-3 flex items-center gap-2">
-                                                    Variant {variant}: {variant === "A" ? "Standard Response" : "Enhanced Response"}
-                                                    {abTestResults.winner === variant && <Badge variant="default">Winner</Badge>}
-                                                </h5>
-                                                <div className="space-y-2">
-                                                    <div className="flex justify-between">
-                                                        <span>Sample Size:</span>
-                                                        <span className="font-bold">{data?.sample_size || 0}</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span>Avg Response Time:</span>
-                                                        <span className="font-bold">{data?.avg_response_time?.toFixed(2) || 0}s</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span>Avg Satisfaction:</span>
-                                                        <span className="font-bold">{data?.avg_satisfaction?.toFixed(2) || 0}/5</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span>Conversion Rate:</span>
-                                                        <span className="font-bold">{((data?.conversion_rate || 0) * 100).toFixed(1)}%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Test Actions */}
-                            <div className="flex flex-wrap justify-end gap-2">
-                                <Button variant="outline" onClick={() => recordTestResult("A", 2.5, 4.2)}>
-                                    Record A Result
-                                </Button>
-                                <Button variant="outline" onClick={() => recordTestResult("B", 2.1, 4.5)}>
-                                    Record B Result
-                                </Button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* Header Actions */}
+            <HeaderAction
+                createNewABTest={createNewABTest}
+                simulateTestData={simulateTestData}
+                currentTestId={currentTestId}
+                actionLoading={actionLoading}
+            />
+
+            {/* Test Overview Dashboard */}
+            <TestOverview allTests={allTests} dialogueAnomalies={dialogueAnomalies} />
+
+            {/* All Tests List */}
+            <AllTests
+                allTests={allTests}
+                currentTestId={currentTestId}
+                setCurrentTestId={setCurrentTestId}
+                handleTestStatusUpdate={handleTestStatusUpdate}
+                handleDeleteTest={handleDeleteTest}
+                actionLoading={actionLoading}
+            />
+
+            {/* Current Test Status */}
+            <CurrentTests
+                currentTestId={currentTestId}
+                handleTestStatusUpdate={handleTestStatusUpdate}
+                actionLoading={actionLoading}
+                assignVariant={assignVariant}
+            />
+
+            {/* Performance Comparison */}
+            {performanceComparison && (
+                <PerformanceComparision performanceComparison={performanceComparison} />
+            )}
+
+            {/* A/B Test Results */}
+            {abTestResults && (
+                <ABTestResults
+                    abTestResults={abTestResults}
+                    recordTestResult={recordTestResult}
+                    actionLoading={actionLoading}
+                />
+            )}
+
+            {/* Dialogue Testing Analytics */}
+            {(statisticalData || performanceTrends) && (
+                <DialogueTesting statisticalData={statisticalData} performanceTrends={performanceTrends} />
             )}
         </div>
     );

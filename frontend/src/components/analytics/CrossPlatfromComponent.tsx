@@ -22,7 +22,12 @@ type CrossPlatformDataType = {
   platform_recommendations?: { [key: string]: string };
 };
 
-export const CrossPlatformComponent = ({ crossPlatformData }: { crossPlatformData: CrossPlatformDataType }) => {
+interface CrossPlatformComponentProps {
+  crossPlatformData: CrossPlatformDataType | null;
+  loading: boolean;
+}
+
+export const CrossPlatformComponent = ({ crossPlatformData, loading }: CrossPlatformComponentProps) => {
   const analysis = crossPlatformData?.cross_platform_analysis;
 
   const totalSessions = analysis
@@ -33,6 +38,51 @@ export const CrossPlatformComponent = ({ crossPlatformData }: { crossPlatformDat
     ? (Object.values(analysis).reduce((sum, platform) => sum + (platform?.avg_response_time || 0), 0) /
       Object.values(analysis).length).toFixed(2)
     : "0";
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Cross-Platform Performance</CardTitle>
+          <p className="text-sm text-muted-foreground">Performance metrics across different platforms</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Loading Summary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="animate-pulse text-center p-4 bg-gray-50 rounded">
+                  <div className="h-8 bg-gray-200 rounded w-16 mx-auto mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20 mx-auto"></div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Loading Platform Cards */}
+            <div>
+              <div className="h-6 bg-gray-200 rounded w-48 mb-3 animate-pulse"></div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="animate-pulse p-4 border rounded-lg space-y-3">
+                    <div className="h-5 bg-gray-200 rounded w-24"></div>
+                    <div className="space-y-2">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className="flex justify-between">
+                          <div className="h-4 bg-gray-200 rounded w-16"></div>
+                          <div className="h-4 bg-gray-200 rounded w-12"></div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -58,7 +108,7 @@ export const CrossPlatformComponent = ({ crossPlatformData }: { crossPlatformDat
                 <div className="text-sm text-muted-foreground">Avg Response Time</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded">
-                <div className="text-2xl font-bold text-purple-600 capitalize">{crossPlatformData.best_performing_platform || 'N/A'}</div>
+                <div className="text-2xl font-bold text-purple-600 capitalize">{crossPlatformData?.best_performing_platform || 'N/A'}</div>
                 <div className="text-sm text-muted-foreground">Best Platform</div>
               </div>
             </div>
@@ -76,7 +126,7 @@ export const CrossPlatformComponent = ({ crossPlatformData }: { crossPlatformDat
                         {platformName === 'api' && <Activity className="h-4 w-4" />}
                         {platformName}
                       </h5>
-                      {crossPlatformData.best_performing_platform === platformName && (
+                      {crossPlatformData?.best_performing_platform === platformName && (
                         <Badge variant="default">Best</Badge>
                       )}
                     </div>
@@ -121,9 +171,35 @@ export const CrossPlatformComponent = ({ crossPlatformData }: { crossPlatformDat
                 ))}
               </div>
             </div>
+
+            {/* Platform Recommendations */}
+            {crossPlatformData?.platform_recommendations && (
+              <div>
+                <h4 className="font-semibold mb-3">Platform Recommendations</h4>
+                <div className="space-y-3">
+                  {Object.entries(crossPlatformData.platform_recommendations).map(([platform, recommendation]) => (
+                    <div key={platform} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          {platform === 'web' && <Monitor className="h-5 w-5 text-blue-600 mt-0.5" />}
+                          {platform === 'mobile' && <Users className="h-5 w-5 text-blue-600 mt-0.5" />}
+                          {platform === 'api' && <Activity className="h-5 w-5 text-blue-600 mt-0.5" />}
+                        </div>
+                        <div>
+                          <h6 className="font-medium capitalize text-blue-900">{platform} Platform</h6>
+                          <p className="text-sm text-blue-700 mt-1">{recommendation}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          <div className="animate-pulse h-32 bg-gray-200 rounded"></div>
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">No cross-platform data available</p>
+          </div>
         )}
       </CardContent>
     </Card>

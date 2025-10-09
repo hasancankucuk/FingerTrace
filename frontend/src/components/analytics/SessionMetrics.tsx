@@ -1,34 +1,13 @@
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getSessionMetrics } from "@/services/tracey";
+import type { SessionMetrics } from "@/models/AnalysisInterfaces";
 
-interface SessionMetrics {
-    total_sessions: number;
-    avg_session_duration: number;
-    total_messages: number;
-    avg_response_time: number;
-    active_users: number;
-    top_intents: Record<string, number>;
+interface SessionMetricsProps {
+    metrics: SessionMetrics | null;
+    loading: boolean;
 }
 
-export const SessionMetricsComponent = () => {
-    const [metrics, setMetrics] = useState<SessionMetrics | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchMetrics = async () => {
-            try {
-                const response = await getSessionMetrics();
-                setMetrics(response);
-            } catch (error) {
-                console.error('Error fetching metrics:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMetrics();
-    }, []);
+export const SessionMetricsComponent: React.FC<SessionMetricsProps> = ({ metrics, loading }) => {
 
     if (loading) {
         return (
@@ -50,7 +29,7 @@ export const SessionMetricsComponent = () => {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold">Session Metrics</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader>
@@ -105,12 +84,13 @@ export const SessionMetricsComponent = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
-                            {metrics?.top_intents && Object.entries(metrics.top_intents).map(([intent, count]) => (
-                                <div key={intent} className="flex justify-between items-center">
-                                    <span className="text-sm">{intent}</span>
-                                    <Badge variant="secondary">{count}</Badge>
-                                </div>
-                            ))}
+                            {metrics?.top_intents &&
+                                Object.entries(metrics.top_intents).map(([intent, count]) => (
+                                    <div key={intent} className="flex justify-between items-center">
+                                        <span className="text-sm">{intent}</span>
+                                        <Badge variant="secondary">{count}</Badge>
+                                    </div>
+                                ))}
                         </div>
                     </CardContent>
                 </Card>
