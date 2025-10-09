@@ -24,7 +24,7 @@ import { StatisticsComponent } from "./StatisticsComponent";
 import { TrendsComponent } from "./TrendsComponent";
 import { TestingComponent } from "./TestingComponent";
 import { Button } from "../ui/button";
-import type { SessionMetrics } from "@/models/AnalysisInterfaces";
+import type { SessionMetrics, UserSegmentation } from "@/models/AnalysisInterfaces";
 
 export const BotAnalytics = () => {
     const [anomalies, setAnomalies] = useState<any>(null);
