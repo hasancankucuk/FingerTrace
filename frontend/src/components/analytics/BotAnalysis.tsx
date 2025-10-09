@@ -9,7 +9,8 @@ import {
     getCrossPlatformPerformance,
     getSessionMetrics,
     getSessionHeatMap,
-    listAllABTests
+    listAllABTests,
+    getUserSegmentation
 } from "@/services/tracey";
 import { SessionMetricsComponent } from "./SessionMetrics";
 import { HeatMap } from "./Heatmap";
@@ -37,7 +38,7 @@ export const BotAnalytics = () => {
     const [metrics, setMetrics] = useState<SessionMetrics | null>(null);
     const [heatmap, setHeatmap] = useState<{ heatmap: string } | null>(null);
     const [allTests, setAllTests] = useState<any>(null);
-
+    const [segmentation, setSegmentation] = useState<UserSegmentation | null>(null);
     useEffect(() => {
         fetchAllData();
     }, []);
@@ -53,6 +54,7 @@ export const BotAnalytics = () => {
                 crossPlatformResult,
                 metricsResult,
                 heatMapResult,
+                segmentationResult,
                 allTestsResult,
             ] = await Promise.all([
                 detectDialogueAnomalies(),
@@ -62,6 +64,7 @@ export const BotAnalytics = () => {
                 getCrossPlatformPerformance(),
                 getSessionMetrics(),
                 getSessionHeatMap(),
+                getUserSegmentation(),
                 listAllABTests().catch(() => null)
             ]);
 
@@ -73,6 +76,7 @@ export const BotAnalytics = () => {
             setMetrics(metricsResult)
             setHeatmap(heatMapResult);
             setAllTests(allTestsResult);
+            setSegmentation(segmentationResult);
 
             if (currentTestId) {
                 const testResults = await getABTestResults(currentTestId);
@@ -195,7 +199,10 @@ export const BotAnalytics = () => {
                 </TabsContent>
 
                 <TabsContent value="user-segmentation" className="space-y-4">
-                    <UserSegmentationComponent />
+                    <UserSegmentationComponent
+                        segmentation={segmentation}
+                        loading={loading}
+                     />
                 </TabsContent>
 
                 <TabsContent value="export" className="space-y-4">

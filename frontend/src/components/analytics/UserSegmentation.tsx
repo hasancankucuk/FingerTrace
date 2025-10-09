@@ -1,31 +1,9 @@
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getUserSegmentation } from "@/services/tracey";
+import type { UserSegmentation } from "@/models/AnalysisInterfaces";
 
-interface UserSegmentation {
-    segments: Record<string, number>;
-    recommendations: Record<string, string>;
-    visualization?: string;
-}
+export const UserSegmentationComponent = ({segmentation, loading}: {segmentation: UserSegmentation | null; loading: boolean}) => {
 
-export const UserSegmentationComponent = () => {
-    const [segmentation, setSegmentation] = useState<UserSegmentation | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchSegmentation = async () => {
-            try {
-                const response = await getUserSegmentation()
-                setSegmentation(response);
-            } catch (error) {
-                console.error('Error fetching user segmentation:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSegmentation();
-    }, []);
 
     if (loading) {
         return (

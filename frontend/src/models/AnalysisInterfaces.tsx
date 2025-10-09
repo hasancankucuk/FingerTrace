@@ -6,3 +6,9 @@ export interface SessionMetrics {
     active_users: number;
     top_intents: Record<string, number>;
 }
+
+export interface UserSegmentation {
+    segments: Record<string, number>;
+    recommendations: Record<string, string>;
+    visualization?: string;
+}
