@@ -42,7 +42,7 @@ export const resetTracey = async () => {
 
 // Analytics endpoints
 export const getSessionHeatMap = async () => {
-    const response = await fetch(`https://api.fingertrace.app/session-heatmap`, {
+    const response = await fetch(`https://api.fingertrace.app/analytics/session-heatmap`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
