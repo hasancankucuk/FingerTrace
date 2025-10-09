@@ -40,8 +40,8 @@ type TestingComponentProps = {
     currentTestId?: string;
     setCurrentTestId: (id: string) => void;
     loading: boolean;
-    abTestResults?: ABTestResults;
-    setAbTestResults: (results: ABTestResults) => void;
+    abTestResults?: ABTestResults | null;
+    setAbTestResults: (results: ABTestResults | null) => void;
     fetchAllData: () => void;
     // Ana fetch'ten gelen yeni data
     allTests?: any;
@@ -235,7 +235,7 @@ export const TestingComponent = ({
 
             if (testId === currentTestId) {
                 setCurrentTestId('');
-                setAbTestResults(undefined);
+                setAbTestResults(null);
                 setPerformanceComparison(null);
             }
 
