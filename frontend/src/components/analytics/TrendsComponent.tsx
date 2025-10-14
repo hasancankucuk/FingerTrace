@@ -2,11 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, Activity } from "lucide-react";
 
-type MovingAveragePoint = {
-  timestamp: string;
-  avg_response_time: number;
-};
-
 type DailyTrendPoint = {
   avg_response_time: number;
   total_interactions: number;
@@ -29,6 +24,7 @@ type TrendsProps = {
     peak_hour?: number | null;
     best_performance_day?: string | null;
   };
+  improvement_percentage?: number;
 };
 
 type TrendsComponentProps = {

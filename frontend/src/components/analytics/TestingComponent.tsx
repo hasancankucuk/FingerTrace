@@ -46,7 +46,6 @@ type TestingComponentProps = {
     allTests?: any;
     dialogueAnomalies?: any;
     statisticalData?: any;
-    performanceTrends?: any;
 };
 
 export const TestingComponent = ({
@@ -59,7 +58,6 @@ export const TestingComponent = ({
     allTests,
     dialogueAnomalies,
     statisticalData,
-    performanceTrends
 }: TestingComponentProps) => {
     const [performanceComparison, setPerformanceComparison] = useState<any>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
