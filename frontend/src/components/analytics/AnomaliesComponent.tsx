@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Activity } from "lucide-react";
+import { AlertTriangle, Activity, Search } from "lucide-react";
 
 type Anomaly = {
   session_id: string;

@@ -7,12 +7,34 @@ type MovingAveragePoint = {
   avg_response_time: number;
 };
 
+type DailyTrendPoint = {
+  avg_response_time: number;
+  total_interactions: number;
+  top_intent?: string | null;
+  avg_answer_length?: number;
+  unique_intents?: number;
+};
+
+type HourlyTrendPoint = {
+  avg_response_time: number;
+  total_interactions: number;
+};
+
 type TrendsProps = {
-  trend_direction: "improving" | "declining" | "stable";
+  trend_direction: "improving" | "degrading" | "stable" | "unknown";
   recent_performance?: number;
   improvement_percentage: number;
   moving_averages?: MovingAveragePoint[];
   baseline_performance?: number;
+  trends?: Record<string, DailyTrendPoint>;
+  hourly_trends?: Record<number, HourlyTrendPoint>;
+  summary?: {
+    total_days?: number;
+    peak_hour?: number | null;
+    best_performance_day?: string | null;
+  };
+  // optional additional friendly fields
+  improvement_text?: string;
 };
 
 type TrendsComponentProps = {
@@ -75,10 +97,10 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
   const summary = trends?.summary;
 
   const getTrendIcon = () => {
-    switch (trends?.trend_direction) {
+    switch (trendDirection) {
       case "improving":
         return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case "declining":
+      case "degrading":
         return <TrendingDown className="h-4 w-4 text-red-500" />;
       default:
         return <Minus className="h-4 w-4 text-gray-500" />;
@@ -86,10 +108,10 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
   };
 
   const getTrendColor = () => {
-    switch (trends?.trend_direction) {
+    switch (trendDirection) {
       case "improving":
         return "text-green-600 bg-green-50 border-green-200";
-      case "declining":
+      case "degrading":
         return "text-red-600 bg-red-50 border-red-200";
       default:
         return "text-gray-600 bg-gray-50 border-gray-200";
@@ -97,7 +119,7 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
   };
 
   const getPerformanceChangeColor = () => {
-    if (!trends?.improvement_percentage) return "text-gray-600";
+    if (trends == null || trends.improvement_percentage == null) return "text-gray-600";
     return trends.improvement_percentage > 0 ? "text-green-600" : "text-red-600";
   };
 
@@ -121,19 +143,19 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 <div className="flex items-center gap-3">
                   {getTrendIcon()}
                   <div>
-                    <h3 className="font-semibold capitalize">{trends.trend_direction} Trend</h3>
+                    <h3 className="font-semibold capitalize">{trendDirection} Trend</h3>
                     <p className="text-sm opacity-80">
-                      {trends.trend_direction === "improving" 
+                      {trendDirection === "improving"
                         ? "Performance is getting better over time"
-                        : trends.trend_direction === "declining"
+                        : trendDirection === "degrading"
                         ? "Performance needs attention"
                         : "Performance is stable"}
                     </p>
                   </div>
                 </div>
-                <Badge 
-                  variant={trends.trend_direction === "improving" ? "default" : 
-                          trends.trend_direction === "declining" ? "destructive" : "secondary"}
+                <Badge
+                  variant={trendDirection === "improving" ? "default" :
+                           trendDirection === "degrading" ? "destructive" : "secondary"}
                 >
                   {trends.improvement_percentage > 0 ? "+" : ""}
                   {trends.improvement_percentage?.toFixed(1)}%
@@ -145,12 +167,12 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded border border-blue-200">
                 <div className="text-2xl font-bold text-blue-600">
-                  {trends.recent_performance?.toFixed(2) || 'N/A'}s
+                  {trends.recent_performance != null ? trends.recent_performance.toFixed(2) : "N/A"}s
                 </div>
                 <div className="text-sm text-muted-foreground">Recent Performance</div>
                 <div className="text-xs text-blue-600 mt-1">Last 7 days average</div>
               </div>
-              
+
               <div className="text-center p-4 bg-purple-50 rounded border border-purple-200">
                 <div className={`text-2xl font-bold ${getPerformanceChangeColor()}`}>
                   {trends.improvement_percentage > 0 ? "+" : ""}
@@ -298,7 +320,7 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
                       trends.trend_direction === "improving" ? 'bg-green-500' :
-                      trends.trend_direction === "declining" ? 'bg-red-500' : 'bg-yellow-500'
+                      trends.trend_direction === "degrading" ? 'bg-red-500' : 'bg-yellow-500'
                     }`}></div>
                     <span className="text-sm capitalize">{trends.trend_direction} trend detected</span>
                   </div>
@@ -361,8 +383,8 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 {trends.trend_direction === "improving" && (
                   <p>✅ Great job! Performance is consistently improving. Keep monitoring to maintain this trend.</p>
                 )}
-                {trends.trend_direction === "declining" && (
-                  <p>⚠️ Performance is declining. Consider investigating recent changes or increasing system resources.</p>
+                {trends.trend_direction === "degrading" && (
+                  <p>⚠️ Performance is degrading. Consider investigating recent changes or increasing system resources.</p>
                 )}
                 {trends.trend_direction === "stable" && (
                   <p>📊 Performance is stable. Monitor for any sudden changes and consider optimization opportunities.</p>

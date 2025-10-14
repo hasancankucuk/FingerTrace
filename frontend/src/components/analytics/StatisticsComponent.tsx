@@ -16,10 +16,33 @@ type SatisfactionAnalysis = {
   avg_slow_response_time: number;
 };
 
+type TTestResult = {
+  fast_count: number;
+  slow_count: number;
+  fast_mean: number;
+  slow_mean: number;
+  t_statistic: number;
+  p_value: number;
+  significant: boolean;
+};
+
+type AnovaResult = {
+  groups: Record<string, { count: number; mean: number }>;
+  f_statistic: number;
+  p_value: number;
+  significant: boolean;
+};
+
 type StatisticalProps = {
-  response_time_stats?: ResponseTimeStats;
+  response_time_stats?: ResponseTimeStats & {
+    percentile_25?: number;
+    percentile_75?: number;
+  };
   intent_distribution?: Record<string, number>;
   satisfaction_analysis?: SatisfactionAnalysis;
+  t_test_fast_vs_slow?: TTestResult;
+  anova_by_intent?: AnovaResult;
+  summary?: string;
 };
 
 type StatisticsComponentProps = {
@@ -60,7 +83,7 @@ export const StatisticsComponent = ({ statistical, loading }: StatisticsComponen
               </div>
             </div>
 
-            {/* Loading Satisfaction Analysis */}
+
             <div>
               <div className="h-5 bg-gray-200 rounded w-40 mb-3 animate-pulse"></div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -82,7 +105,7 @@ export const StatisticsComponent = ({ statistical, loading }: StatisticsComponen
   const intentDist = statistical?.intent_distribution;
   const tTest = statistical?.t_test_fast_vs_slow;
   const anova = statistical?.anova_by_intent;
-  const summary = statistical?.summary;
+  const satisfaction = statistical?.satisfaction_analysis;
 
   return (
     <Card>
@@ -129,11 +152,13 @@ export const StatisticsComponent = ({ statistical, loading }: StatisticsComponen
                 {/* Additional percentiles */}
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div className="text-center p-2 bg-indigo-50 rounded text-sm">
-                    <div className="font-bold">{stats.percentile_25.toFixed(2)}s</div>
+                    <div className="font-bold">{stats.percentile_25 !== undefined ? `${stats.percentile_25.toFixed(2)}s` : "N/A"}</div>
                     <div className="text-xs text-muted-foreground">25th Percentile</div>
                   </div>
                   <div className="text-center p-2 bg-indigo-50 rounded text-sm">
-                    <div className="font-bold">{stats.percentile_75.toFixed(2)}s</div>
+                    <div className="font-bold">
+                      {stats.percentile_75 !== undefined ? `${stats.percentile_75.toFixed(2)}s` : "N/A"}
+                    </div>
                     <div className="text-xs text-muted-foreground">75th Percentile</div>
                   </div>
                 </div>
