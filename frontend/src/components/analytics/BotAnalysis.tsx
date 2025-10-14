@@ -183,7 +183,6 @@ export const BotAnalytics = () => {
                         allTests={allTests}
                         dialogueAnomalies={anomalies}
                         statisticalData={statistical}
-                        performanceTrends={trends}
                     />
                 </TabsContent>
 
