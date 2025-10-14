@@ -379,9 +379,9 @@ export const TestingComponent = ({
                 />
             )}
 
-            {/* Dialogue Testing Analytics */}
-            {(statisticalData || performanceTrends) && (
-                <DialogueTesting statisticalData={statisticalData} performanceTrends={performanceTrends} />
+
+            {statisticalData && (
+                <DialogueTesting statisticalData={statisticalData} />
             )}
         </div>
     );

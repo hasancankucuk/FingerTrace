@@ -22,19 +22,13 @@ type HourlyTrendPoint = {
 
 type TrendsProps = {
   trend_direction: "improving" | "degrading" | "stable" | "unknown";
-  recent_performance?: number;
-  improvement_percentage: number;
-  moving_averages?: MovingAveragePoint[];
-  baseline_performance?: number;
   trends?: Record<string, DailyTrendPoint>;
-  hourly_trends?: Record<number, HourlyTrendPoint>;
+  hourly_trends?: Record<string, HourlyTrendPoint>; // Changed from Record<number, ...> to Record<string, ...>
   summary?: {
     total_days?: number;
     peak_hour?: number | null;
     best_performance_day?: string | null;
   };
-  // optional additional friendly fields
-  improvement_text?: string;
 };
 
 type TrendsComponentProps = {
@@ -95,6 +89,38 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
   const hourlyTrends = trends?.hourly_trends || {};
   const trendDirection = trends?.trend_direction || "stable";
   const summary = trends?.summary;
+
+  // Calculate recent performance from the latest daily trend
+  const getRecentPerformance = () => {
+    const dates = Object.keys(trendsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    if (dates.length > 0) {
+      return trendsData[dates[0]]?.avg_response_time;
+    }
+    return null;
+  };
+
+  // Calculate baseline performance (average of all daily trends)
+  const getBaselinePerformance = () => {
+    const values = Object.values(trendsData).map((d: any) => d.avg_response_time).filter(v => v != null);
+    if (values.length > 0) {
+      return values.reduce((a, b) => a + b, 0) / values.length;
+    }
+    return null;
+  };
+
+  // Calculate improvement percentage (comparing recent vs baseline)
+  const getImprovementPercentage = () => {
+    const recent = getRecentPerformance();
+    const baseline = getBaselinePerformance();
+    if (recent != null && baseline != null && baseline !== 0) {
+      return ((baseline - recent) / baseline) * 100;
+    }
+    return 0;
+  };
+
+  const recentPerformance = getRecentPerformance();
+  const baselinePerformance = getBaselinePerformance();
+  const improvementPercentage = getImprovementPercentage();
 
   const getTrendIcon = () => {
     switch (trendDirection) {
@@ -157,8 +183,8 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                   variant={trendDirection === "improving" ? "default" :
                            trendDirection === "degrading" ? "destructive" : "secondary"}
                 >
-                  {trends.improvement_percentage > 0 ? "+" : ""}
-                  {trends.improvement_percentage?.toFixed(1)}%
+                  {improvementPercentage > 0 ? "+" : ""}
+                  {improvementPercentage.toFixed(1)}%
                 </Badge>
               </div>
             </div>
@@ -167,16 +193,16 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded border border-blue-200">
                 <div className="text-2xl font-bold text-blue-600">
-                  {trends.recent_performance != null ? trends.recent_performance.toFixed(2) : "N/A"}s
+                  {recentPerformance != null ? recentPerformance.toFixed(2) : "N/A"}s
                 </div>
                 <div className="text-sm text-muted-foreground">Recent Performance</div>
-                <div className="text-xs text-blue-600 mt-1">Last 7 days average</div>
+                <div className="text-xs text-blue-600 mt-1">Latest available data</div>
               </div>
 
               <div className="text-center p-4 bg-purple-50 rounded border border-purple-200">
                 <div className={`text-2xl font-bold ${getPerformanceChangeColor()}`}>
-                  {trends.improvement_percentage > 0 ? "+" : ""}
-                  {trends.improvement_percentage?.toFixed(1)}%
+                  {improvementPercentage > 0 ? "+" : ""}
+                  {improvementPercentage.toFixed(1)}%
                 </div>
                 <div className="text-sm text-muted-foreground">Performance Change</div>
                 <div className="text-xs text-purple-600 mt-1">vs baseline</div>
@@ -184,7 +210,7 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
 
               <div className="text-center p-4 bg-gray-50 rounded border border-gray-200">
                 <div className="text-2xl font-bold text-gray-600">
-                  {trends.baseline_performance?.toFixed(2) || 'N/A'}s
+                  {baselinePerformance != null ? baselinePerformance.toFixed(2) : "N/A"}s
                 </div>
                 <div className="text-sm text-muted-foreground">Baseline</div>
                 <div className="text-xs text-gray-600 mt-1">Historical average</div>
@@ -202,7 +228,7 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
               <span className="text-sm">
                 Based on {summary?.total_days || 0} days of data
               </span>
-              {summary?.peak_hour && (
+              {summary?.peak_hour != null && (
                 <span className="text-sm">
                   Peak hour: {summary.peak_hour}:00
                 </span>
@@ -229,13 +255,13 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                             {new Date(date).toLocaleDateString()}
                           </span>
                           <div className="text-xs text-muted-foreground">
-                            {data.unique_intents} unique intents
+                            {data.unique_intents ?? 0} unique intents
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-bold">{data.avg_response_time?.toFixed(2)}s</div>
                           <div className="text-xs text-muted-foreground">
-                            {data.total_interactions} interactions • {data.avg_answer_length?.toFixed(0)} chars avg
+                            {data.total_interactions} interactions • {data.avg_answer_length != null ? data.avg_answer_length.toFixed(0) : "-"} chars avg
                           </div>
                           {data.top_intent && (
                             <div className="text-xs text-blue-600">
@@ -257,7 +283,7 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 </h4>
                 <div className="grid grid-cols-6 gap-2">
                   {Array.from({length: 24}, (_, hour) => {
-                    const hourData = hourlyTrends[hour];
+                    const hourData = hourlyTrends[hour.toString()]; // Convert to string since API returns string keys
                     const intensity = hourData ? Math.min(hourData.total_interactions / 10, 1) : 0;
                     
                     return (
@@ -292,20 +318,20 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Baseline Performance:</span>
-                    <span className="font-bold">{trends.baseline_performance?.toFixed(2)}s</span>
+                    <span className="font-bold">{baselinePerformance?.toFixed(2) ?? "N/A"}s</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Current Performance:</span>
-                    <span className="font-bold">{trends.recent_performance?.toFixed(2)}s</span>
+                    <span className="font-bold">{recentPerformance?.toFixed(2) ?? "N/A"}s</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div
                       className={`h-2 rounded-full ${
-                        trends.improvement_percentage > 0 ? 'bg-green-500' : 
-                        trends.improvement_percentage < 0 ? 'bg-red-500' : 'bg-gray-400'
+                        improvementPercentage > 0 ? 'bg-green-500' : 
+                        improvementPercentage < 0 ? 'bg-red-500' : 'bg-gray-400'
                       }`}
                       style={{
-                        width: `${Math.min(100, Math.abs(trends.improvement_percentage) * 2)}%`
+                        width: `${Math.min(100, Math.abs(improvementPercentage) * 2)}%`
                       }}
                     ></div>
                   </div>
@@ -319,77 +345,39 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
-                      trends.trend_direction === "improving" ? 'bg-green-500' :
-                      trends.trend_direction === "degrading" ? 'bg-red-500' : 'bg-yellow-500'
+                      trendDirection === "improving" ? 'bg-green-500' :
+                      trendDirection === "degrading" ? 'bg-red-500' : 'bg-yellow-500'
                     }`}></div>
-                    <span className="text-sm capitalize">{trends.trend_direction} trend detected</span>
+                    <span className="text-sm capitalize">{trendDirection} trend detected</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
-                      Math.abs(trends.improvement_percentage) < 5 ? 'bg-green-500' :
-                      Math.abs(trends.improvement_percentage) < 15 ? 'bg-yellow-500' : 'bg-red-500'
+                      Math.abs(improvementPercentage) < 5 ? 'bg-green-500' :
+                      Math.abs(improvementPercentage) < 15 ? 'bg-yellow-500' : 'bg-red-500'
                     }`}></div>
                     <span className="text-sm">
-                      {Math.abs(trends.improvement_percentage) < 5 ? 'Stable performance' :
-                       Math.abs(trends.improvement_percentage) < 15 ? 'Moderate variation' : 'High variation'}
+                      {Math.abs(improvementPercentage) < 5 ? 'Stable performance' :
+                       Math.abs(improvementPercentage) < 15 ? 'Moderate variation' : 'High variation'}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Moving Averages Timeline */}
-            {trends.moving_averages && trends.moving_averages.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  📈 Recent Performance Timeline
-                </h4>
-                <div className="space-y-2 max-h-60 overflow-y-auto bg-gray-50 rounded p-3">
-                  {trends.moving_averages.slice(-10).reverse().map((point, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center p-2 bg-white rounded text-sm shadow-sm"
-                    >
-                      <span className="font-medium">
-                        {new Date(point.timestamp).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: '2-digit'
-                        })}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant="outline"
-                          className={
-                            point.avg_response_time <= 2 ? 'border-green-300 text-green-700' :
-                            point.avg_response_time <= 3 ? 'border-yellow-300 text-yellow-700' :
-                            'border-red-300 text-red-700'
-                          }
-                        >
-                          {point.avg_response_time.toFixed(2)}s
-                        </Badge>
-                        {index === 0 && <Badge variant="default" className="text-xs">Latest</Badge>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Insights & Recommendations */}
             <div className="p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
               <h6 className="font-medium text-blue-800 mb-2">Performance Insights</h6>
               <div className="text-sm text-blue-700 space-y-1">
-                {trends.trend_direction === "improving" && (
+                {trendDirection === "improving" && (
                   <p>✅ Great job! Performance is consistently improving. Keep monitoring to maintain this trend.</p>
                 )}
-                {trends.trend_direction === "degrading" && (
+                {trendDirection === "degrading" && (
                   <p>⚠️ Performance is degrading. Consider investigating recent changes or increasing system resources.</p>
                 )}
-                {trends.trend_direction === "stable" && (
+                {trendDirection === "stable" && (
                   <p>📊 Performance is stable. Monitor for any sudden changes and consider optimization opportunities.</p>
                 )}
-                {Math.abs(trends.improvement_percentage) > 20 && (
+                {Math.abs(improvementPercentage) > 20 && (
                   <p>🔍 Significant performance change detected. Review recent deployments or system changes.</p>
                 )}
               </div>

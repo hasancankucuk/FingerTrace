@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Badge } from "@/components/ui/badge"
-
-export const DialogueTesting = ({ statisticalData, performanceTrends }: any) => {
+export const DialogueTesting = ({ statisticalData }: any) => {
     return (
         <Card>
             <CardHeader>
@@ -38,28 +36,6 @@ export const DialogueTesting = ({ statisticalData, performanceTrends }: any) => 
                                     <div className="font-bold">{statisticalData.response_time_stats.max.toFixed(2)}s</div>
                                     <div className="text-xs text-muted-foreground">Max</div>
                                 </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Trend Analysis */}
-                    {performanceTrends && (
-                        <div>
-                            <h5 className="font-medium mb-2">Performance Trend</h5>
-                            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded">
-                                <Badge variant={
-                                    performanceTrends.trend_direction === 'improving' ? 'default' :
-                                        performanceTrends.trend_direction === 'declining' ? 'destructive' : 'secondary'
-                                }>
-                                    {performanceTrends.trend_direction}
-                                </Badge>
-                                <span className="text-sm">
-                                    Recent: {performanceTrends.recent_performance?.toFixed(2)}s
-                                </span>
-                                <span className="text-sm">
-                                    Change: {performanceTrends.improvement_percentage > 0 ? '+' : ''}
-                                    {performanceTrends.improvement_percentage?.toFixed(1)}%
-                                </span>
                             </div>
                         </div>
                     )}
