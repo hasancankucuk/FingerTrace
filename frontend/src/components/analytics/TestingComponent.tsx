@@ -64,7 +64,6 @@ export const TestingComponent = ({
     const [performanceComparison, setPerformanceComparison] = useState<any>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    // A/B test creation form state
     const [testName, setTestName] = useState<string>('');
     const [variantA, setVariantA] = useState<string>('Standard Response');
     const [variantB, setVariantB] = useState<string>('Enhanced Response');
@@ -92,7 +91,7 @@ export const TestingComponent = ({
         }
     };
 
-    const recordTestResult = async (variant: string, responseTime: number, satisfaction: number) => {
+    const recordTestResult = async (variant: string, responseTime: number, value: number) => {
         if (!currentTestId) {
             console.error('No active test ID');
             return;
@@ -102,9 +101,8 @@ export const TestingComponent = ({
             test_id: currentTestId,
             session_id: `session_${Date.now()}`,
             variant: variant,
-            response_time: responseTime,
-            satisfaction: satisfaction,
-            conversion: satisfaction > 3.5
+            metric: targetMetric,
+            value: value,
         };
 
         try {
@@ -175,7 +173,6 @@ export const TestingComponent = ({
     };
 
     const createNewABTest = async () => {
-        // basic validation
         if (!testName.trim()) {
             alert('Please provide a test name');
             return;
