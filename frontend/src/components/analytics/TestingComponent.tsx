@@ -91,7 +91,7 @@ export const TestingComponent = ({
         }
     };
 
-    const recordTestResult = async (variant: string, responseTime: number, value: number) => {
+    const recordTestResult = async (variant: string, value: number) => {
         if (!currentTestId) {
             console.error('No active test ID');
             return;
@@ -164,7 +164,7 @@ export const TestingComponent = ({
             const result = await assignTestVariant(testId, sessionId);
             console.log('Variant assigned:', result);
 
-            await recordTestResult(variant, Math.random() * 3 + 1, Math.random() * 2 + 3);
+            await recordTestResult(variant, Math.random() * 2 + 3);
         } catch (error) {
             console.error('Error assigning variant:', error);
         } finally {
