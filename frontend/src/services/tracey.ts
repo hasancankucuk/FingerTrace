@@ -13,7 +13,6 @@ export const askTracey = async (message: string) => {
         redirect: "follow" as RequestRedirect
     };
 
-    // Updated URL to match bot service
     const response = await fetch(`https://api.fingertrace.app/ask-trace`, requestOptions);
     if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -478,101 +477,87 @@ export const getABTestWithStatistics = async (testId: string) => {
     }
 }
 
-export const getABTestPerformanceComparison = async (testId: string) => {
-    try {
-        const results = await getABTestResults(testId);
-        
-        if (!results.variant_a_performance || !results.variant_b_performance) {
-            return null;
-        }
-
-        const variantA = results.variant_a_performance;
-        const variantB = results.variant_b_performance;
-
-        return {
-            response_time_improvement: ((variantA.avg_response_time - variantB.avg_response_time) / variantA.avg_response_time) * 100,
-            satisfaction_improvement: ((variantB.avg_satisfaction - variantA.avg_satisfaction) / variantA.avg_satisfaction) * 100,
-            conversion_improvement: ((variantB.conversion_rate - variantA.conversion_rate) / variantA.conversion_rate) * 100,
-            sample_size_ratio: variantB.sample_size / variantA.sample_size,
-            statistical_power: results.confidence_level || 0,
-            recommendation: results.winner ? `Deploy Variant ${results.winner}` : "Continue testing"
-        };
-    } catch (error) {
-        console.error('Error getting A/B test performance comparison:', error);
-        return null;
-    }
-}
-
-export const pauseABTest = async (testId: string) => {
-    return await updateABTestStatus(testId, "paused");
-}
-
-export const resumeABTest = async (testId: string) => {
-    return await updateABTestStatus(testId, "active");
-}
-
-export const completeABTest = async (testId: string) => {
-    return await updateABTestStatus(testId, "completed");
-}
-
+// Additional A/B Testing endpoints - updated to match new API structure
 export const bulkRecordABTestResults = async (testId: string, results: Array<{
     session_id: string;
     variant: string;
-    response_time: number;
-    satisfaction: number;
-    conversion: boolean;
+    response_time?: number;
+    satisfaction?: number;
+    conversion?: boolean;
 }>) => {
-    const promises = results.map(result => 
-        recordABTestResult({
-            test_id: testId,
-            ...result
-        })
-    );
+    const response = await fetch(`https://api.fingertrace.app/testing/ab-test/${testId}/bulk-record`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(results)
+    });
 
-    try {
-        await Promise.all(promises);
-        return { status: "success", recorded_count: results.length };
-    } catch (error) {
-        console.error('Error bulk recording A/B test results:', error);
-        throw error;
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
+
+    return await response.json();
 }
 
-export const createABTest = async (testConfig: any) => {
-    return await setupABTest(testConfig);
+export const getABTestPerformanceComparison = async (testId: string) => {
+    const response = await fetch(`https://api.fingertrace.app/testing/ab-test/${testId}/performance-comparison`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
 }
 
-export const getTestingAnalytics = async () => {
-    try {
-        const [anomalies, statistical, trends] = await Promise.all([
-            detectDialogueAnomalies(),
-            getStatisticalDialogueTesting(), 
-            getPerformanceTrends()
-        ]);
+export const pauseABTest = async (testId: string) => {
+    const response = await fetch(`https://api.fingertrace.app/testing/ab-test/${testId}/pause`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
 
-        return {
-            anomalies,
-            statistical,
-            trends,
-            summary: {
-                totalAnomalies: anomalies.total_anomalies || 0,
-                trendDirection: trends.trend_direction || 'stable',
-                avgResponseTime: statistical.response_time_stats?.mean || 0
-            }
-        };
-    } catch (error) {
-        console.error('Error fetching testing analytics:', error);
-        return {
-            anomalies: { total_anomalies: 0 },
-            statistical: { response_time_stats: { mean: 0 } },
-            trends: { trend_direction: 'unknown' },
-            summary: {
-                totalAnomalies: 0,
-                trendDirection: 'unknown',
-                avgResponseTime: 0
-            }
-        };
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
+
+    return await response.json();
+}
+
+export const resumeABTest = async (testId: string) => {
+    const response = await fetch(`https://api.fingertrace.app/testing/ab-test/${testId}/resume`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+export const completeABTest = async (testId: string) => {
+    const response = await fetch(`https://api.fingertrace.app/testing/ab-test/${testId}/complete`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
 }
 
 // Health endpoints

@@ -80,7 +80,9 @@ export const StatisticsComponent = ({ statistical, loading }: StatisticsComponen
 
   const stats = statistical?.response_time_stats;
   const intentDist = statistical?.intent_distribution;
-  const satisfaction = statistical?.satisfaction_analysis;
+  const tTest = statistical?.t_test_fast_vs_slow;
+  const anova = statistical?.anova_by_intent;
+  const summary = statistical?.summary;
 
   return (
     <Card>
@@ -124,12 +126,78 @@ export const StatisticsComponent = ({ statistical, loading }: StatisticsComponen
                   </div>
                 </div>
 
-                {/* Performance Insight */}
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Performance Variability:</span>
-                    <Badge variant={stats.std <= 1 ? "default" : stats.std <= 2 ? "secondary" : "destructive"}>
-                      {stats.std <= 1 ? "Consistent" : stats.std <= 2 ? "Moderate" : "High Variance"}
+                {/* Additional percentiles */}
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="text-center p-2 bg-indigo-50 rounded text-sm">
+                    <div className="font-bold">{stats.percentile_25.toFixed(2)}s</div>
+                    <div className="text-xs text-muted-foreground">25th Percentile</div>
+                  </div>
+                  <div className="text-center p-2 bg-indigo-50 rounded text-sm">
+                    <div className="font-bold">{stats.percentile_75.toFixed(2)}s</div>
+                    <div className="text-xs text-muted-foreground">75th Percentile</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* T-Test Results */}
+            {tTest && (
+              <div>
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Fast vs Slow Response Comparison
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-green-50 rounded">
+                    <h5 className="font-medium text-green-800">Fast Responses (&lt;2s)</h5>
+                    <div className="text-2xl font-bold text-green-600">{tTest.fast_count}</div>
+                    <div className="text-sm">Avg: {tTest.fast_mean.toFixed(2)}s</div>
+                  </div>
+                  <div className="p-4 bg-red-50 rounded">
+                    <h5 className="font-medium text-red-800">Slow Responses (≥2s)</h5>
+                    <div className="text-2xl font-bold text-red-600">{tTest.slow_count}</div>
+                    <div className="text-sm">Avg: {tTest.slow_mean.toFixed(2)}s</div>
+                  </div>
+                </div>
+                <div className="mt-3 p-3 bg-gray-50 rounded">
+                  <div className="text-sm">
+                    <span className="font-medium">T-Statistic:</span> {tTest.t_statistic.toFixed(4)} |
+                    <span className="font-medium ml-2">P-Value:</span> {tTest.p_value.toFixed(4)} |
+                    <Badge variant={tTest.significant ? "default" : "secondary"} className="ml-2">
+                      {tTest.significant ? "Significant" : "Not Significant"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ANOVA Results */}
+            {anova && (
+              <div>
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Response Time by Intent Category
+                </h4>
+                <div className="space-y-2">
+                  {Object.entries(anova.groups).map(([intent, data]: [string, any]) => (
+                    <div key={intent} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                      <div>
+                        <span className="font-medium">{intent}</span>
+                        <span className="text-sm text-muted-foreground ml-2">({data.count} samples)</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold">{data.mean.toFixed(2)}s</div>
+                        <div className="text-xs text-muted-foreground">avg response time</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 p-3 bg-gray-50 rounded">
+                  <div className="text-sm">
+                    <span className="font-medium">F-Statistic:</span> {anova.f_statistic.toFixed(4)} |
+                    <span className="font-medium ml-2">P-Value:</span> {anova.p_value.toFixed(4)} |
+                    <Badge variant={anova.significant ? "default" : "secondary"} className="ml-2">
+                      {anova.significant ? "Significant" : "Not Significant"}
                     </Badge>
                   </div>
                 </div>

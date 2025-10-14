@@ -69,6 +69,11 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
     );
   }
 
+  const trendsData = trends?.trends || {};
+  const hourlyTrends = trends?.hourly_trends || {};
+  const trendDirection = trends?.trend_direction || "stable";
+  const summary = trends?.summary;
+
   const getTrendIcon = () => {
     switch (trends?.trend_direction) {
       case "improving":
@@ -163,6 +168,98 @@ export const TrendsComponent = ({ trends, loading }: TrendsComponentProps) => {
                 <div className="text-xs text-gray-600 mt-1">Historical average</div>
               </div>
             </div>
+
+            {/* Performance Trend Summary */}
+            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded mb-4">
+              <Badge variant={
+                trendDirection === 'improving' ? 'default' :
+                trendDirection === 'degrading' ? 'destructive' : 'secondary'
+              }>
+                {trendDirection}
+              </Badge>
+              <span className="text-sm">
+                Based on {summary?.total_days || 0} days of data
+              </span>
+              {summary?.peak_hour && (
+                <span className="text-sm">
+                  Peak hour: {summary.peak_hour}:00
+                </span>
+              )}
+            </div>
+
+            {/* Daily Performance Timeline */}
+            {Object.keys(trendsData).length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  📈 Daily Performance Timeline
+                </h4>
+                <div className="space-y-2 max-h-60 overflow-y-auto bg-gray-50 rounded p-3">
+                  {Object.entries(trendsData)
+                    .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+                    .slice(-10)
+                    .map(([date, data]: [string, any]) => (
+                      <div
+                        key={date}
+                        className="flex justify-between items-center p-2 bg-white rounded text-sm shadow-sm"
+                      >
+                        <div>
+                          <span className="font-medium">
+                            {new Date(date).toLocaleDateString()}
+                          </span>
+                          <div className="text-xs text-muted-foreground">
+                            {data.unique_intents} unique intents
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">{data.avg_response_time?.toFixed(2)}s</div>
+                          <div className="text-xs text-muted-foreground">
+                            {data.total_interactions} interactions • {data.avg_answer_length?.toFixed(0)} chars avg
+                          </div>
+                          {data.top_intent && (
+                            <div className="text-xs text-blue-600">
+                              Top: {data.top_intent}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Hourly Performance Pattern */}
+            {Object.keys(hourlyTrends).length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  🕐 Hourly Performance Pattern
+                </h4>
+                <div className="grid grid-cols-6 gap-2">
+                  {Array.from({length: 24}, (_, hour) => {
+                    const hourData = hourlyTrends[hour];
+                    const intensity = hourData ? Math.min(hourData.total_interactions / 10, 1) : 0;
+                    
+                    return (
+                      <div
+                        key={hour}
+                        className="text-center p-2 rounded text-xs"
+                        style={{
+                          backgroundColor: hourData ? `rgba(59, 130, 246, ${intensity})` : '#f3f4f6',
+                          color: intensity > 0.5 ? 'white' : '#374151'
+                        }}
+                      >
+                        <div className="font-bold">{hour}:00</div>
+                        {hourData && (
+                          <div>
+                            <div>{hourData.total_interactions}</div>
+                            <div className="text-xs opacity-75">{hourData.avg_response_time?.toFixed(1)}s</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Performance Comparison Chart */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -43,7 +43,6 @@ type TestingComponentProps = {
     abTestResults?: ABTestResults | null;
     setAbTestResults: (results: ABTestResults | null) => void;
     fetchAllData: () => void;
-    // Ana fetch'ten gelen yeni data
     allTests?: any;
     dialogueAnomalies?: any;
     statisticalData?: any;
@@ -65,7 +64,17 @@ export const TestingComponent = ({
     const [performanceComparison, setPerformanceComparison] = useState<any>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    // Performance comparison'ı currentTestId değiştiğinde güncelle
+    // A/B test creation form state
+    const [testName, setTestName] = useState<string>('');
+    const [variantA, setVariantA] = useState<string>('Standard Response');
+    const [variantB, setVariantB] = useState<string>('Enhanced Response');
+    const [trafficSplit, setTrafficSplit] = useState<number>(0.5);
+    const [startDate, setStartDate] = useState<string>(new Date().toISOString().slice(0,10));
+    const [endDate, setEndDate] = useState<string>(new Date(Date.now() + 30*24*60*60*1000).toISOString().slice(0,10));
+    const [targetMetric, setTargetMetric] = useState<string>('satisfaction');
+    const [minimumSampleSize, setMinimumSampleSize] = useState<number>(50);
+    const [confidenceLevel, setConfidenceLevel] = useState<number>(0.95);
+
     useEffect(() => {
         if (currentTestId && abTestResults) {
             loadPerformanceComparison();
@@ -142,7 +151,6 @@ export const TestingComponent = ({
             await bulkRecordABTestResults(currentTestId, bulkResults);
             console.log('Bulk test data recorded:', bulkResults.length, 'results');
 
-            // Ana fetch'i çağır
             fetchAllData();
         } catch (error) {
             console.error('Error simulating test data:', error);
@@ -167,16 +175,22 @@ export const TestingComponent = ({
     };
 
     const createNewABTest = async () => {
+        // basic validation
+        if (!testName.trim()) {
+            alert('Please provide a test name');
+            return;
+        }
+
         const testConfig = {
-            test_name: `Response Variant Test ${Date.now()}`,
-            variant_a: "Standard Response",
-            variant_b: "Enhanced Response",
-            traffic_split: 0.5,
-            start_date: new Date(),
-            end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            target_metric: "satisfaction",
-            minimum_sample_size: 50,
-            confidence_level: 0.95
+            test_name: testName,
+            variant_a: variantA,
+            variant_b: variantB,
+            traffic_split: Number(trafficSplit),
+            start_date: new Date(startDate).toISOString(),
+            end_date: new Date(endDate).toISOString(),
+            target_metric: targetMetric,
+            minimum_sample_size: Number(minimumSampleSize),
+            confidence_level: Number(confidenceLevel)
         };
 
         try {
@@ -189,10 +203,11 @@ export const TestingComponent = ({
                 setAbTestResults(testResults);
             }
 
-            // Ana fetch'i çağır
             fetchAllData();
+            setTestName('');
         } catch (error) {
             console.error('Error creating A/B test:', error);
+            alert('Failed to create A/B test');
         } finally {
             setActionLoading(null);
         }
@@ -215,7 +230,6 @@ export const TestingComponent = ({
                 setAbTestResults(updatedResults);
             }
 
-            // Ana fetch'i çağır
             fetchAllData();
         } catch (error) {
             console.error('Error updating test status:', error);
@@ -239,7 +253,6 @@ export const TestingComponent = ({
                 setPerformanceComparison(null);
             }
 
-            // Ana fetch'i çağır
             fetchAllData();
         } catch (error) {
             console.error('Error deleting test:', error);
@@ -295,7 +308,38 @@ export const TestingComponent = ({
 
     return (
         <div className="space-y-6">
-            {/* Header Actions */}
+            {/* A/B Test Creation Form */}
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-medium">Create A/B Test</h3>
+                        <div className="text-sm text-muted-foreground">Fill fields and create</div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input value={testName} onChange={(e) => setTestName(e.target.value)} className="input" placeholder="Test name" />
+                        <input value={variantA} onChange={(e) => setVariantA(e.target.value)} className="input" placeholder="Variant A label" />
+                        <input value={variantB} onChange={(e) => setVariantB(e.target.value)} className="input" placeholder="Variant B label" />
+                        <input type="number" step="0.01" min={0} max={1} value={trafficSplit} onChange={(e) => setTrafficSplit(parseFloat(e.target.value))} className="input" placeholder="Traffic split (0-1)" />
+                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="input" />
+                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="input" />
+                        <input value={targetMetric} onChange={(e) => setTargetMetric(e.target.value)} className="input" placeholder="Target metric" />
+                        <input type="number" value={minimumSampleSize} onChange={(e) => setMinimumSampleSize(Number(e.target.value))} className="input" placeholder="Min sample size" />
+                        <input type="number" step="0.01" min={0} max={1} value={confidenceLevel} onChange={(e) => setConfidenceLevel(Number(e.target.value))} className="input" placeholder="Confidence level" />
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                        <button onClick={createNewABTest} disabled={actionLoading === 'create'} className="btn">
+                            {actionLoading === 'create' ? 'Creating...' : 'Create A/B Test'}
+                        </button>
+                        <button onClick={simulateTestData} disabled={!currentTestId || actionLoading === 'simulate'} className="btn-outline">
+                            Simulate Data
+                        </button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Header Actions (kept for other actions) */}
             <HeaderAction
                 createNewABTest={createNewABTest}
                 simulateTestData={simulateTestData}

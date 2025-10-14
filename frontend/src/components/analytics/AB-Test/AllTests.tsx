@@ -54,7 +54,7 @@ export const AllTests = ({
                                 <div>
                                     <div className="font-medium">{test.test_name}</div>
                                     <div className="text-sm text-muted-foreground">
-                                        ID: {test.id} • Created: {new Date(test.start_date).toLocaleDateString()}
+                                        ID: {test.id} • Created: {new Date(test.created_at).toLocaleDateString()}
                                     </div>
                                 </div>
                                 <Badge variant="outline" className="ml-2">

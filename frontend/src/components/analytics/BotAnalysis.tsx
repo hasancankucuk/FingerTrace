@@ -25,6 +25,7 @@ import { TrendsComponent } from "./TrendsComponent";
 import { TestingComponent } from "./TestingComponent";
 import { Button } from "../ui/button";
 import type { SessionMetrics, UserSegmentation } from "@/models/AnalysisInterfaces";
+import { AccessibilityComponent } from "./AccessibilityComponent";
 
 export const BotAnalytics = () => {
     const [anomalies, setAnomalies] = useState<any>(null);
@@ -113,6 +114,8 @@ export const BotAnalytics = () => {
                         <TabsTrigger value="session-metrics" className="whitespace-nowrap px-4 py-2 min-w-fit">Session Metrics</TabsTrigger>
                         <TabsTrigger value="heat-map" className="whitespace-nowrap px-4 py-2 min-w-fit">Heat Map</TabsTrigger>
                         <TabsTrigger value="user-segmentation" className="whitespace-nowrap px-4 py-2 min-w-fit">User Segmentation</TabsTrigger>
+                        <TabsTrigger value="accessibility" className="whitespace-nowrap px-4 py-2 min-w-fit">Accessibility</TabsTrigger>
+
                     </TabsList>
                 </div>
 
@@ -202,6 +205,11 @@ export const BotAnalytics = () => {
                     <UserSegmentationComponent
                         segmentation={segmentation}
                         loading={loading}
+                     />
+                </TabsContent>
+
+                <TabsContent value="accessibility" className="space-y-4">
+                    <AccessibilityComponent
                      />
                 </TabsContent>
 
