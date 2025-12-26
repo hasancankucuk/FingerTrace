@@ -15,6 +15,7 @@ export default defineConfig({
     allowedHosts: [
       'api.fingertrace.app',
       'chat.fingertrace.app',
+      'ai.fingertrace.app',
       'localhost',
       '127.0.0.1'
     ],

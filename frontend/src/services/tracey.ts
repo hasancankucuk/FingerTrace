@@ -3,7 +3,12 @@ export const askTracey = async (message: string) => {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        "question": message
+    "messages": [
+        {
+        "role": "user",
+        "content": message
+        }
+    ]
     });
 
     const requestOptions = {
@@ -13,7 +18,7 @@ export const askTracey = async (message: string) => {
         redirect: "follow" as RequestRedirect
     };
 
-    const response = await fetch(`https://api.fingertrace.app/ask-trace`, requestOptions);
+    const response = await fetch(`https://ai.fingertrace.app/api/chat`, requestOptions);
     if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
     }

@@ -37,6 +37,7 @@ const CodeBlock: React.FC<{ code: string; language?: string }> = ({ code, langua
 
 
 export const FormattedMessage: React.FC<{ content: string }> = ({ content }) => {
+  if (!content) return null;
   const parts = content.split(/(```[\s\S]*?```)/g);
 
   return (

@@ -56,7 +56,7 @@ export const SimpleChatBot = () => {
       const response = await askTracey(message);
       const botMessage = {
         role: 'assistant',
-        content: response.answer
+        content: response.response
       };
 
       setMessages(prev => [...prev, botMessage]);
