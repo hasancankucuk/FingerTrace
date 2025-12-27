@@ -11,12 +11,12 @@ api.fingertrace.app {
 
     # Enable JA3 fingerprinting and proxy
     route {
-        ja3
+        # ja3  # Temporarily disabled to test SSL
         
         # Reverse proxy to Flask backend
         reverse_proxy backend:5000 {
             # Forward JA3 header to backend
-            header_up X-JA3-Fingerprint {http.request.tls.ja3}
+            # header_up X-JA3-Fingerprint {http.request.tls.ja3}
             header_up Host {host}
             header_up X-Real-IP {remote_host}
         }
