@@ -29,7 +29,7 @@ services:
     # build:
     #   context: ./nginx
     #   dockerfile: Dockerfile
-    image: hg8496/nginx-ja3:latest
+    image: nginx:latest
     container_name: fingertrace-nginx
     ports:
       - "80:80"
