@@ -2,27 +2,25 @@
     # Global options
     auto_https off
     admin off
+    order ja3 before reverse_proxy
 }
 
 api.fingertrace.app {
-    # Enable JA3 fingerprinting
-    ja3
-
     # TLS configuration
     tls /etc/letsencrypt/live/api.fingertrace.app/fullchain.pem /etc/letsencrypt/live/api.fingertrace.app/privkey.pem
 
-    # Reverse proxy to Flask backend
-    reverse_proxy /api/* backend:5000 {
-        # Forward JA3 header to backend
-        header_up X-JA3-Fingerprint {http.request.tls.ja3}
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
+    # Enable JA3 fingerprinting and proxy
+    route {
+        ja3
+        
+        # Reverse proxy to Flask backend
+        reverse_proxy backend:5000 {
+            # Forward JA3 header to backend
+            header_up X-JA3-Fingerprint {http.request.tls.ja3}
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
     }
-
-    # Return 404 for root
-    respond / 404
 }
 
 # HTTP redirect
