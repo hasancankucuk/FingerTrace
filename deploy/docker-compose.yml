@@ -26,10 +26,10 @@ services:
     restart: always
 
   nginx:
-    # build:
-    #   context: ./nginx
-    #   dockerfile: Dockerfile
-    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    # image: nginx:latest
     container_name: fingertrace-nginx
     ports:
       - "80:80"
