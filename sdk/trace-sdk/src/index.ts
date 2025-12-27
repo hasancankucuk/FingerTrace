@@ -1,5 +1,5 @@
 import { getAudioHash } from "./collection/audio/audioHash";
-import { canPlay, checkWebPSupport, getAvailableFonts, getBarVisibility, getBrowserFeatureSupport, getColorDepth, getColorGamut, getFeaturePolicies, getNavigatorProperties, getTimeZone } from "./collection/browser";
+import { canPlay, checkWebPSupport, getAvailableFonts, getBarVisibility, getBrowserFeatureSupport, getColorDepth, getColorGamut, getFeaturePolicies, getHardwareConcurrency, getNavigatorProperties, getTimeZone } from "./collection/browser";
 import { getDeviceType } from "./collection/browser/deviceType";
 import detectIncognito from "./collection/browser/incognito";
 import { getPlatform } from "./collection/browser/platform";
@@ -13,16 +13,15 @@ import { generateWebGLHash } from "./collection/webgl/webglHash";
 import { MediaSupport } from "./models";
 import { postData, postAttributes } from "./services/httpService";
 import * as murmurhash from 'murmurhash';
-
-let workspaceId: string;
-let apiKey: string;
+import { Keys } from "./models/keys";
+import { getDeviceMemory } from "./collection/browser/deviceMemory";
 
 const SetWorkspaceId = (id: string) => {
-    workspaceId = id;
+    Keys.workspaceId = id;
 }
 
 const SetApiKey = (key: string) => {
-    apiKey = key;
+    Keys.apiKey = key;
 }
 
 const generateFingerprints = async (): Promise<string> => {
@@ -34,7 +33,11 @@ const generateFingerprints = async (): Promise<string> => {
                 reject(new Error('Failed to generate fingerprint'));
             }
         }, true);
+    }).catch((error) => {
+        console.error('Error generating audio fingerprint:', error);
+        return '';
     });
+
     const webGlPrint = generateWebGLHash();
     const canvasPrint = getCanvasHash();
     const videoAttributes = {
@@ -51,13 +54,16 @@ const generateFingerprints = async (): Promise<string> => {
         WEBM: canPlay(MediaSupport.WEBM),
         HLS: canPlay(MediaSupport.HLS)
     };
-    const availableFonts = await getAvailableFonts();
+    const availableFonts = await getAvailableFonts().catch((error) => {
+        console.error('Error getting available fonts:', error);
+        return [];
+    });
     const mathPrint = MathFingerprint();
     const clientRectFp = getClientRects();
 
     const hash1 = murmurhash.v3([audioPrint, webGlPrint, canvasPrint, clientRectFp].join('|'));
     const hash2 = murmurhash.v3([videoAttributes, availableFonts, mathPrint].join('|'));
-    const hash3 = murmurhash.v3([getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision()].join('|'));
+    const hash3 = murmurhash.v3([getWebGLInfo(), getWebGLRendererInfo(), getWebGLShaderPrecision(), getHardwareConcurrency(), getDeviceMemory()].join('|'));
 
     let fingerprint = (hash1.toString(36) + hash2.toString(36) + hash3.toString(36));
 
@@ -104,8 +110,12 @@ export default async function FingerprintSDK() {
     };
 
     try {
-        await postData('fingerprints', fingerprint, workspaceId, apiKey);
-        await postAttributes('deviceinfo', browserAttributes, fingerprint, workspaceId, apiKey);
+        if (!Keys.workspaceId || !Keys.apiKey) {
+            throw new Error('Workspace ID and API key are required');
+        }
+
+        await postData('fingerprints', fingerprint, Keys.workspaceId, Keys.apiKey);
+        await postAttributes('deviceinfo', browserAttributes, fingerprint, Keys.workspaceId, Keys.apiKey);
 
     } catch (error) {
         console.error('Error posting data:', error);

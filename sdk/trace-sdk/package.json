@@ -1,6 +1,6 @@
 {
   "name": "trace-sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "files": [
     "dist"
@@ -68,8 +68,6 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "blueimp-md5": "^2.19.0",
-    "crypto-js": "^4.2.0",
     "murmurhash": "^2.0.1",
     "rimraf": "^6.0.1",
     "spark-md5": "^3.0.2",

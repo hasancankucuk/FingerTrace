@@ -13,7 +13,6 @@ export function generateWebGLHash(): { hash: string; rawData: string | null } | 
 
     const result: string[] = [];
 
-    // ---- shader setup ----
     const vShaderTemplate = `
         attribute vec2 attrVertex;
         varying vec2 varyinTexCoordinate;
@@ -78,7 +77,6 @@ export function generateWebGLHash(): { hash: string; rawData: string | null } | 
         console.warn('Canvas toDataURL error: ', e);
     }
 
-    // ---- vendor/renderer (safe!) ----
     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
     if (debugInfo) {
         const vendorConst = debugInfo.UNMASKED_VENDOR_WEBGL;

@@ -4,6 +4,7 @@ import { MathFingerprintResult, PrecisionFunctions } from "./mathFingerprint";
 import { MediaSupport } from "./mediaSupport";
 import { WebGLBufferWithItems } from "./webglTypes";
 import { OfflineAudioCompletionEvent } from "./offlineAudioCompletionEvent";
+import { Keys } from "./keys";
 
 export {
     BrowserType,
@@ -12,5 +13,6 @@ export {
     MediaSupport,
     WebGLBufferWithItems,
     AudioRenderingEvent,
-    OfflineAudioCompletionEvent
+    OfflineAudioCompletionEvent,
+    Keys
 }

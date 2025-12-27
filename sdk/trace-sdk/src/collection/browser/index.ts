@@ -13,6 +13,7 @@ import { getVendor } from "./vendor";
 import { checkWebPSupport } from "./webpSupport";
 import { getBarVisibility } from "./barVisibility";
 import { getAvailableFonts } from "./fonts";
+import { getHardwareConcurrency } from "./hardwareConcurrency";
 
 export {
     canPlay,
@@ -30,5 +31,6 @@ export {
     getTimeZone,
     isMobile,
     getBarVisibility,
-    getAvailableFonts
+    getAvailableFonts,
+    getHardwareConcurrency
 }

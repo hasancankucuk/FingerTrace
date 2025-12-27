@@ -41,7 +41,7 @@ console.log('Is Incognito:', result.isIncognito);
 ```html
 <script src="path/to/trace-sdk.min.js"></script>
 <script>
-  // SDK is available as FingerprintIO global
+
   FingerprintIO.SetWorkspaceId('your-workspace-id');
   FingerprintIO.SetApiKey('your-api-key');
   
@@ -62,8 +62,8 @@ Generates a unique device fingerprint and returns detection results.
 **Returns:**
 ```typescript
 {
-  fingerprint: string;    // 30-character unique fingerprint
-  isIncognito: boolean;   // true if private/incognito mode detected
+  fingerprint: string; 
+  isIncognito: boolean; 
 }
 ```
 

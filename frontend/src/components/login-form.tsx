@@ -32,10 +32,8 @@ export function LoginForm({
 
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-  // Callback'leri stable hale getir
   const handleTurnstileVerify = useCallback(
     (token: string) => {
-      console.log("Turnstile verified:", token);
       setTurnstileToken(token);
       setTurnstileVerified(true);
     },
@@ -53,7 +51,6 @@ export function LoginForm({
   );
 
   const handleTurnstileExpire = useCallback(() => {
-    console.log("Turnstile expired");
     setTurnstileToken(null);
     setTurnstileVerified(false);
     toast.warning("CAPTCHA expired. Please verify again.");
@@ -141,7 +138,6 @@ export function LoginForm({
                   />
                 </div>
 
-                {/* Turnstile - sadece site key varsa göster */}
                 {siteKey && (
                   <div className="grid gap-3">
                     <Label>Security Verification</Label>
