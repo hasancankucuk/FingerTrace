@@ -68,8 +68,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx /etc/nginx
-# Copy modules if any were built
-COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
+# Modules are statically linked, so no need to copy external modules
+# COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
 
 # Log redirection
 RUN mkdir -p /var/log/nginx && \
