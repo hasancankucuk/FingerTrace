@@ -1,20 +1,21 @@
 version: '3.8'
 
 services:
-  backend:  # Changed from fingertrace-backend
+  backend:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: fingertrace-backend  # Keep container name as is
+    container_name: fingertrace-backend
     working_dir: /app/backend
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
       - PORT=5000
       - PYTHONPATH=/app
+      - WEB_CONCURRENCY=2 # Optimize for 1GB RAM
       - DOPPLER_TOKEN=${DOPPLER_TOKEN}
       - DOPPLER_PROJECT=finger-trace-backend
-      - DOPPLER_CONFIG=$MODE
+      - DOPPLER_CONFIG=${MODE}
     expose:
       - "5000"
     volumes:
@@ -22,58 +23,26 @@ services:
     entrypoint: ["/bin/sh", "-c", "chmod +x /app/backend/start.sh && exec /bin/sh /app/backend/start.sh"]
     networks:
       - fingertrace-shared
-
-  frontend:  # Changed from fingertrace-frontend
-    image: node:lts-trixie-slim
-    container_name: fingertrace-frontend  # Keep container name as is
-    working_dir: /frontend
-    volumes:
-      - ../frontend:/frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - DOPPLER_TOKEN=${DOPPLER_TOKEN_FE}
-      - DOPPLER_PROJECT=finger-trace-frontend
-      - DOPPLER_CONFIG=$MODE
-    command: >-
-      sh -c "
-      apt-get update && apt-get install -y curl gnupg &&
-      curl -Ls https://cli.doppler.com/install.sh | sh &&
-      echo 'Creating .env file with Doppler CLI...' &&
-      rm -rf .env &&
-      doppler secrets download --no-file --format env | grep -E '^(REACT_APP_|NODE_|VITE_)' > /tmp/env_temp &&
-      mv /tmp/env_temp .env &&
-      echo 'Environment file created:' && ls -la .env && cat .env &&
-      rm -rf node_modules &&
-      npm install &&
-      npm run dev -- --host 0.0.0.0
-      "
-    networks:
-      - fingertrace-shared
+    restart: always
 
   nginx:
-    image: openresty/openresty:alpine
+    image: hg8496/nginx-ja3:latest
     container_name: fingertrace-nginx
     ports:
       - "80:80"
       - "443:443"
     depends_on:
-      - backend        # Changed from fingertrace-backend
-      - frontend       # Changed from fingertrace-frontend
+      - backend
     volumes:
       - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
-      - ./nginx/ja3.lua:/etc/nginx/ja3.lua:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # JA3 Lua script is removed as we use native module, but keeping dir mapping just in case
       - /etc/letsencrypt/live/api.fingertrace.app/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/api.fingertrace.app/privkey.pem:/etc/nginx/certs/privkey.pem:ro
-    command: >-
-      sh -c "mkdir -p /usr/local/openresty/lualib/resty && \
-      cp /etc/nginx/ja3.lua /usr/local/openresty/lualib/resty/ja3.lua && \
-      openresty -g 'daemon off;'"
     networks:
       - fingertrace-shared
+    restart: always
 
 networks:
   fingertrace-shared:
-    external: true
+    external: false
