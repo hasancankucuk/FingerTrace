@@ -17,8 +17,8 @@ WORKDIR /build
 # 1. Get JA3 Module
 RUN git clone https://github.com/fooinha/nginx-ssl-ja3.git
 
-# 2. Get OpenSSL (Matching version for patch)
-ENV OPENSSL_VERSION=3.2.0
+# 2. Get OpenSSL (Updated for JA3 module requirements)
+ENV OPENSSL_VERSION=3.3.2
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     tar -zxvf openssl-${OPENSSL_VERSION}.tar.gz
 
@@ -29,11 +29,13 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
 
 # 4. Patch OpenSSL
 WORKDIR /build/openssl-${OPENSSL_VERSION}
-RUN patch -p1 < /build/nginx-ssl-ja3/src/openssl_3.2.0.patch
+# Use the OpenSSL 3 extensions patch from the repo
+RUN patch -p1 < /build/nginx-ssl-ja3/patches/openssl-3.extensions.patch
 
 # 5. Compile Nginx
 WORKDIR /build/nginx-${NGINX_VERSION}
-RUN patch -p1 < /build/nginx-ssl-ja3/src/nginx_1.25.3.patch
+# Find and apply the Nginx patch (usually nginx.patch or similar)
+RUN patch -p1 < $(find /build/nginx-ssl-ja3/patches -name "nginx*.patch" | head -n 1)
 
 RUN ./configure \
     --prefix=/etc/nginx \
