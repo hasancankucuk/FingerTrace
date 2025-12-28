@@ -1,7 +1,4 @@
 // TeamSwitcher.tsx
-import * as React from "react";
-import { ChevronsUpDown, Plus } from "lucide-react";
-import { IconSitemap } from "@tabler/icons-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,41 +8,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton, useSidebar } from "@/components/ui/sidebar";
-import type { WorkspacesType } from "@/models/Workspaces";
-import CreateWorkspaceModal from "./helpers/CreateWorkspaceModal";
-import { toast } from "sonner";
-import { getWorkspaces } from "@/services/workspaces";
 import { useWorkspace } from "@/hooks/useWorkspace";
+import type { WorkspacesType } from "@/models/Workspaces";
+import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import { IconSitemap } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChevronsUpDown, Plus } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import CreateWorkspaceModal from "./helpers/CreateWorkspaceModal";
 
 export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: WorkspacesType[] }) {
   const { isMobile } = useSidebar();
   const { workspace: selectedWorkspace, setWorkspace } = useWorkspace();
-  const [workspaces, setWorkspaces] = React.useState(initialWorkspaces);
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspacesType | undefined>(selectedWorkspace ?? initialWorkspaces[0]);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
 
-  React.useEffect(() => {
-    if (workspaces.length && !activeWorkspace) {
-      setActiveWorkspace(workspaces[0]);
-    }
-  }, [workspaces, activeWorkspace]);
-
   const openCreateModal = () => setShowCreateModal(true);
   const closeCreateModal = () => setShowCreateModal(false);
+  const queryClient = useQueryClient();
 
-  const refreshWorkspaces = async () => {
-    // try {
-    //   const data = await getWorkspaces();
-    //   setWorkspaces(data ?? []);
-    //   if (data?.length) {
-    //     setActiveWorkspace(data[0]);
-    //     setWorkspace(data[0]);
-    //   }
-    // } catch (err: unknown) {
-    //   console.error(err);
-    //   toast.error(err instanceof Error ? err.message : "Failed to refresh workspaces");
-    // }
-  };
+  const {
+    data: workspaces,
+    error: workspacesError,
+    isLoading: workspacesLoading,
+  } = useWorkspacesQuery();
+
+  if (workspacesError) {
+    toast.error(workspacesError instanceof Error ? workspacesError.message : "Failed to refresh workspaces");
+  }
+
+  if (!workspacesLoading && workspaces && workspaces?.length > 0) {
+    setActiveWorkspace(workspaces[0]);
+    setWorkspace(workspaces[0]);
+  }
 
   return (
     <>
@@ -55,7 +51,7 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
           onClose={closeCreateModal}
           onCreated={async () => {
             closeCreateModal();
-            await refreshWorkspaces();
+            queryClient.invalidateQueries({ queryKey: ["workspaces"] });
             toast.success("Workspace created!");
           }}
         />

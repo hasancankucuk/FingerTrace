@@ -1,7 +1,6 @@
-import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Globe } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const languages = [
     { code: "en", label: "EN", title: "English" },

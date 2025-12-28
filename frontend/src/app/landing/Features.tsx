@@ -1,9 +1,9 @@
-import { NavigationBar } from "@/components/landing/NavigationBar"
 import { FooterSection } from "@/components/landing/FooterSection"
+import { NavigationBar } from "@/components/landing/NavigationBar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, ArrowRight, Code, Database, BarChart3, Shield, Zap, Users, Eye, Globe, Smartphone, Monitor, Server, Lock, Bell, Activity } from "lucide-react"
+import { Activity, ArrowRight, BarChart3, Bell, Check, Code, Database, Eye, Globe, Lock, Monitor, Server, Shield, Smartphone, Users, Zap } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const mainFeatures = [
@@ -137,7 +137,7 @@ export const Features = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <NavigationBar />
-      
+
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
         <div className="text-center space-y-6 max-w-4xl mx-auto">
@@ -149,7 +149,7 @@ export const Features = () => {
             <span className="text-primary">User Analytics</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            From basic page views to advanced device fingerprinting, FingerTrace provides 
+            From basic page views to advanced device fingerprinting, FingerTrace provides
             all the tools you need to understand your users completely.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -36,10 +36,12 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  ChevronUp,
   Search,
 } from "lucide-react";
 import { useEffect, useState } from "react";
