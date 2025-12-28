@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Search as SearchIcon, Key, Layout, ChevronRight, Fingerprint, Settings, FileText, Info, Mail, Library } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { getWorkspaces } from "@/services/workspaces";
 import { getApiKeys } from "@/services/api_keys";
 import { getMergedFingerprints } from "@/services/fingerprint";
 import { cn } from "@/lib/utils";
+import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import { toast } from "sonner";
 
 interface SearchResult {
     id: string;
@@ -42,6 +43,16 @@ export function Search() {
     const [results, setResults] = useState<SearchResult[]>([]);
     const [inputLocal, setInputLocal] = useState(query);
 
+    const {
+        data: workspaces = [],
+        error: workspacesError
+    } = useWorkspacesQuery();
+
+    if(workspacesError) {
+        toast.error(workspacesError instanceof Error ? workspacesError.message : "Error loading workspaces");
+    }
+
+
     useEffect(() => {
         if (!inputLocal.trim()) {
             setResults([]);
@@ -59,7 +70,6 @@ export function Search() {
         const performSearch = async () => {
             setLoading(true);
             try {
-                const workspaces = await getWorkspaces();
                 const searchResults: SearchResult[] = [];
                 const lowQuery = query.toLowerCase();
 

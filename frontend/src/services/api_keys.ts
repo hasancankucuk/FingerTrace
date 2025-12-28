@@ -4,7 +4,7 @@ import type { ApiKey } from "@/utils/apiHelpers";
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
-export const getApiKeys = async (workspaceId: string) => {
+export const getApiKeys = async (workspaceId: string): Promise<ApiKey[]> => {
   const token = getToken();
   if (!token) throw new Error("No token found");
 

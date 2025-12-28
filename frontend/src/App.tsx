@@ -39,7 +39,9 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/in
 import { SearchIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Account from "./app/account/Account";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 
 function SidebarLayout() {
   const navigate = useNavigate();
@@ -126,6 +128,7 @@ function PrivateRoute() {
 
 function App() {
   return (
+    <QueryClientProvider client={queryClient}>  
     <ThemeProvider defaultTheme="dark" storageKey="fingertrace-theme">
       <BrowserRouter>
         <SidebarProvider>
@@ -173,6 +176,7 @@ function App() {
       </BrowserRouter>
       <SimpleChatBot />
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

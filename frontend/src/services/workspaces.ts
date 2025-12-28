@@ -17,7 +17,7 @@ export const createWorkspace = async (workspaceData: WorkspacesType) => {
   );
 };
 
-export const getWorkspaces = async () => {
+export const getWorkspaces = async (): Promise<WorkspacesType[]> => {
   const token = getToken();
   return httpRequest<WorkspacesType[]>(`${API_BASE_URL}/api/workspaces`, {
     method: "GET",

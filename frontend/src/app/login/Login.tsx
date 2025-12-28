@@ -5,7 +5,7 @@ import { ModeToggle } from "@/components/mode-toggle"
 
 export default function LoginPage() {
   return (
-    <div className="relative min-h-svh flex flex-col items-center justify-center p-6 bg-zinc-950">
+    <div className="relative min-h-svh flex flex-col items-center justify-center p-6 dark:bg-zinc-950 bg-white">
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full ur-[120px] opacity-50" />
       </div>

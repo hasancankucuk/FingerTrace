@@ -3,6 +3,7 @@ import { httpRequest } from './http';
 import type { AuthResponse } from '@/models/AuthResponse';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
+import type { User } from '@/models/UserInterface';
 
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
@@ -43,7 +44,7 @@ export const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<User> => {
   const token = getToken();
   if (!token) throw new Error('No token found');
 

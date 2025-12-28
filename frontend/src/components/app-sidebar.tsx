@@ -18,57 +18,42 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/services/auth";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { getWorkspaces } from "@/services/workspaces";
-import type { User } from "@/models/UserInterface";
-import type { WorkspacesType } from "@/models/Workspaces";
 import { useTranslation } from "react-i18next";
+import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import { useUserQuery } from "@/queries/userQueries";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const [user, setUser] = useState<User>({ name: "", email: "", phone: "" });
-  const [workspaces, setWorkspaces] = useState<WorkspacesType[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        setUser({
-          name: currentUser.name,
-          email: currentUser.email,
-          phone: currentUser.phone ?? "",
-        });
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Error fetching user data";
-        toast.error(message);
-      }
+  const {
+    data: workspaces = [],
+    isLoading: isWorkspacesLoading
+  } = useWorkspacesQuery();
 
-      try {
-        const ws = await getWorkspaces();
-        setWorkspaces(ws);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : t("common.error_workspaces");
-        toast.error(message);
-      }
-    };
+  const {
+    data: currentUser,
+    error: userError
+  } = useUserQuery();
 
-    fetchData();
-  }, []);
+  if (userError) {
+    toast.error(userError.message);
+  }
 
   const navMainItems = [
-    ...(workspaces.length <= 0 ? [{ title: t("nav.get_started"), url: "/dashboard", icon: IconQuestionMark }] : []),
+    ...(isWorkspacesLoading && workspaces.length === 0
+      ? [{ title: t("nav.get_started"), url: "/dashboard", icon: IconQuestionMark }]
+      : []),
     { title: t("nav.identification"), url: "/identification", icon: IconFingerprint },
     { title: t("nav.api_keys"), url: "/api-keys", icon: IconKey },
     { title: t("nav.analysis"), url: "/analysis", icon: IconEye },
   ];
 
-  const data = {
-    user,
-    workspaces,
+  const datas = {
+    user: currentUser ?? { name: "", email: "", phone: "" },
+    workspaces: workspaces,
     navMain: navMainItems,
     navSecondary: [],
   };
@@ -94,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain
-          items={data.navMain.map((item) => ({
+          items={datas.navMain.map((item) => ({
             ...item,
             className:
               location.pathname === item.url
@@ -105,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={datas.user} />
       </SidebarFooter>
     </Sidebar>
   );

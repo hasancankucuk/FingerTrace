@@ -34,17 +34,17 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
   const closeCreateModal = () => setShowCreateModal(false);
 
   const refreshWorkspaces = async () => {
-    try {
-      const data = await getWorkspaces();
-      setWorkspaces(data ?? []);
-      if (data?.length) {
-        setActiveWorkspace(data[0]);
-        setWorkspace(data[0]);
-      }
-    } catch (err: unknown) {
-      console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to refresh workspaces");
-    }
+    // try {
+    //   const data = await getWorkspaces();
+    //   setWorkspaces(data ?? []);
+    //   if (data?.length) {
+    //     setActiveWorkspace(data[0]);
+    //     setWorkspace(data[0]);
+    //   }
+    // } catch (err: unknown) {
+    //   console.error(err);
+    //   toast.error(err instanceof Error ? err.message : "Failed to refresh workspaces");
+    // }
   };
 
   return (

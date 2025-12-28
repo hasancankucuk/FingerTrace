@@ -24,15 +24,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import { useTranslation } from "react-i18next";
+import type { User } from "@/models/UserInterface";
 
 export function NavUser({
   user,
 }: {
-  user: {
-    name: string;
-    email: string;
-    phone: string;
-  };
+  user: User;
 }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
@@ -60,7 +57,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                 <AvatarFallback className="rounded-lg">
-                  {user.name
+                  {user?.name
                     ? user.name
                       .split(" ")
                       .map((n) => n[0])

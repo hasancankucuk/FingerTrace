@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { getAnalysis } from "@/services/analysis";
-import { Spinner } from "@/components/ui/spinner";
+import { CardSkeleton } from "@/components/landing/CardSkeleton";
 
 export const Analysis = () => {
   const [stats, setStats] = useState<AnalysisStats | null>(null);
@@ -96,8 +96,6 @@ export const Analysis = () => {
       }))
       : [];
 
-  console.log("chartData", stats);
-
   const firstRow = chartData[0] ?? {};
   const hasUsageSeries = "usage" in firstRow;
   const hasDesktopSeries = "desktop" in firstRow;
@@ -107,137 +105,140 @@ export const Analysis = () => {
     <>
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-6 p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>API Usage</CardTitle>
-          </CardHeader>
-          <div className="relative">
-            {loading && <Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" />}
-            <CardContent className={`space-y-6 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
-              <div className="flex flex-col gap-6 px-4 py-6">
-                <div className="flex items-center gap-4 mb-2">
-                  <label className="text-sm font-medium">API Usage Period:</label>
-                  <select
-                    value={period}
-                    onChange={(e) => setPeriod(Number(e.target.value))}
-                    className="p-2 border rounded"
-                  >
-                    <option value={7}>Last 7 days</option>
-                    <option value={30}>Last 30 days</option>
-                    <option value={90}>Last 90 days</option>
-                    <option value={365}>Last 1 year</option>
-                  </select>
-                </div>
+        {loading && !stats ? (
+          <CardSkeleton />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>API Usage</CardTitle>
+            </CardHeader>
+            <div className="relative">
+              <CardContent className="space-y-6">
+                <div className="flex flex-col gap-6 px-4 py-6">
+                  <div className="flex items-center gap-4 mb-2">
+                    <label className="text-sm font-medium">API Usage Period:</label>
+                    <select
+                      value={period}
+                      onChange={(e) => setPeriod(Number(e.target.value))}
+                      className="p-2 border rounded"
+                    >
+                      <option value={7}>Last 7 days</option>
+                      <option value={30}>Last 30 days</option>
+                      <option value={90}>Last 90 days</option>
+                      <option value={365}>Last 1 year</option>
+                    </select>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Usage</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <span className="text-2xl font-bold">{stats?.usage ?? "-"}</span>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Unique Visitors</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <span className="text-2xl font-bold">
+                          {stats?.uniqueVisitors ?? "-"}
+                        </span>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Events / Visitor</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <span className="text-2xl font-bold">
+                          {stats?.eventsPerVisitor ?? "-"}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </div>
+
                   <Card>
                     <CardHeader>
-                      <CardTitle>Usage</CardTitle>
+                      <CardTitle>API Usage ({period} days)</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <span className="text-2xl font-bold">{stats?.usage ?? "-"}</span>
+                      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                        {chartData.length === 0 ? (
+                          <div className="flex items-center justify-center min-h-[200px]">
+                            <span className="text-muted-foreground">No data</span>
+                          </div>
+                        ) : (
+                          <ResponsiveContainer width="100%" height={260}>
+                            <BarChart
+                              data={chartData}
+                              margin={{ top: 8, right: 20, left: 0, bottom: 8 }}
+                            >
+                              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                              <XAxis dataKey="day" />
+                              <YAxis />
+                              <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #ccc" }} />
+                              <Legend />
+                              {hasUsageSeries && (
+                                <Bar dataKey="usage" fill="var(--color-desktop)" radius={4} />
+                              )}
+                              {!hasUsageSeries && hasDesktopSeries && (
+                                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+                              )}
+                              {!hasUsageSeries && hasMobileSeries && (
+                                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+                              )}
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
+                      </ChartContainer>
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Unique Visitors</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <span className="text-2xl font-bold">
-                        {stats?.uniqueVisitors ?? "-"}
-                      </span>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Events / Visitor</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <span className="text-2xl font-bold">
-                        {stats?.eventsPerVisitor ?? "-"}
-                      </span>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>API Usage ({period} days)</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                      {chartData.length === 0 ? (
-                        <div className="flex items-center justify-center min-h-[200px]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Top Browsers</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {stats?.topBrowsers?.length ? (
+                          <ul>
+                            {stats.topBrowsers.map((b) => (
+                              <li key={b}>{b}</li>
+                            ))}
+                          </ul>
+                        ) : (
                           <span className="text-muted-foreground">No data</span>
-                        </div>
-                      ) : (
-                        <ResponsiveContainer width="100%" height={260}>
-                          <BarChart
-                            data={chartData}
-                            margin={{ top: 8, right: 20, left: 0, bottom: 8 }}
-                          >
-                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                            <XAxis dataKey="day" />
-                            <YAxis />
-                            <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #ccc" }} />
-                            <Legend />
-                            {hasUsageSeries && (
-                              <Bar dataKey="usage" fill="var(--color-desktop)" radius={4} />
-                            )}
-                            {!hasUsageSeries && hasDesktopSeries && (
-                              <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                            )}
-                            {!hasUsageSeries && hasMobileSeries && (
-                              <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                            )}
-                          </BarChart>
-                        </ResponsiveContainer>
-                      )}
-                    </ChartContainer>
-                  </CardContent>
-                </Card>
+                        )}
+                      </CardContent>
+                    </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Top Browsers</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {stats?.topBrowsers?.length ? (
-                        <ul>
-                          {stats.topBrowsers.map((b) => (
-                            <li key={b}>{b}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="text-muted-foreground">No data</span>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Top Timezones</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {stats?.timezones?.length ? (
-                        <ul>
-                          {stats.timezones.map((c) => (
-                            <li key={c}>{c}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="text-muted-foreground">No data</span>
-                      )}
-                    </CardContent>
-                  </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Top Timezones</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {stats?.timezones?.length ? (
+                          <ul>
+                            {stats.timezones.map((c) => (
+                              <li key={c}>{c}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <span className="text-muted-foreground">No data</span>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </div>
-        </Card>
+              </CardContent>
+            </div>
+          </Card>
+        )}
       </div>
     </>
   );
