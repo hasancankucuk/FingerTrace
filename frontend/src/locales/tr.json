@@ -45,7 +45,10 @@
         "features": "Özellikler",
         "contact": "İletişim",
         "account": "Hesap",
-        "log_out": "Çıkış yap"
+        "log_out": "Çıkış yap",
+        "toast": {
+            "workspace_created": "Workspace created."
+        }
     },
     "search": {
         "title": "Ara",
@@ -571,5 +574,13 @@
                 }
             }
         }
-    }
+    },
+    "http": {
+    "400": "Geçersiz istek: ({body}) || Geçersiz parametreler",
+    "401": "Yetkisiz erişim. Lütfen giriş yapın.",
+    "403": "Bu çalışma alanına erişim reddedildi.",
+    "404": "Analiz noktası bulunamadı (404).",
+    "429": "İstek sınırı aşıldı. Lütfen daha sonra tekrar deneyin.",
+    "500": "Sunucu hatası."
+}
 }

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Search as SearchIcon, Key, Layout, ChevronRight, Fingerprint, Settings, FileText, Info, Mail, Library } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { getApiKeys } from "@/services/api_keys";
-import { getMergedFingerprints } from "@/services/fingerprint";
 import { cn } from "@/lib/utils";
+import { useGetApiKeysQuery } from "@/queries/apiKeyQueries";
+import { useFingerprintQuery } from "@/queries/fingerprintQueries";
 import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import { ChevronRight, FileText, Fingerprint, Info, Key, Layout, Library, Mail, Search as SearchIcon, Settings } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 interface SearchResult {
@@ -48,7 +48,7 @@ export function Search() {
         error: workspacesError
     } = useWorkspacesQuery();
 
-    if(workspacesError) {
+    if (workspacesError) {
         toast.error(workspacesError instanceof Error ? workspacesError.message : "Error loading workspaces");
     }
 
@@ -93,12 +93,21 @@ export function Search() {
                 const detailPromises = workspaces.slice(0, 5).map(async (ws) => {
                     if (!ws.id) return;
                     try {
-                        const [keys, fingerprints] = await Promise.all([
-                            getApiKeys(ws.id),
-                            getMergedFingerprints(ws.id, { page_size: 100 })
-                        ]);
+                        const {
+                            data: keys = []
+                        } = useGetApiKeysQuery(ws.id);
+                        const {
+                            data: fingerprints
+                        } = useFingerprintQuery(ws.id, {
+                            page_size: 100,
+                            page: 0,
+                            sort_field: "",
+                            sort_direction: "asc",
+                            search: ""
+                        });
 
-                        keys.forEach(key => {
+
+                        keys?.forEach(key => {
                             if (key.name?.toLowerCase().includes(lowQuery) ||
                                 key.environment?.toLowerCase().includes(lowQuery)) {
                                 searchResults.push({
@@ -112,7 +121,7 @@ export function Search() {
                             }
                         });
 
-                        fingerprints.data.forEach(fp => {
+                        fingerprints?.data?.forEach(fp => {
                             if (fp.fingerprint.toLowerCase().includes(lowQuery) ||
                                 fp.platform?.toLowerCase().includes(lowQuery) ||
                                 fp.device_type?.toLowerCase().includes(lowQuery)) {

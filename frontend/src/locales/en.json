@@ -45,7 +45,10 @@
         "features": "Features",
         "contact": "Contact",
         "account": "Account",
-        "log_out": "Log out"
+        "log_out": "Log out",
+        "toast": {
+            "workspace_created": "Workspace created."
+        }
     },
     "search": {
         "title": "Search",
@@ -571,5 +574,13 @@
                 }
             }
         }
+    },
+    "http": {
+        "400": "Bad request: ({body}) || Invalid parameters",
+        "401": "Unauthorized. Please sign in.",
+        "403": "Access denied to this workspace.",
+        "404": "Analysis endpoint not found (404).",
+        "429": "Rate limited. Try again later.",
+        "500": "Server error."
     }
 }

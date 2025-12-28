@@ -1,12 +1,12 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableSkeleton } from "@/components/landing/TableSkeleton";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,42 +15,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import type { MergedFingerprint } from "@/models/IdentificationData";
-import { useTranslation } from "react-i18next";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useWorkspace } from "@/hooks/useWorkspace";
-import { getMergedFingerprints } from "@/services/fingerprint";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  ChevronUp,
-  ChevronDown,
-  Search,
-} from "lucide-react";
+import type { MergedFingerprint } from "@/models/IdentificationData";
+import { useFingerprintQuery } from "@/queries/fingerprintQueries";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   type ColumnDef,
-  type SortingState,
   type ColumnFiltersState,
+  type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { TableSkeleton } from "@/components/landing/TableSkeleton";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Search,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export function Identification() {
-  const [data, setData] = useState<MergedFingerprint[]>([]);
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -59,11 +56,26 @@ export function Identification() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [totalItems, setTotalItems] = useState(0);
   const { workspace } = useWorkspace();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const {
+    data: fingerprintData,
+    isLoading,
+    error: fingerprintError
+  } = useFingerprintQuery(workspace?.id || "", {
+    page: pagination.pageIndex + 1,
+    page_size: pagination.pageSize,
+    sort_field: sorting[0]?.id || "created_at",
+    sort_direction: sorting[0]?.desc ? "desc" : "asc",
+    search: debouncedSearch.trim(),
+  });
+
+  if (fingerprintError) {
+    toast.error(t("identification.error"))
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -72,42 +84,6 @@ export function Identification() {
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
-
-  useEffect(() => {
-    if (!workspace) {
-      setData([]);
-      setTotalItems(0);
-      setLoading(false);
-      return;
-    }
-
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const sortField = sorting[0]?.id || "created_at";
-        const sortDirection = sorting[0]?.desc ? "desc" : "asc";
-
-        const response = await getMergedFingerprints(workspace.id, {
-          page: pagination.pageIndex + 1,
-          page_size: pagination.pageSize,
-          sort_field: sortField,
-          sort_direction: sortDirection,
-          search: debouncedSearch.trim() || undefined,
-        });
-
-        setData(response.data);
-        setTotalItems(response.pagination.total_items);
-      } catch (err) {
-        console.error(err);
-        setData([]);
-        setTotalItems(0);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [workspace, pagination, sorting, debouncedSearch]);
 
   const columns: ColumnDef<MergedFingerprint>[] = [
     {
@@ -156,9 +132,9 @@ export function Identification() {
   ];
 
   const table = useReactTable({
-    data,
+    data: fingerprintData?.data || [],
     columns,
-    pageCount: Math.ceil(totalItems / pagination.pageSize),
+    pageCount: Math.ceil(fingerprintData?.pagination.total_items || 0 / pagination.pageSize),
     state: {
       sorting,
       columnFilters,
@@ -180,7 +156,7 @@ export function Identification() {
   return (
 
     <div className="max-w-7xl mx-auto space-y-6 p-6">
-      {loading ? (
+      {isLoading ? (
         <TableSkeleton />
       ) : (
         <Card>
@@ -191,7 +167,7 @@ export function Identification() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Search and Controls */}
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="relative">
@@ -228,7 +204,6 @@ export function Identification() {
               </div>
             </div>
 
-            {/* Table */}
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -306,14 +281,13 @@ export function Identification() {
               </Table>
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <p className="text-sm text-gray-600">
                   {t("identification.pagination.showing", {
                     from: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
-                    to: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, totalItems),
-                    total: totalItems
+                    to: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, fingerprintData?.pagination.total_items || 0),
+                    total: fingerprintData?.pagination.total_items || 0
                   })}
                 </p>
               </div>

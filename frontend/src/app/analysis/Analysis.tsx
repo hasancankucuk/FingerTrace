@@ -1,81 +1,47 @@
-import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { AnalysisStats } from "@/models/AnalysisStats";
-import { toast, Toaster } from "sonner";
+import { HttpErrorHandler } from "@/components/helpers/HttpErrorHandler";
+import { CardSkeleton } from "@/components/landing/CardSkeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
+import { useWorkspace } from "@/hooks/useWorkspace";
+import { useAnalysisQuery } from "@/queries/analysisQueries";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
   Legend,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
-import { useWorkspace } from "@/hooks/useWorkspace";
-import { getAnalysis } from "@/services/analysis";
-import { CardSkeleton } from "@/components/landing/CardSkeleton";
+import { toast, Toaster } from "sonner";
 
 export const Analysis = () => {
-  const [stats, setStats] = useState<AnalysisStats | null>(null);
   const [period, setPeriod] = useState<number>(7);
-  const [loading, setLoading] = useState(false);
   const { workspace } = useWorkspace();
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!workspace) {
-      setStats(null);
-      return;
-    }
+  const {
+    data: analysisData,
+    isLoading,
+    error: analysisError
+  } = useAnalysisQuery(workspace?.id || "", period);
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await getAnalysis(period, String(workspace.id));
-        setStats(data);
-        const usageEmpty =
-          !data ||
-          (!Array.isArray(data.apiUsage) || data.apiUsage.length === 0) &&
-          !(data.usage || data.uniqueVisitors);
-        if (usageEmpty) {
-          toast.info("No analysis data for the selected workspace / period.");
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: unknown) {
-        const error = err as { status?: number; body?: string | object; message?: string };
-        const status = error.status;
-        const body = typeof error.body === 'object' ? JSON.stringify(error.body) : error.body;
-        switch (status) {
-          case 400:
-            toast.error(`Bad request: ${body || "Invalid parameters"}`);
-            break;
-          case 401:
-            toast.error("Unauthorized. Please sign in.");
-            break;
-          case 403:
-            toast.error("Access denied to this workspace.");
-            break;
-          case 404:
-            toast.error("Analysis endpoint not found (404).");
-            break;
-          case 429:
-            toast.error("Rate limited. Try again later.");
-            break;
-          case 500:
-          default:
-            toast.error(`Server error: ${body || error.message || `Status ${status || "unknown"}`}`);
-            break;
-        }
-        console.error("Error fetching analysis data:", err);
-        setStats(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (analysisError) {
+    HttpErrorHandler(analysisError);
+  }
 
-    fetchData();
-  }, [period, workspace]);
+  if (
+    !analysisData
+    || (!Array.isArray(analysisData.apiUsage)
+      || analysisData.apiUsage.length === 0)
+    && !(analysisData.usage
+      || analysisData.uniqueVisitors)) {
+    toast.info(t("analysis.no_data"));
+  }
+
 
   const chartConfig = {
     desktop: {
@@ -89,9 +55,9 @@ export const Analysis = () => {
   } satisfies ChartConfig;
 
   const chartData =
-    stats?.apiUsage && Array.isArray(stats.apiUsage) && stats?.apiUsageLabels && Array.isArray(stats.apiUsageLabels)
-      ? stats.apiUsage.map((usage, i) => ({
-        day: new Date(stats.apiUsageLabels[i]).toLocaleDateString() || `Day ${i + 1}`,
+    analysisData?.apiUsage && Array.isArray(analysisData.apiUsage) && analysisData?.apiUsageLabels && Array.isArray(analysisData.apiUsageLabels)
+      ? analysisData.apiUsage.map((usage, i) => ({
+        day: new Date(analysisData.apiUsageLabels[i]).toLocaleDateString() || `Day ${i + 1}`,
         usage: typeof usage === "number" ? usage : 0
       }))
       : [];
@@ -105,7 +71,7 @@ export const Analysis = () => {
     <>
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-6 p-6">
-        {loading && !stats ? (
+        {isLoading && !analysisData ? (
           <CardSkeleton />
         ) : (
           <Card>
@@ -135,7 +101,7 @@ export const Analysis = () => {
                         <CardTitle>Usage</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <span className="text-2xl font-bold">{stats?.usage ?? "-"}</span>
+                        <span className="text-2xl font-bold">{analysisData?.usage ?? "-"}</span>
                       </CardContent>
                     </Card>
 
@@ -145,7 +111,7 @@ export const Analysis = () => {
                       </CardHeader>
                       <CardContent>
                         <span className="text-2xl font-bold">
-                          {stats?.uniqueVisitors ?? "-"}
+                          {analysisData?.uniqueVisitors ?? "-"}
                         </span>
                       </CardContent>
                     </Card>
@@ -156,7 +122,7 @@ export const Analysis = () => {
                       </CardHeader>
                       <CardContent>
                         <span className="text-2xl font-bold">
-                          {stats?.eventsPerVisitor ?? "-"}
+                          {analysisData?.eventsPerVisitor ?? "-"}
                         </span>
                       </CardContent>
                     </Card>
@@ -205,9 +171,9 @@ export const Analysis = () => {
                         <CardTitle>Top Browsers</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {stats?.topBrowsers?.length ? (
+                        {analysisData?.topBrowsers?.length ? (
                           <ul>
-                            {stats.topBrowsers.map((b) => (
+                            {analysisData.topBrowsers.map((b) => (
                               <li key={b}>{b}</li>
                             ))}
                           </ul>
@@ -222,9 +188,9 @@ export const Analysis = () => {
                         <CardTitle>Top Timezones</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {stats?.timezones?.length ? (
+                        {analysisData?.timezones?.length ? (
                           <ul>
-                            {stats.timezones.map((c) => (
+                            {analysisData.timezones.map((c) => (
                               <li key={c}>{c}</li>
                             ))}
                           </ul>

@@ -1,5 +1,5 @@
 // NavMain.tsx
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -46,7 +46,7 @@ export function NavMain({ items }: { items: { title: string; url: string; icon?:
 
   const handleWorkspaceCreated = async () => {
     handleCloseModal();
-    toast.success("Workspace created!");
+    toast.success(t("nav.toast.workspace_created"));
   };
 
   const { state } = useSidebar();

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { ApiKey } from "@/utils/apiHelpers";
 
 export const useGetApiKeysQuery = (workspaceId: string) => {
-   return useQuery<ApiKey[], Error, Loading>({
+   return useQuery<ApiKey[], Error>({
     queryKey: ['api-keys', workspaceId],
     queryFn: () => getApiKeys(workspaceId),
     staleTime: 10 * 60 * 1000,

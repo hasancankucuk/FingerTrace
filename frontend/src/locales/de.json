@@ -45,7 +45,10 @@
         "features": "Funktionen",
         "contact": "Kontakt",
         "account": "Konto",
-        "log_out": "Abmelden"
+        "log_out": "Abmelden",
+        "toast": {
+            "workspace_created": "Arbeitsbereich erstellt."
+        }
     },
     "search": {
         "title": "Suche",
@@ -572,5 +575,13 @@
                 }
             }
         }
+    },
+    "http": {
+        "400": "Ungültige Anfrage: ({body}) || Ungültige Parameter",
+        "401": "Nicht autorisiert. Bitte melden Sie sich an.",
+        "403": "Zugriff auf diesen Workspace verweigert.",
+        "404": "Analyse-Endpunkt nicht gefunden (404).",
+        "429": "Anfragerate begrenzt. Bitte versuchen Sie es später erneut.",
+        "500": "Serverfehler."
     }
 }
