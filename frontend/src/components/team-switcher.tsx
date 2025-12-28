@@ -21,12 +21,11 @@ import CreateWorkspaceModal from "./helpers/CreateWorkspaceModal";
 export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: WorkspacesType[] }) {
   const { isMobile } = useSidebar();
   const { workspace: selectedWorkspace, setWorkspace } = useWorkspace();
-  const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspacesType | undefined>(selectedWorkspace ?? initialWorkspaces[0]);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const queryClient = useQueryClient();
 
   const openCreateModal = () => setShowCreateModal(true);
   const closeCreateModal = () => setShowCreateModal(false);
-  const queryClient = useQueryClient();
 
   const {
     data: workspaces,
@@ -34,14 +33,21 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
     isLoading: workspacesLoading,
   } = useWorkspacesQuery();
 
-  if (workspacesError) {
-    toast.error(workspacesError instanceof Error ? workspacesError.message : "Failed to refresh workspaces");
-  }
 
-  if (!workspacesLoading && workspaces && workspaces?.length > 0) {
-    setActiveWorkspace(workspaces[0]);
-    setWorkspace(workspaces[0]);
-  }
+  React.useEffect(() => {
+    if (!workspacesLoading && workspaces && workspaces.length > 0 && !selectedWorkspace) {
+      setWorkspace(workspaces[0]);
+    }
+  }, [workspaces, workspacesLoading, selectedWorkspace, setWorkspace]);
+
+
+  React.useEffect(() => {
+    if (workspacesError) {
+      toast.error(workspacesError instanceof Error ? workspacesError.message : "Failed to refresh workspaces");
+    }
+  }, [workspacesError]);
+
+  const activeWorkspace = selectedWorkspace ?? initialWorkspaces[0];
 
   return (
     <>
@@ -67,7 +73,9 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
                 <IconSitemap className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeWorkspace?.name}</span>
+                <span className="truncate font-medium">
+                  {activeWorkspace?.name || "Select Workspace"}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -78,14 +86,13 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">Workspaces</DropdownMenuLabel>
-            {workspaces && workspaces.map((workspace) => (
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
+              Workspaces
+            </DropdownMenuLabel>
+            {(workspaces || initialWorkspaces).map((workspace) => (
               <DropdownMenuItem
                 key={workspace.id}
-                onClick={() => {
-                  setActiveWorkspace(workspace);
-                  setWorkspace(workspace);
-                }}
+                onClick={() => setWorkspace(workspace)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-md border">
