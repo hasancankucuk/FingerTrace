@@ -11,3 +11,5 @@ gunicorn
 ja3
 uvicorn[standard]
 throttled-py
+reportlab 
+Pillow

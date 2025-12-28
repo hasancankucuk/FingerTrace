@@ -1,3 +1,4 @@
+import { ExportButtons } from "@/components/ExportButtons";
 import { TableSkeleton } from "@/components/landing/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,9 @@ import {
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { MergedFingerprint } from "@/models/IdentificationData";
 import { useFingerprintQuery } from "@/queries/fingerprintQueries";
+import { downloadBlob, exportFingerprintsPDF } from "@/services/export";
+import type { ExportColumn } from "@/utils/exportCSV";
+import { formatDate } from "@/utils/exportCSV";
 import {
   flexRender,
   getCoreRowModel,
@@ -112,6 +116,38 @@ export function Identification() {
     }
   ], [t]);
 
+  // Export columns definition
+  const exportColumns: ExportColumn[] = useMemo(() => [
+    { key: 'fingerprint', label: 'Fingerprint' },
+    { key: 'device_type', label: 'Device Type' },
+    { key: 'platform', label: 'Platform' },
+    { key: 'browser', label: 'Browser' },
+    { key: 'time_zone', label: 'Time Zone' },
+    { key: 'user_agent', label: 'User Agent' },
+    {
+      key: 'created_at',
+      label: 'Created At',
+      format: formatDate
+    },
+  ], []);
+
+  const handlePDFExport = async () => {
+    if (!workspace?.id) {
+      toast.error('Workspace not found');
+      return;
+    }
+
+    try {
+      toast.info('PDF oluşturuluyor...');
+      const blob = await exportFingerprintsPDF(workspace.id);
+      downloadBlob(blob, `fingerprints_${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('PDF indirildi!');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('PDF export başarısız oldu');
+    }
+  };
+
   const table = useReactTable({
     data: fingerprintData?.data || [],
     columns,
@@ -137,6 +173,13 @@ export function Identification() {
               <CardTitle>{t("identification.title")}</CardTitle>
               <CardDescription>{t("identification.description")}</CardDescription>
             </div>
+            <ExportButtons
+              data={fingerprintData?.data || []}
+              columns={exportColumns}
+              filename={`fingerprints_${new Date().toISOString().split('T')[0]}`}
+              onExportPDF={handlePDFExport}
+              disabled={isLoading}
+            />
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

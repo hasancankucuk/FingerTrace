@@ -10,6 +10,7 @@ from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
     api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, blog_bp, anomalies_bp
 )
+from api.routes.export import export_bp
 
 
 load_dotenv()
@@ -38,6 +39,7 @@ app.register_blueprint(deviceinfo_bp, url_prefix='/api')
 app.register_blueprint(contact_bp, url_prefix='/api')
 app.register_blueprint(blog_bp, url_prefix='/api')
 app.register_blueprint(anomalies_bp, url_prefix='/api')
+app.register_blueprint(export_bp, url_prefix='/api')
 
 @app.errorhandler(404)
 def not_found(error):

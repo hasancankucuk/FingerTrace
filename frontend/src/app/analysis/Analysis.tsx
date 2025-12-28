@@ -1,3 +1,4 @@
+import { ExportButtons } from "@/components/ExportButtons";
 import { HttpErrorHandler } from "@/components/helpers/HttpErrorHandler";
 import { CardSkeleton } from "@/components/landing/CardSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,7 +77,31 @@ export const Analysis = () => {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>API Usage</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>API Usage</CardTitle>
+                <ExportButtons
+                  data={[
+                    {
+                      period: `Last ${period} days`,
+                      usage: analysisData?.usage || 0,
+                      uniqueVisitors: analysisData?.uniqueVisitors || 0,
+                      eventsPerVisitor: analysisData?.eventsPerVisitor || 0,
+                      topBrowsers: analysisData?.topBrowsers?.join(', ') || '',
+                      topTimezones: analysisData?.timezones?.join(', ') || '',
+                    }
+                  ]}
+                  columns={[
+                    { key: 'period', label: 'Period' },
+                    { key: 'usage', label: 'Total Usage' },
+                    { key: 'uniqueVisitors', label: 'Unique Visitors' },
+                    { key: 'eventsPerVisitor', label: 'Events per Visitor' },
+                    { key: 'topBrowsers', label: 'Top Browsers' },
+                    { key: 'topTimezones', label: 'Top Timezones' },
+                  ]}
+                  filename={`analytics_${period}days_${new Date().toISOString().split('T')[0]}`}
+                  disabled={isLoading}
+                />
+              </div>
             </CardHeader>
             <div className="relative">
               <CardContent className="space-y-6">
