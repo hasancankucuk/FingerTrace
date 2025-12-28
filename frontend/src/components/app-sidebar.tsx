@@ -1,12 +1,3 @@
-import * as React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-  IconKey,
-  IconInnerShadowTop,
-  IconEye,
-  IconQuestionMark,
-  IconFingerprint,
-} from "@tabler/icons-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -18,10 +9,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-import { useWorkspacesQuery } from "@/queries/workspaceQueries";
 import { useUserQuery } from "@/queries/userQueries";
+import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import {
+  IconEye,
+  IconFingerprint,
+  IconFlagPin,
+  IconInnerShadowTop,
+  IconKey,
+  IconQuestionMark,
+} from "@tabler/icons-react";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: t("nav.identification"), url: "/identification", icon: IconFingerprint },
     { title: t("nav.api_keys"), url: "/api-keys", icon: IconKey },
     { title: t("nav.analysis"), url: "/analysis", icon: IconEye },
+    { title: t("nav.rules"), url: "/rules", icon: IconFlagPin },
   ];
 
   const datas = {

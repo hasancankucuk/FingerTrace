@@ -66,6 +66,7 @@ def _parse_ja3(ja3_str: str):
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
 @api_key_required
 def create_fingerprint(current_user):
+    print(request.json);
     data = request.json or {}
 
     browser_fp = data.get('fingerprint')
@@ -104,6 +105,7 @@ def create_fingerprint(current_user):
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
+    data['IP'] = request.remote_addr
 
     data['fingerprint'] = doc_id
 

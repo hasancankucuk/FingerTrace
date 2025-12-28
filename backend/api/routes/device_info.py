@@ -34,15 +34,36 @@ def create_device_info(current_user):
         device_info['workspace_id'] = workspace_id
     if workspace_name:
         device_info['workspace'] = workspace_name
+
+    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    if "," in client_ip: client_ip = client_ip.split(",")[0].strip()
+    
+    device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
+    current_location = get_location(client_ip)
 
-    ja3_fp = request.headers.get('X-JA3', '')
+    existing_device = firestore_get('deviceinfo', doc_id)
+    if existing_device:
+        device_info['updated_at'] = datetime.utcnow().isoformat()
+        device_info['previous_location'] = existing_device.get('previous_location')
+        device_info['previous_location_timestamp'] = existing_device.get('previous_location_timestamp')
+        device_info['created_at'] = existing_device.get('created_at')
+    else:
+        device_info['previous_location'] = None
+        device_info['created_at'] = datetime.utcnow().isoformat()
 
-    combined_string = f"{device_info.get('fingerprint')}:{ja3_fp}"
+    device_info['current_location'] = current_location
+    device_info['current_location_timestamp'] = datetime.utcnow().isoformat()
 
-    doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
+    from helpers.fingerprint_helper import get_fingerprint_from_context
+    doc_id, raw_fp, ja3_fp = get_fingerprint_from_context(device_info)
     device_info['fingerprint'] = doc_id
+    device_info['raw_fingerprint'] = raw_fp
+    device_info['ja3_fingerprint'] = ja3_fp
+    device_info['previous_location'] = get_location()
+    device_info['previous_location_timestamp'] = datetime.utcnow().isoformat()
+    device_info['is_vpn'] = check_vpn_proxy(client_ip)[0]
 
     firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201

@@ -28,6 +28,7 @@ import {
   Landing,
   LoginPage,
   Privacy,
+  Rules,
   Search,
   Security,
   SignupPage,
@@ -166,6 +167,7 @@ function App() {
                   <Route path="/api-keys" element={<ApiKeys />} />
                   <Route path="/analysis" element={<Analysis />} />
                   <Route path="/identification" element={<Identification />} />
+                  <Route path="/rules" element={<Rules />} />
                   <Route path="/account" element={<Account />} />
                   <Route path="/search" element={<Search />} />
                 </Route>

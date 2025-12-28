@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
-    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, blog_bp
+    api_keys_bp, workspaces_bp, deviceinfo_bp, contact_bp, blog_bp, anomalies_bp
 )
 
 
@@ -17,7 +17,7 @@ ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS",   "*").split(",")
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=True)
 
 # JWT
@@ -37,6 +37,7 @@ app.register_blueprint(workspaces_bp, url_prefix='/api')
 app.register_blueprint(deviceinfo_bp, url_prefix='/api')
 app.register_blueprint(contact_bp, url_prefix='/api')
 app.register_blueprint(blog_bp, url_prefix='/api')
+app.register_blueprint(anomalies_bp, url_prefix='/api')
 
 @app.errorhandler(404)
 def not_found(error):

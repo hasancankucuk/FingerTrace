@@ -1,36 +1,61 @@
 from functools import wraps
 from flask import request, jsonify
 from throttled import Throttled, exceptions, rate_limiter
+from helpers.firebase_utils import firestore_set
+import uuid
+from datetime import datetime
 
-quota = rate_limiter.per_min(100)
+default_quota = rate_limiter.per_min(100)
 limiters = {}
 
-def rate_limit(key_prefix: str):
+def rate_limit(key_prefix: str, quota: int = None):
     def decorator(func):
-        if key_prefix not in limiters:
-            limiters[key_prefix] = Throttled(quota=quota)
-
-        limiter = limiters[key_prefix]
-
         @wraps(func)
         def wrapper(*args, **kwargs):
             client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
             if client_ip and "," in client_ip:
                 client_ip = client_ip.split(",")[0].strip()
+
+            device_results = firestore_query('deviceinfo', 'IP', '==', client_ip)
             
-            key = f"{key_prefix}:{client_ip}" if client_ip else key_prefix
+            fingerprint = "unknown"
+            current_quota = default_quota
+
+            if device_results:
+                device_data = device_results[0]
+                fingerprint = device_data.get('fingerprint', 'unknown')
+                custom_limit = device_data.get('rate_limit')
+                if custom_limit:
+                    current_quota = rate_limiter.per_min(custom_limit)
             
+            limiter_key = f"{key_prefix}:{fingerprint}:{client_ip}"
+            if limiter_key not in limiters:
+                limiters[limiter_key] = Throttled(quota=current_quota)
+            
+            limiter = limiters[limiter_key]
+
             try:
-                limiter.limit(key=key)
+                limiter.limit(key=limiter_key)
                 return func(*args, **kwargs)
+            
             except exceptions.LimitedError as e:
+                alert_id = str(uuid.uuid4())
+                alert_data = {
+                    "type": "Velocity Attack",
+                    "fingerprint": fingerprint,
+                    "ip": client_ip,
+                    "context": key_prefix,
+                    "created_at": datetime.utcnow().isoformat(),
+                    "severity": "high"
+                }
+                firestore_set('alerts', alert_id, alert_data)
+
                 return jsonify({
                     "error": "Rate limit exceeded",
-                    "message": "Too many requests. Please try again later.",
                     "retry_after": getattr(e, "retry_after", 60)
                 }), 429
             except Exception as e:
-                print(f"Rate limiting internal error: {e}")
+                print(f"Internal rate limit error: {e}")
                 return func(*args, **kwargs)
         return wrapper
     return decorator

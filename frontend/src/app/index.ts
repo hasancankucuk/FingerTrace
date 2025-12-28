@@ -15,6 +15,7 @@ import { Security } from "./legal/Security";
 import { Terms } from "./legal/Terms";
 import { ForgotPassword } from "./login/ForgotPassword";
 import LoginPage from "./login/Login";
+import { Rules } from "./rules/Rules";
 import { Search } from "./search/Search";
 import SignupPage from "./signup/Signup";
 
@@ -25,5 +26,6 @@ export {
     BlogList,
     BlogPost, Contact, Dashboard, Documentation,
     Features, ForgotPassword, Health,
-    Identification, Landing, LoginPage, Privacy, Search, Security, SignupPage, Terms
+    Identification, Landing, LoginPage, Privacy, Rules, Search, Security, SignupPage, Terms
 };
+

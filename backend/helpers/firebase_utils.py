@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import firebase_admin # type: ignore
 from firebase_admin import credentials, auth, firestore # type: ignore
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 load_dotenv()
 
@@ -188,13 +189,13 @@ def firebase_verify_id_token(id_token):
 
 def firestore_query(collection_name, field, operator, value):
     try:
-        docs = db.collection(collection_name).where(field, operator, value).stream()
-        results = []
-        for doc in docs:
-            data = doc.to_dict()
-            data['id'] = doc.id
-            results.append(data)
-        return results
+       docs = db.collection(collection_name).where(filter=FieldFilter(field, operator, value)).stream()
+       results = []
+       for doc in docs:
+           data = doc.to_dict()
+           data['id'] = doc.id
+           results.append(data)
+       return results
     except Exception as e:
         print(f"Error querying {collection_name}: {e}")
         return []

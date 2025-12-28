@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Activity, Search } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, AlertTriangle, Search, ShieldAlert } from "lucide-react";
 
 type Anomaly = {
   session_id: string;
@@ -29,14 +29,16 @@ type AnomaliesProps = {
     anomaly_threshold: number;
   };
   message?: string;
+  rateLimitAnomalies?: any[];
 };
 
 type AnomaliesComponentProps = {
   anomalies: AnomaliesProps | null;
+  rateLimitAnomalies?: any[];
   loading: boolean;
 };
 
-export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentProps) => {
+export const AnomaliesComponent = ({ anomalies, rateLimitAnomalies = [], loading }: AnomaliesComponentProps) => {
   if (loading) {
     return (
       <Card>
@@ -89,7 +91,8 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
 
   const responseAnomalies = anomalies?.anomalies || [];
   const intentAnomalies = anomalies?.intent_anomalies || [];
-  const totalAnomalies = anomalies?.total_anomalies || (responseAnomalies.length + intentAnomalies.length);
+  const rateLimitAlerts = rateLimitAnomalies || [];
+  const totalAnomalies = (anomalies?.total_anomalies || (responseAnomalies.length + intentAnomalies.length)) + rateLimitAlerts.length;
   const totalChecked = anomalies?.total_checked || 0;
   const statistics = anomalies?.statistics;
 
@@ -122,7 +125,7 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
                   </div>
                 )}
               </div>
-              
+
               <div className="text-center p-4 bg-orange-50 rounded border border-orange-200">
                 <div className="text-2xl font-bold text-orange-600">
                   {responseAnomalies.length}
@@ -140,7 +143,7 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
                   Intent Pattern Anomalies
                 </div>
               </div>
-              
+
               <div className="text-center p-4 bg-blue-50 rounded border border-blue-200">
                 <div className="text-2xl font-bold text-blue-600">
                   {totalChecked}
@@ -204,7 +207,7 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
                         <div className="font-bold text-red-800">
                           {anomaly.response_time.toFixed(2)}s
                         </div>
-                        <Badge 
+                        <Badge
                           variant={Math.abs(anomaly.z_score) > 3 ? "destructive" : "outline"}
                           className="text-xs mt-1"
                         >
@@ -217,7 +220,75 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
               </div>
             )}
 
-            {/* Intent Pattern Anomalies */}
+            {/* Rate Limiting Alerts */}
+            {rateLimitAlerts.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-orange-500" />
+                  Rate Limiting Alerts ({rateLimitAlerts.length})
+                </h4>
+                <div className="space-y-3">
+                  {rateLimitAlerts.map((alert, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-orange-50 border border-orange-200 rounded-lg space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-bold text-orange-800 flex items-center gap-2">
+                            <ShieldAlert className="h-4 w-4" />
+                            {alert.type}
+                          </div>
+                          <div className="text-xs text-orange-700 mt-1">
+                            {new Date(alert.created_at).toLocaleString()} • {alert.context}
+                          </div>
+                        </div>
+                        <Badge variant="destructive" className="capitalize">
+                          {alert.severity}
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground block">Hashed Fingerprint:</span>
+                          <code className="bg-orange-100 px-1 py-0.5 rounded break-all">
+                            {alert.fingerprint}
+                          </code>
+                        </div>
+                        {alert.raw_fingerprint && (
+                          <div className="space-y-1">
+                            <span className="text-muted-foreground block">Raw Fingerprint:</span>
+                            <code className="bg-orange-100 px-1 py-0.5 rounded break-all">
+                              {alert.raw_fingerprint}
+                            </code>
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground block">Target IP:</span>
+                          <span className="font-mono">{alert.target_ip}</span>
+                        </div>
+                        {alert.ja3_fingerprint && (
+                          <div className="space-y-1">
+                            <span className="text-muted-foreground block">JA3 Fingerprint:</span>
+                            <code className="bg-orange-100 px-1 py-0.5 rounded break-all">
+                              {alert.ja3_fingerprint}
+                            </code>
+                          </div>
+                        )}
+                        <div className="col-span-full space-y-1">
+                          <span className="text-muted-foreground block">User Agent:</span>
+                          <span className="italic">{alert.user_agent || "Unknown"}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-sm border-t border-orange-100 pt-2 text-orange-800">
+                        <strong>Details:</strong> {alert.details}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {intentAnomalies.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
@@ -238,7 +309,7 @@ export const AnomaliesComponent = ({ anomalies, loading }: AnomaliesComponentPro
                           {anomaly.count} occurrences ({anomaly.percentage}%)
                         </div>
                       </div>
-                      <Badge 
+                      <Badge
                         variant={anomaly.anomaly_type === "rare" ? "outline" : "secondary"}
                         className="capitalize"
                       >

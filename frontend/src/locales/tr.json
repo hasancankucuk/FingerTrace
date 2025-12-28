@@ -40,6 +40,7 @@
         "identification": "Kimlik Doğrulama",
         "api_keys": "API Anahtarları",
         "workspaces": "Çalışma Alanları",
+        "rules": "Kurallar",
         "get_started": "Başlayın",
         "documentation": "Dokümantasyon",
         "features": "Özellikler",
@@ -47,7 +48,7 @@
         "account": "Hesap",
         "log_out": "Çıkış yap",
         "toast": {
-            "workspace_created": "Workspace created."
+            "workspace_created": "Çalışma alanı oluşturuldu."
         }
     },
     "search": {
@@ -122,7 +123,70 @@
         "pagination": {
             "showing": "{{total}} kayıttan {{from}} ile {{to}} arası gösteriliyor",
             "page": "Sayfa {{current}} / {{total}}"
+        },
+        "details": "Detaylar",
+        "technical_specs": "Teknik Özellikler",
+        "detail": {
+            "request_id": "Request ID",
+            "fingerprint": "Fingerprint",
+            "workspace_id": "Workspace ID",
+            "created_at": "Created At",
+            "updated_at": "Last Updated",
+            "device_type": "Device Type",
+            "platform": "Platform",
+            "browser": "Browser",
+            "time_zone": "Time Zone",
+            "user_agent": "User Agent String",
+            "color_depth": "Color Depth",
+            "color_gamut": "Color Gamut",
+            "bar_visibility": "Bar Visibility",
+            "browser_feature_support": "Browser Features",
+            "status": "Connection Status"
         }
+    },
+    "rules": {
+        "title": "Kurallar",
+        "description": "Kurallarınızı yönetin",
+        "create_rule": "Kural Oluştur",
+        "anomaly_detection": "Anomali Tespiti",
+        "anomaly_detection_system_desc": "Sistem {{count}} donanım parametresini analiz eder",
+        "rate_limiting": "Hız Sınırlandırma",
+        "rate_limiting_desc": "Hız saldırıları ve istek artışları için eşikler tanımlayın",
+        "fast_travel": "Hızlı Seyahat Tespiti",
+        "fast_travel_desc": "Hız ve mesafeye dayalı imkansız hareketi tespit edin",
+        "vpn_proxy": "VPN ve Proxy Tespiti",
+        "vpn_proxy_desc": "VPN kullanımını tespit etmek için IP başlıklarını ve tarayıcı uyumsuzluklarını analiz edin.",
+        "add_condition": "Koşul Ekle",
+        "add_velocity_condition": "Hız Koşulu Ekle",
+        "add_travel_condition": "Seyahat Koşulu Ekle",
+        "then_flag": "SONUÇ: İŞARETLE",
+        "then_limit": "SONUÇ: SINIRLA",
+        "then_flag_travel": "SONUÇ: SEYAHATİ İŞARETLE",
+        "save_all": "Tüm Kuralları Yayınla",
+        "save_success": "Kurallar başarıyla yayınlandı!",
+        "save_error": "Kurallar kaydedilemedi.",
+        "risk": "Risk",
+        "risk_level": {
+            "low": "Düşük",
+            "medium": "Orta",
+            "high": "Yüksek"
+        }
+    },
+    "fields": {
+        "color_depth": "Renk Derinliği",
+        "platform": "Platform",
+        "bar_visibility": "Çubuk Görünürlüğü",
+        "color_gamut": "Renk Gamı",
+        "browser_support": "Tarayıcı Desteği",
+        "time_zone": "Saat Dilimi",
+        "request_count": "İstek Sayısı",
+        "window": "Zaman Penceresi (sn)",
+        "retry_after": "Tekrar Deneme (sn)",
+        "estimated_speed": "Tahmini Hız (km/sa)",
+        "distance": "Mesafe (km)",
+        "time_diff": "Zaman Farkı (sa)",
+        "is_proxy": "Proxy",
+        "is_hosting": "Hosting/Veri Merkezi"
     },
     "account": {
         "title": "Hesap Ayarları",
@@ -576,11 +640,11 @@
         }
     },
     "http": {
-    "400": "Geçersiz istek: ({body}) || Geçersiz parametreler",
-    "401": "Yetkisiz erişim. Lütfen giriş yapın.",
-    "403": "Bu çalışma alanına erişim reddedildi.",
-    "404": "Analiz noktası bulunamadı (404).",
-    "429": "İstek sınırı aşıldı. Lütfen daha sonra tekrar deneyin.",
-    "500": "Sunucu hatası."
-}
+        "400": "Geçersiz istek: ({body}) || Geçersiz parametreler",
+        "401": "Yetkisiz erişim. Lütfen giriş yapın.",
+        "403": "Bu çalışma alanına erişim reddedildi.",
+        "404": "Analiz noktası bulunamadı (404).",
+        "429": "İstek sınırı aşıldı. Lütfen daha sonra tekrar deneyin.",
+        "500": "Sunucu hatası."
+    }
 }
