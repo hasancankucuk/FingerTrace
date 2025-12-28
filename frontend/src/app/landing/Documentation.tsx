@@ -6,57 +6,56 @@ import { QuickLink } from "@/components/documentation/QuickLink"
 import { QuickStartSection } from "@/components/documentation/QuickStartSection"
 import { SDKIntegrationSection } from "@/components/documentation/SDKIntegrationSection"
 import { APIReferenceSection } from "@/components/documentation/APIReferenceSection"
-import { ExamplesSection } from "@/components/documentation/ExamplesSection"
 import { SupportSection } from "@/components/documentation/SupportSection"
 
-const quickLinks = [
-	{
-		title: "Quick Start",
-		description: "Get up and running in 5 minutes",
-		href: "#quick-start",
-		icon: <Zap className="h-5 w-5" />,
-	},
-	{
-		title: "SDK Integration",
-		description: "Integrate with your application",
-		href: "#sdk-integration",
-		icon: <Code className="h-5 w-5" />,
-	},
-	{
-		title: "API Reference",
-		description: "Complete API documentation",
-		href: "#api-reference",
-		icon: <Database className="h-5 w-5" />,
-	},
-	{
-		title: "Workspaces",
-		description: "Organize your projects",
-		href: "#workspaces",
-		icon: <Shield className="h-5 w-5" />,
-	},
-	{
-		title: "Examples",
-		description: "Real-world code examples",
-		href: "#examples",
-		icon: <Terminal className="h-5 w-5" />,
-	},
-	{
-		title: "Security",
-		description: "Privacy and compliance",
-		href: "#security",
-		icon: <Shield className="h-5 w-5" />,
-	},
-]
+import { useTranslation } from "react-i18next"
 
 export const Documentation = () => {
+	const { t } = useTranslation()
+
+	const quickLinks = [
+		{
+			title: t("landing.documentation.quick_links.items.quick_start.title"),
+			description: t("landing.documentation.quick_links.items.quick_start.description"),
+			href: "#quick-start",
+			icon: <Zap className="h-5 w-5" />,
+		},
+		{
+			title: t("landing.documentation.quick_links.items.sdk_integration.title"),
+			description: t("landing.documentation.quick_links.items.sdk_integration.description"),
+			href: "#sdk-integration",
+			icon: <Code className="h-5 w-5" />,
+		},
+		{
+			title: t("landing.documentation.quick_links.items.api_reference.title"),
+			description: t("landing.documentation.quick_links.items.api_reference.description"),
+			href: "#api-reference",
+			icon: <Database className="h-5 w-5" />,
+		},
+		{
+			title: t("landing.documentation.quick_links.items.workspaces.title"),
+			description: t("landing.documentation.quick_links.items.workspaces.description"),
+			href: "#workspaces",
+			icon: <Shield className="h-5 w-5" />,
+		},
+		{
+			title: t("landing.documentation.quick_links.items.examples.title"),
+			description: t("landing.documentation.quick_links.items.examples.description"),
+			href: "#examples",
+			icon: <Terminal className="h-5 w-5" />,
+		},
+		{
+			title: t("landing.documentation.quick_links.items.security.title"),
+			description: t("landing.documentation.quick_links.items.security.description"),
+			href: "#security",
+			icon: <Shield className="h-5 w-5" />,
+		},
+	]
+
 	const handleQuickStart = () => {
 		const element = document.querySelector("#quick-start")
 		element?.scrollIntoView({ behavior: "smooth" })
 	}
-
-	// const handleViewGitHub = () => {
-	// 	window.open("https://github.com/hasancankucuk/fingertrace", "_blank")
-	// }
 
 	const handleContactSupport = () => {
 		window.open("mailto:support@fingertrace.app", "_blank")
@@ -74,7 +73,7 @@ export const Documentation = () => {
 				{/* Quick Links */}
 				<section className="mb-16">
 					<h2 className="text-2xl font-bold mb-8 text-center">
-						Jump to what you need
+						{t("landing.documentation.quick_links.title")}
 					</h2>
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{quickLinks.map((link, index) => (
@@ -92,7 +91,7 @@ export const Documentation = () => {
 				<QuickStartSection />
 				<SDKIntegrationSection />
 				<APIReferenceSection />
-				<ExamplesSection />
+				{/* <ExamplesSection /> */}
 				<SupportSection onContactSupport={handleContactSupport} />
 			</div>
 

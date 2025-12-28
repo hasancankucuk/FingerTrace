@@ -1,5 +1,7 @@
+import { useState, useRef, useEffect } from "react";
 import {
   BrowserRouter,
+  useNavigate,
   Routes,
   Route,
   Navigate,
@@ -14,7 +16,7 @@ import { AppSidebar } from "./components/app-sidebar";
 import { Health } from "./app/health/Health";
 import { Analysis } from "./app/analysis/Analysis";
 import { Identification } from "./app/identification/Identification";
-import { Account } from "./app/account/Account";
+import { Search } from "./app/search/Search";
 import type { AuthState } from "./models/Authstate";
 import { ForgotPassword } from "./app/login/ForgotPassword";
 import { Landing } from "./app/landing/Landing";
@@ -29,25 +31,88 @@ import { BlogPost } from "./app/blog/BlogPost";
 import { useAuthStore } from "./store/useAuthStore";
 import { SimpleChatBot } from "@/components/ChatBot/SimpleChatBot";
 import { BotAnalytics } from "./components/analytics/BotAnalysis";
+import { ThemeProvider } from "@/components/theme-provider"
+import { ModeToggle } from "./components/mode-toggle";
+import { LanguageToggle } from "./components/language-toggle";
+import { Kbd } from "./components/ui/kbd";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group";
+import { SearchIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import Account from "./app/account/Account";
+
 
 function SidebarLayout() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      searchInputRef.current?.blur();
+    }
+  };
+
   return (
-    <div className="flex h-screen w-full bg-gray-50">
-      <AppSidebar className="h-full flex-shrink-0" collapsible="icon" />
-      <SidebarTrigger/>
-      <main className="flex-1 flex flex-col overflow-y-auto bg-gray-50">
-        <div className="p-4 flex-1">
-          <Outlet />
-        </div>
-      </main>
+    <div className="flex h-screen w-full bg-background text-foreground transition-all duration-300">
+      <AppSidebar className="h-full border-r shrink-0" collapsible="icon" />
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <header className="flex h-14 items-center justify-between border-b px-4 shrink-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div className="h-4 w-px bg-border hidden sm:block" />
+          </div>
+          <div className="flex items-center gap-4">
+            <InputGroup className="w-64 transition-all duration-300 focus-within:w-80">
+              <InputGroupInput
+                ref={searchInputRef}
+                placeholder={t("common.search")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+              />
+              <InputGroupAddon>
+                <SearchIcon />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <Kbd>⌘</Kbd>
+                <Kbd>K</Kbd>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ModeToggle />
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto bg-slate-50/30 dark:bg-zinc-950/30">
+          <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-7xl">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
 
 function NoSidebarLayout() {
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <div className="w-full p-4">
+    <div className="flex min-h-screen w-full items-center justify-center bg-background text-foreground transition-colors duration-300">
+      <div className="w-full max-w-md p-6">
         <Outlet />
       </div>
     </div>
@@ -61,7 +126,7 @@ function PrivateRoute() {
 
 function App() {
   return (
-    <div className="App">
+    <ThemeProvider defaultTheme="dark" storageKey="fingertrace-theme">
       <BrowserRouter>
         <SidebarProvider>
           <Routes>
@@ -99,6 +164,7 @@ function App() {
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/identification" element={<Identification />} />
                 <Route path="/account" element={<Account />} />
+                <Route path="/search" element={<Search />} />
               </Route>
             </Route>
 
@@ -106,7 +172,7 @@ function App() {
         </SidebarProvider>
       </BrowserRouter>
       <SimpleChatBot />
-    </div>
+    </ThemeProvider>
   );
 }
 

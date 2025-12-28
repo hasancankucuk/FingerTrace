@@ -28,7 +28,7 @@ export interface FingerprintParams {
   page_size?: number;
   sort_field?: string;
   sort_direction?: "asc" | "desc";
-  search?: string;
+  search?: string | undefined;
 }
 
 export const getMergedFingerprints = async (

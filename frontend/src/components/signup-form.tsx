@@ -14,11 +14,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useTranslation } from "react-i18next";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -26,64 +28,64 @@ export function SignupForm({
   const navigate = useNavigate();
 
 
-async function submit(e: React.FormEvent) {
-  e.preventDefault();
-  setLoading(true);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await registerUser(email, password, name);
-    if (res?.access_token) {
-      useAuthStore.setState({ token: res.access_token });
-      navigate("/dashboard");
-    } else {
-      toast.warning("Registration succeeded but no token returned");
+    try {
+      const res = await registerUser(email, password, name);
+      if (res?.access_token) {
+        useAuthStore.setState({ token: res.access_token });
+        navigate("/dashboard");
+      } else {
+        toast.warning("Registration succeeded but no token returned");
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Registration failed";
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Registration failed";
-    toast.error(message);
-  } finally {
-    setLoading(false);
   }
-}
   return (
     <>
       <Toaster />
       <div
         className={cn(
-          "flex flex-col gap-6 items-center justify-center py-8",
+          "flex flex-col gap-6",
           className
         )}
         {...props}
       >
-        <Card className="w-full">
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl">Create your account</CardTitle>
-            <CardDescription>Enter your details to get started</CardDescription>
+        <Card className="w-full border-border shadow-md overflow-hidden bg-card">
+          <CardHeader className="space-y-1 text-center pb-2">
+            <CardTitle className="text-xl font-bold">{t("auth.create_account")}</CardTitle>
+            <CardDescription>{t("auth.signup_desc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={submit} className="grid gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t("common.name")}</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={t("auth.name_placeholder")}
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("common.email")}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="m@example.com"
+                  placeholder={t("auth.email_placeholder")}
                   required
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("common.password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -94,12 +96,12 @@ async function submit(e: React.FormEvent) {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Creating..." : "Create account"}
+                {loading ? t("auth.creating") : t("auth.create_account")}
               </Button>
               <div className="text-center text-sm">
-                Already have an account?{" "}
+                {t("auth.already_have_account")}{" "}
                 <a href="/login" className="underline underline-offset-4">
-                  Sign in
+                  {t("auth.back_to_login")}
                 </a>
               </div>
             </form>

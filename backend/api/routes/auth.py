@@ -1,6 +1,7 @@
 from helpers.firebase_utils import create_user, firebase_reset_password, firestore_get_all, get_user, firebase_update_user, firebase_delete_user, firestore_update, firestore_delete
 from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity # type: ignore
+from helpers.api_rate_limiting import rate_limit
 import os
 from dotenv import load_dotenv
 import requests
@@ -8,7 +9,7 @@ import requests
 load_dotenv()
 auth_bp = Blueprint('auth', __name__)
 
-
+@rate_limit('register')
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -28,6 +29,7 @@ def register():
     access_token = create_access_token(identity=user["uid"])
     return jsonify({"uid": user["uid"], "access_token": access_token}), 201
 
+@rate_limit('user')
 @auth_bp.route('/user', methods=['GET'])
 @jwt_required()
 def user():
@@ -40,6 +42,7 @@ def user():
         "phone": user["phone_number"],
     }), 200
 
+@rate_limit('user')
 @auth_bp.route('/user', methods=['PUT'])
 @jwt_required()
 def update_user():
@@ -51,6 +54,7 @@ def update_user():
         return jsonify({"error": str(e)}), 400
     return jsonify({"message": "User updated"}), 200
 
+@rate_limit('user')
 @auth_bp.route('/user/', methods=['DELETE'])
 @jwt_required()
 def delete_user():
@@ -73,6 +77,7 @@ def delete_user():
 
     return jsonify({"message": "User and their workspaces deleted"}), 200
 
+@rate_limit('me')
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def me():
@@ -81,7 +86,7 @@ def me():
     user = get_user(uid)
     return jsonify({"email": user.email}), 200
 
-
+@rate_limit('forgot')
 @auth_bp.route('/forgot', methods=['POST'])
 def forgot_password():
     data = request.json

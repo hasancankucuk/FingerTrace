@@ -24,10 +24,12 @@ import { useEffect, useState } from "react";
 import { getWorkspaces } from "@/services/workspaces";
 import type { User } from "@/models/UserInterface";
 import type { WorkspacesType } from "@/models/Workspaces";
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User>({ name: "", email: "", phone: "" });
   const [workspaces, setWorkspaces] = useState<WorkspacesType[]>([]);
 
@@ -49,20 +51,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         const ws = await getWorkspaces();
         setWorkspaces(ws);
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Error fetching workspaces";
+        const message = err instanceof Error ? err.message : t("common.error_workspaces");
         toast.error(message);
       }
     };
 
     fetchData();
   }, []);
-  
+
   const navMainItems = [
-    // Get Started sadece workspace yoksa göster
-    ...(workspaces.length <= 0 ? [{ title: "Get Started", url: "/dashboard", icon: IconQuestionMark }] : []),
-    { title: "Identification", url: "/identification", icon: IconFingerprint },
-    { title: "API Keys", url: "/api-keys", icon: IconKey },
-    { title: "Analysis", url: "/analysis", icon: IconEye },
+    ...(workspaces.length <= 0 ? [{ title: t("nav.get_started"), url: "/dashboard", icon: IconQuestionMark }] : []),
+    { title: t("nav.identification"), url: "/identification", icon: IconFingerprint },
+    { title: t("nav.api_keys"), url: "/api-keys", icon: IconKey },
+    { title: t("nav.analysis"), url: "/analysis", icon: IconEye },
   ];
 
   const data = {
@@ -82,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
               onClick={() => navigate("/")}
             >
-              <a href="/">
+              <a href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Finger Trace</span>
               </a>
@@ -97,8 +98,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ...item,
             className:
               location.pathname === item.url
-                ? "bg-blue-500 text-white rounded-md"
-                : "hover:bg-gray-100 text-gray-700",
+                ? "bg-primary text-primary-foreground font-medium rounded-md shadow-sm"
+                : "hover:bg-accent hover:text-accent-foreground text-muted-foreground transition-colors",
           }))}
         />
       </SidebarContent>

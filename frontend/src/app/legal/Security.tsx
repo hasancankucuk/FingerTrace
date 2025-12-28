@@ -3,31 +3,33 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Shield, Lock, Eye, AlertTriangle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { LegalLayout } from "@/components/legal/LegalLayout"
 
 export const Security = () => {
+  const { t } = useTranslation("landing")
   const navigate = useNavigate()
 
   const securityFeatures = [
     {
       icon: <Lock className="h-6 w-6" />,
-      title: "End-to-End Encryption",
-      description: "All data is encrypted in transit using TLS 1.3 and at rest using AES-256"
+      title: t("legal.security.features.encryption.title"),
+      description: t("legal.security.features.encryption.description")
     },
     {
       icon: <Shield className="h-6 w-6" />,
-      title: "SOC 2 Type II Compliant",
-      description: "Our infrastructure meets the highest security and availability standards"
+      title: t("legal.security.features.soc2.title"),
+      description: t("legal.security.features.soc2.description")
     },
     {
       icon: <Eye className="h-6 w-6" />,
-      title: "Regular Security Audits",
-      description: "Independent third-party security assessments and penetration testing"
+      title: t("legal.security.features.audits.title"),
+      description: t("legal.security.features.audits.description")
     },
     {
       icon: <AlertTriangle className="h-6 w-6" />,
-      title: "24/7 Monitoring",
-      description: "Continuous monitoring for threats and anomalous activity"
+      title: t("legal.security.features.monitoring.title"),
+      description: t("legal.security.features.monitoring.description")
     }
   ]
 
@@ -36,21 +38,21 @@ export const Security = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="mb-4 gap-2"
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t("legal.back_to_home")}
           </Button>
           <div className="flex items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">Security & Compliance</h1>
-            <Badge variant="outline">Updated: January 2025</Badge>
+            <h1 className="text-4xl font-bold">{t("legal.security.title")}</h1>
+            <Badge variant="outline">{t("legal.last_updated")}</Badge>
           </div>
           <p className="text-lg text-muted-foreground">
-            Learn how we protect your data and maintain the highest security standards.
+            {t("legal.security.description")}
           </p>
         </div>
 
@@ -77,13 +79,13 @@ export const Security = () => {
           {/* Infrastructure Security */}
           <Card>
             <CardHeader>
-              <CardTitle>Infrastructure Security</CardTitle>
+              <CardTitle>{t("legal.security.infrastructure.title")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Cloud Infrastructure</h4>
+                <h4 className="font-semibold mb-2">{t("legal.security.infrastructure.cloud.title")}</h4>
                 <p className="text-muted-foreground mb-3">
-                  FingerTrace is built on enterprise-grade cloud infrastructure with multiple layers of security.
+                  {t("legal.security.infrastructure.cloud.description")}
                 </p>
               </div>
             </CardContent>
@@ -92,15 +94,15 @@ export const Security = () => {
           {/* Contact */}
           <Card>
             <CardHeader>
-              <CardTitle>Security Contact</CardTitle>
+              <CardTitle>{t("legal.security.contact.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                For security-related questions or to report vulnerabilities:
+                {t("legal.security.contact.description")}
               </p>
               <ul className="space-y-2 text-muted-foreground">
-                <li><strong>Security Team:</strong> security@fingertrace.app</li>
-                <li><strong>Response Time:</strong> Within 24 hours for critical issues</li>
+                <li><strong>{t("legal.security.contact.team")}</strong> security@fingertrace.app</li>
+                <li><strong>{t("legal.security.contact.response_time")}</strong> {t("legal.security.contact.response_desc")}</li>
               </ul>
             </CardContent>
           </Card>

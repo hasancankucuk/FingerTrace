@@ -4,9 +4,7 @@ from threading import Thread
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_mail import Mail
 from dotenv import load_dotenv
-from flask_mail import Mail, Message
 
 from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
@@ -18,32 +16,14 @@ load_dotenv()
 ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=True)
 
 # JWT
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 
-# Mail config
-# app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
-# app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
-# app.config['MAIL_USE_SSL'] =  True
-# app.config['MAIL_USERNAME'] = os.getenv('SMTP_USER', 'fingertraaceapp@gmail.com')
-# app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASS', 'adff sxyw saoj vvvx')
-# app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
-
-
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = "fingertraaceapp@gmail.com"
-app.config['MAIL_PASSWORD'] = "adff sxyw saoj vvvx"
-app.config['MAIL_DEFAULT_SENDER'] = "fingertraaceapp@gmail.com"
-
-
-# Mail instance - bu global olmalı
-mail = Mail(app)
 jwt = JWTManager(app)
 
 # Blueprints

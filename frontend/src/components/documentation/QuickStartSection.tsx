@@ -2,47 +2,54 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Terminal, Code, Database } from "lucide-react"
 import { CodeBlock } from "./CodeBlock"
+import { useTranslation } from "react-i18next"
 
-const quickStartSteps = [
-  {
-    number: 1,
-    icon: <Terminal className="h-5 w-5" />,
-    title: "Install SDK",
-    description: "Add our lightweight SDK to your project with npm or yarn",
-    code: "npm install @fingertrace/trace-sdk"
-  },
-  {
-    number: 2,
-    icon: <Code className="h-5 w-5" />,
-    title: "Initialize",
-    description: "Import and initialize the SDK in your application",
-    code: `import { FingerprintSDK } from '@fingertrace/trace-sdk';
+export const QuickStartSection = () => {
+  const { t } = useTranslation()
+
+  const quickStartSteps = [
+    {
+      number: 1,
+      icon: <Terminal className="h-5 w-5" />,
+      title: t("landing.documentation.quick_start.steps.install.title"),
+      description: t("landing.documentation.quick_start.steps.install.description"),
+      code: "npm install @fingertrace/trace-sdk"
+    },
+    {
+      number: 2,
+      icon: <Code className="h-5 w-5" />,
+      title: t("landing.documentation.quick_start.steps.initialize.title"),
+      description: t("landing.documentation.quick_start.steps.initialize.description"),
+      code: `import { FingerprintSDK } from '@fingertrace/trace-sdk';
 
 const result = await FingerprintSDK();
 console.log(result.fingerprint);`
-  },
-  {
-    number: 3,
-    icon: <Database className="h-5 w-5" />,
-    title: "Send Data",
-    description: "Send fingerprint data to your FingerTrace workspace",
-    code: `await postData(
+    },
+    {
+      number: 3,
+      icon: <Database className="h-5 w-5" />,
+      title: t("landing.documentation.quick_start.steps.send_data.title"),
+      description: t("landing.documentation.quick_start.steps.send_data.description"),
+      code: `await postData(
   'fingerprint', 
   result, 
   'workspace-id', 
   'api-key'
 );`
-  }
-]
+    }
+  ]
 
-export const QuickStartSection = () => {
   return (
     <section id="quick-start" className="mb-16">
       <div className="text-center mb-12">
-        <Badge variant="outline" className="mb-4">Quick Start</Badge>
-        <h2 className="text-3xl font-bold mb-4">Get Started in Minutes</h2>
+        <Badge variant="outline" className="mb-4">
+          {t("landing.documentation.quick_start.badge")}
+        </Badge>
+        <h2 className="text-3xl font-bold mb-4">
+          {t("landing.documentation.quick_start.title")}
+        </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Follow these simple steps to integrate FingerTrace into your application
+          {t("landing.documentation.quick_start.description")}
         </p>
       </div>
 

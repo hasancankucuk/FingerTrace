@@ -6,14 +6,20 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
+      user: {
+        name: "",
+        email: "",
+        phone: "",
+      },
       setToken: (token: string | null) => {
         if (token) localStorage.setItem("access_token", token);
         else localStorage.removeItem("access_token");
         set({ token });
       },
+      setUser: (user) => set({ user }),
       logout: () => {
         localStorage.removeItem("access_token");
-        set({ token: null });
+        set({ token: null, user: null });
       },
     }),
     {
@@ -32,7 +38,9 @@ export const useAuthStore = create<AuthState>()(
       },
       partialize: (state) => ({
         token: state.token,
+        user: state.user,
         setToken: state.setToken,
+        setUser: state.setUser,
         logout: state.logout,
       }),
     }

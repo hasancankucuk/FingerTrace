@@ -2,10 +2,11 @@ from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, request, jsonify
 from helpers.api_key_utils import generate_api_key
 from helpers.firebase_utils import firestore_delete, firestore_set, firestore_get_all, firestore_get, get_user
+from helpers.api_rate_limiting import rate_limit
 
 api_keys_bp = Blueprint("api_keys", __name__)
 
-
+@rate_limit("api_keys")
 @api_keys_bp.route("/api-keys", methods=["POST"])
 @api_keys_bp.route("/api-keys/", methods=["POST"])
 @jwt_protected

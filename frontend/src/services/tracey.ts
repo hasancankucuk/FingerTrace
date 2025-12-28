@@ -3,12 +3,12 @@ export const askTracey = async (message: string) => {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-    "messages": [
-        {
-        "role": "user",
-        "content": message
-        }
-    ]
+        "messages": [
+            {
+                "role": "user",
+                "content": message
+            }
+        ]
     });
 
     const requestOptions = {

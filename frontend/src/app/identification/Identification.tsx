@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import type { MergedFingerprint } from "@/models/IdentificationData";
+import { useTranslation } from "react-i18next";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { getMergedFingerprints } from "@/services/fingerprint";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -47,6 +49,7 @@ import {
 
 export function Identification() {
   const [data, setData] = useState<MergedFingerprint[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -90,7 +93,7 @@ export function Identification() {
           page_size: pagination.pageSize,
           sort_field: sortField,
           sort_direction: sortDirection,
-          search: debouncedSearch || undefined,
+          search: debouncedSearch.trim() || undefined,
         });
 
         setData(response.data);
@@ -110,7 +113,7 @@ export function Identification() {
   const columns: ColumnDef<MergedFingerprint>[] = [
     {
       accessorKey: "fingerprint",
-      header: "Fingerprint",
+      header: t("identification.fingerprint"),
       cell: ({ row }) => (
         <div className="font-mono text-xs max-w-[200px] truncate">
           {row.getValue("fingerprint")}
@@ -119,22 +122,22 @@ export function Identification() {
     },
     {
       accessorKey: "device_type",
-      header: "Device Type",
+      header: t("identification.device_type"),
       cell: ({ row }) => <div>{row.getValue("device_type")}</div>,
     },
     {
       accessorKey: "platform",
-      header: "Platform",
+      header: t("identification.platform"),
       cell: ({ row }) => <div>{row.getValue("platform")}</div>,
     },
     {
       accessorKey: "time_zone",
-      header: "Time Zone",
+      header: t("identification.time_zone"),
       cell: ({ row }) => <div>{row.getValue("time_zone")}</div>,
     },
     {
       accessorKey: "user_agent",
-      header: "User Agent",
+      header: t("identification.user_agent"),
       cell: ({ row }) => (
         <div className="max-w-[300px] truncate text-sm">
           {row.getValue("user_agent")}
@@ -143,12 +146,12 @@ export function Identification() {
     },
     {
       accessorKey: "created_at",
-      header: "Created At",
+      header: t("common.created_at"),
       cell: ({ row }) => <div>{new Date(row.getValue("created_at")).toLocaleString()}</div>,
     },
     {
       accessorKey: "updated_at",
-      header: "Updated At",
+      header: t("common.updated_at"),
       cell: ({ row }) => <div>{new Date(row.getValue("updated_at")).toLocaleString()}</div>,
     },
   ];
@@ -176,16 +179,20 @@ export function Identification() {
   });
 
   if (loading) {
-    return <div className="text-center py-16 text-gray-500">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spinner className="size-10 text-primary" />
+      </div>
+    );
   }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Identification</CardTitle>
+          <CardTitle>{t("identification.title")}</CardTitle>
           <CardDescription>
-            Overview of user identification data
+            {t("identification.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -195,7 +202,7 @@ export function Identification() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search all columns..."
+                  placeholder={t("identification.search_placeholder")}
                   value={globalFilter ?? ""}
                   onChange={(event) => setGlobalFilter(event.target.value)}
                   className="pl-10 max-w-sm"
@@ -204,7 +211,7 @@ export function Identification() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Show</span>
+              <span className="text-sm text-gray-600">{t("identification.show")}</span>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
@@ -222,7 +229,7 @@ export function Identification() {
                   ))}
                 </SelectContent>
               </Select>
-              <span className="text-sm text-gray-600">entries</span>
+              <span className="text-sm text-gray-600">{t("identification.entries")}</span>
             </div>
           </div>
 
@@ -296,7 +303,7 @@ export function Identification() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results found.
+                      {t("common.no_results")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -308,23 +315,11 @@ export function Identification() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <p className="text-sm text-gray-600">
-                Showing{" "}
-                {table.getState().pagination.pageIndex *
-                  table.getState().pagination.pageSize +
-                  1}{" "}
-                to{" "}
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) *
-                    table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length
-                )}{" "}
-                of {table.getFilteredRowModel().rows.length} entries
-                {table.getFilteredRowModel().rows.length !== data.length && (
-                  <span className="text-gray-400">
-                    {" "}
-                    (filtered from {data.length} total entries)
-                  </span>
-                )}
+                {t("identification.pagination.showing", {
+                  from: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                  to: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, totalItems),
+                  total: totalItems
+                })}
               </p>
             </div>
 
@@ -347,11 +342,10 @@ export function Identification() {
               </Button>
 
               <div className="flex items-center space-x-1">
-                <span className="text-sm text-gray-600">Page</span>
-                <strong className="text-sm">
-                  {table.getState().pagination.pageIndex + 1} of{" "}
-                  {table.getPageCount()}
-                </strong>
+                <span className="text-sm text-gray-600">{t("identification.pagination.page", {
+                  current: table.getState().pagination.pageIndex + 1,
+                  total: table.getPageCount()
+                })}</span>
               </div>
 
               <Button

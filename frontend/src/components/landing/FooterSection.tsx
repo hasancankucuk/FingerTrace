@@ -1,35 +1,37 @@
 import { Separator } from "@/components/ui/separator"
 import { IconInnerShadowTop } from "@tabler/icons-react"
 import { useNavigate } from "react-router-dom"
-
-const footerSections = [
-	{
-		title: "Product",
-		links: [
-			{ name: "Features", href: "/features" },
-			{ name: "Documentation", href: "/docs" }
-		]
-	},
-	{
-		title: "Company", 
-		links: [
-			{ name: "About", href: "#about" },
-			{ name: "Blog", href: "/blog" },
-			{ name: "Contact", href: "/contact" }
-		]
-	},
-	{
-		title: "Legal",
-		links: [
-			{ name: "Privacy", href: "/privacy" },
-			{ name: "Terms", href: "/terms" },
-			{ name: "Security", href: "/security" }
-		]
-	}
-]
+import { useTranslation } from "react-i18next"
 
 export const FooterSection = () => {
 	const navigate = useNavigate()
+	const { t } = useTranslation()
+
+	const footerSections = [
+		{
+			title: t("landing.footer.sections.product"),
+			links: [
+				{ name: t("landing.footer.links.features"), href: "/features" },
+				{ name: t("landing.footer.links.documentation"), href: "/docs" }
+			]
+		},
+		{
+			title: t("landing.footer.sections.company"),
+			links: [
+				{ name: t("landing.footer.links.about"), href: "#about" },
+				{ name: t("landing.footer.links.blog"), href: "/blog" },
+				{ name: t("landing.footer.links.contact"), href: "/contact" }
+			]
+		},
+		{
+			title: t("landing.footer.sections.legal"),
+			links: [
+				{ name: t("landing.footer.links.privacy"), href: "/privacy" },
+				{ name: t("landing.footer.links.terms"), href: "/terms" },
+				{ name: t("landing.footer.links.security"), href: "/security" }
+			]
+		}
+	]
 
 	const handleLinkClick = (href: string) => {
 		if (href.startsWith('#')) {
@@ -50,12 +52,12 @@ export const FooterSection = () => {
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="h-6 w-6  flex items-center justify-center">
-              					<IconInnerShadowTop className="!size-7" />
+								<IconInnerShadowTop className="!size-7" />
 							</div>
 							<span className="font-bold">FingerTrace</span>
 						</div>
 						<p className="text-sm text-muted-foreground">
-							Advanced user analytics and interaction tracking for modern applications.
+							{t("landing.footer.brand_desc")}
 						</p>
 					</div>
 
@@ -83,11 +85,11 @@ export const FooterSection = () => {
 
 				<div className="flex flex-col md:flex-row justify-between items-center gap-4">
 					<p className="text-sm text-muted-foreground">
-						© 2025 FingerTrace. All rights reserved.
+						{t("landing.footer.rights")}
 					</p>
 					<div className="flex gap-4 text-sm text-muted-foreground">
 						<a href="/status" className="hover:text-foreground transition-colors">
-							Status
+							{t("landing.footer.links.status")}
 						</a>
 					</div>
 				</div>

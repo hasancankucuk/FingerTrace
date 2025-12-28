@@ -5,5 +5,5 @@ export type AnalysisStats = {
   apiUsage: number[]
   apiUsageLabels: string[]
   topBrowsers: string[]
-  topTimezones: string[]
+  timezones: string[]
 }

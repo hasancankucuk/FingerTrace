@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Copy, Check } from "lucide-react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
+import { useTranslation } from "react-i18next"
 
 const npmInstall = `npm install trace-sdk`
 const yarnInstall = `yarn add trace-sdk`
@@ -62,6 +63,7 @@ const frameworks = ["JavaScript", "Next.js", "React", "Angular", "Vue.js"]
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [platform, setPlatform] = useState<"web" | "mobile">("web")
   const [framework, setFramework] = useState<string>("JavaScript")
   const [copied, setCopied] = useState<{ npm: boolean; yarn: boolean; code: boolean }>({
@@ -100,21 +102,21 @@ export default function Dashboard() {
     <div className="max-w-4xl mx-auto space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Get Started</CardTitle>
+          <CardTitle>{t("dashboard.get_started")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Platform */}
           <section>
             <div className="flex items-center gap-3">
               <Badge variant="secondary">1</Badge>
-              <h3 className="text-sm font-medium">Platform</h3>
+              <h3 className="text-sm font-medium">{t("dashboard.platform")}</h3>
             </div>
             <div className="mt-3 flex gap-2">
               <Button
                 variant={platform === "web" ? "default" : "outline"}
                 onClick={() => setPlatform("web")}
               >
-                Web
+                {t("dashboard.web")}
               </Button>
               <Button
                 variant={platform === "mobile" ? "default" : "outline"}
@@ -122,7 +124,8 @@ export default function Dashboard() {
                 disabled
                 className="opacity-50 cursor-not-allowed"
               >
-                Mobile
+                {t("dashboard.mobile")}
+                <Badge variant="destructive" className="text-black dark:text-white ml-2">{t("common.coming_soon")}</Badge>
               </Button>
             </div>
           </section>
@@ -131,7 +134,7 @@ export default function Dashboard() {
           <section>
             <div className="flex items-center gap-3">
               <Badge variant="secondary">2</Badge>
-              <h3 className="text-sm font-medium">Framework</h3>
+              <h3 className="text-sm font-medium">{t("dashboard.framework")}</h3>
             </div>
             <div className="mt-3 flex gap-2 flex-wrap">
               {frameworks.map((fw) => (
@@ -150,7 +153,7 @@ export default function Dashboard() {
           <section>
             <div className="flex items-center gap-3">
               <Badge variant="secondary">3</Badge>
-              <h3 className="text-sm font-medium">Install</h3>
+              <h3 className="text-sm font-medium">{t("dashboard.install")}</h3>
             </div>
             <div className="mt-3 grid gap-3">
               {renderCodeBlock(npmInstall, "npm")}
@@ -162,7 +165,7 @@ export default function Dashboard() {
           <section>
             <div className="flex items-center gap-3">
               <Badge variant="secondary">4</Badge>
-              <h3 className="text-sm font-medium">Usage</h3>
+              <h3 className="text-sm font-medium">{t("dashboard.usage")}</h3>
             </div>
             <div className="mt-3">{renderCodeBlock(usageCodeMap[framework], "code")}</div>
           </section>
@@ -170,7 +173,7 @@ export default function Dashboard() {
           {/* Docs Button */}
           <div className="flex items-center justify-between">
             <Button variant="secondary" onClick={() => navigate("/docs")}>
-              Open docs
+              {t("dashboard.open_docs")}
             </Button>
           </div>
         </CardContent>

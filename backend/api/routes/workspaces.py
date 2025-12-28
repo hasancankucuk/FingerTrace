@@ -1,23 +1,34 @@
 from flask import Blueprint, jsonify, request
-from helpers.firebase_utils import firestore_get_all, firestore_set, get_user
+from helpers.firebase_utils import firestore_get_all, firestore_set, get_user, db
 from helpers.jwt_token_helper import jwt_protected
+from helpers.api_rate_limiting import rate_limit
 from datetime import datetime
 import secrets
 
 workspaces_bp = Blueprint("workspaces", __name__)
 
-@workspaces_bp.route("/api/workspaces", methods=["GET"])
+@rate_limit('workspaces')
+@workspaces_bp.route("/workspaces", methods=["GET"])
 @jwt_protected
 def get_workspaces(current_user):
     try:
         user = get_user(current_user)
-        workspaces = firestore_get_all("workspaces")
-        workspaces = [ws for ws in workspaces if ws.get("created_by") == user["email"]]
-        return jsonify(workspaces), 200
+        workspaces = db.collection("workspaces")\
+            .where("created_by", "==", user["email"])\
+            .get()
+        
+        results = []
+        for doc in workspaces:
+            d = doc.to_dict()
+            d["id"] = doc.id
+            results.append(d)
+
+        return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@workspaces_bp.route("/api/workspaces/<workspace_id>", methods=["GET"])
+@rate_limit('workspaces')
+@workspaces_bp.route("/workspaces/<workspace_id>", methods=["GET"])
 @jwt_protected
 def get_workspace(current_user, workspace_id):
     try:
@@ -26,7 +37,8 @@ def get_workspace(current_user, workspace_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@workspaces_bp.route("/api/workspaces", methods=["POST"])
+@rate_limit('workspaces')
+@workspaces_bp.route("/workspaces", methods=["POST"])
 @jwt_protected
 def create_workspace(current_user):
     try:

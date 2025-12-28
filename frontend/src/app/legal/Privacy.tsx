@@ -3,9 +3,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Shield, Eye, Lock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { LegalLayout } from "@/components/legal/LegalLayout"
 
 export const Privacy = () => {
+  const { t } = useTranslation("landing")
   const navigate = useNavigate()
 
   return (
@@ -13,21 +15,21 @@ export const Privacy = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="mb-4 gap-2"
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t("legal.back_to_home")}
           </Button>
           <div className="flex items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">Privacy Policy</h1>
-            <Badge variant="outline">Last updated: January 2025</Badge>
+            <h1 className="text-4xl font-bold">{t("legal.privacy.title")}</h1>
+            <Badge variant="outline">{t("legal.last_updated")}</Badge>
           </div>
           <p className="text-lg text-muted-foreground">
-            Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information.
+            {t("legal.privacy.description")}
           </p>
         </div>
 
@@ -36,35 +38,35 @@ export const Privacy = () => {
           <Card>
             <CardHeader className="text-center">
               <Eye className="h-8 w-8 text-primary mx-auto mb-2" />
-              <CardTitle className="text-lg">Transparency</CardTitle>
+              <CardTitle className="text-lg">{t("legal.privacy.principles.transparency.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground text-center">
-                We're clear about what data we collect and how we use it
+                {t("legal.privacy.principles.transparency.description")}
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="text-center">
               <Lock className="h-8 w-8 text-primary mx-auto mb-2" />
-              <CardTitle className="text-lg">Security</CardTitle>
+              <CardTitle className="text-lg">{t("legal.privacy.principles.security.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground text-center">
-                Your data is encrypted and protected with industry standards
+                {t("legal.privacy.principles.security.description")}
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="text-center">
               <Shield className="h-8 w-8 text-primary mx-auto mb-2" />
-              <CardTitle className="text-lg">Control</CardTitle>
+              <CardTitle className="text-lg">{t("legal.privacy.principles.control.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground text-center">
-                You have full control over your data and privacy settings
+                {t("legal.privacy.principles.control.description")}
               </p>
             </CardContent>
           </Card>
@@ -74,21 +76,20 @@ export const Privacy = () => {
           {/* Information We Collect */}
           <Card>
             <CardHeader>
-              <CardTitle>1. Information We Collect</CardTitle>
+              <CardTitle>{t("legal.privacy.sections.collect.title")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Account Information</h4>
+                <h4 className="font-semibold mb-2">{t("legal.privacy.sections.collect.account.title")}</h4>
                 <p className="text-muted-foreground">
-                  When you create an account, we collect your email address, name, and encrypted password.
+                  {t("legal.privacy.sections.collect.account.description")}
                 </p>
               </div>
-              
+
               <div>
-                <h4 className="font-semibold mb-2">Fingerprinting Data</h4>
+                <h4 className="font-semibold mb-2">{t("legal.privacy.sections.collect.fingerprint.title")}</h4>
                 <p className="text-muted-foreground">
-                  We collect device fingerprints including canvas fingerprints, WebGL renderer information, 
-                  font detection data, screen resolution, browser information, and TLS/JA3 fingerprints.
+                  {t("legal.privacy.sections.collect.fingerprint.description")}
                 </p>
               </div>
             </CardContent>
@@ -97,15 +98,15 @@ export const Privacy = () => {
           {/* Contact */}
           <Card>
             <CardHeader>
-              <CardTitle>Contact Us</CardTitle>
+              <CardTitle>{t("legal.privacy.sections.contact.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                If you have any questions about this Privacy Policy, please contact us:
+                {t("legal.privacy.sections.contact.description")}
               </p>
               <ul className="space-y-2 text-muted-foreground">
-                <li><strong>Email:</strong> privacy@fingertrace.app</li>
-                <li><strong>Data Protection Officer:</strong> privacy@fingertrace.app</li>
+                <li><strong>{t("legal.privacy.sections.contact.email")}</strong> privacy@fingertrace.app</li>
+                <li><strong>{t("legal.privacy.sections.contact.dpo")}</strong> privacy@fingertrace.app</li>
               </ul>
             </CardContent>
           </Card>

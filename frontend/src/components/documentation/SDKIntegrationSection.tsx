@@ -2,12 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CodeBlock } from "./CodeBlock"
+import { useTranslation } from "react-i18next"
 
-const integrationExamples = {
-  react: {
-    title: "React Hook Implementation",
-    description: "Use this custom hook to integrate fingerprinting into your React components",
-    code: `import { useState, useEffect } from 'react';
+export const SDKIntegrationSection = () => {
+  const { t } = useTranslation()
+
+  const integrationExamples = {
+    react: {
+      title: t("landing.documentation.sdk_integration.examples.react.title"),
+      description: t("landing.documentation.sdk_integration.examples.react.description"),
+      code: `import { useState, useEffect } from 'react';
 import { FingerprintSDK, postData } from '@fingertrace/trace-sdk';
 
 export const useFingerprint = (workspaceId, apiKey) => {
@@ -34,11 +38,11 @@ export const useFingerprint = (workspaceId, apiKey) => {
 
   return { fingerprint, loading, error };
 };`
-  },
-  vanilla: {
-    title: "Vanilla JavaScript Implementation",
-    description: "Basic implementation without any framework dependencies",
-    code: `import { FingerprintSDK, postData } from '@fingertrace/trace-sdk';
+    },
+    vanilla: {
+      title: t("landing.documentation.sdk_integration.examples.vanilla.title"),
+      description: t("landing.documentation.sdk_integration.examples.vanilla.description"),
+      code: `import { FingerprintSDK, postData } from '@fingertrace/trace-sdk';
 
 class FingerprintManager {
   constructor(workspaceId, apiKey) {
@@ -64,11 +68,11 @@ class FingerprintManager {
 // Usage
 const manager = new FingerprintManager('workspace-id', 'api-key');
 const fingerprint = await manager.initialize();`
-  },
-  vue: {
-    title: "Vue.js Composable",
-    description: "Vue 3 composable for fingerprint management",
-    code: `import { ref, onMounted } from 'vue';
+    },
+    vue: {
+      title: t("landing.documentation.sdk_integration.examples.vue.title"),
+      description: t("landing.documentation.sdk_integration.examples.vue.description"),
+      code: `import { ref, onMounted } from 'vue';
 import { FingerprintSDK, postData } from '@fingertrace/trace-sdk';
 
 export function useFingerprint(workspaceId, apiKey) {
@@ -100,11 +104,11 @@ export function useFingerprint(workspaceId, apiKey) {
     regenerate: generateFingerprint
   };
 }`
-  },
-  angular: {
-    title: "Angular Service",
-    description: "Injectable service for Angular applications",
-    code: `import { Injectable } from '@angular/core';
+    },
+    angular: {
+      title: t("landing.documentation.sdk_integration.examples.angular.title"),
+      description: t("landing.documentation.sdk_integration.examples.angular.description"),
+      code: `import { Injectable } from '@angular/core';
 import { FingerprintSDK, postData } from '@fingertrace/trace-sdk';
 import { BehaviorSubject } from 'rxjs';
 
@@ -130,23 +134,34 @@ export class FingerprintService {
     }
   }
 }`
+    }
   }
-}
 
-export const SDKIntegrationSection = () => {
   return (
     <section id="sdk-integration" className="mb-16">
       <div className="text-center mb-12">
-        <Badge variant="outline" className="mb-4">SDK Integration</Badge>
-        <h2 className="text-3xl font-bold mb-4">Multiple Integration Options</h2>
+        <Badge variant="outline" className="mb-4">
+          {t("landing.documentation.sdk_integration.badge")}
+        </Badge>
+        <h2 className="text-3xl font-bold mb-4">
+          {t("landing.documentation.sdk_integration.title")}
+        </h2>
       </div>
 
       <Tabs defaultValue="react" className="w-full">
         <TabsList className="grid w-full grid-cols-4 mb-8">
-          <TabsTrigger value="react">React</TabsTrigger>
-          <TabsTrigger value="vanilla">Vanilla JS</TabsTrigger>
-          <TabsTrigger value="vue">Vue.js</TabsTrigger>
-          <TabsTrigger value="angular">Angular</TabsTrigger>
+          <TabsTrigger value="react">
+            {t("landing.documentation.sdk_integration.tabs.react")}
+          </TabsTrigger>
+          <TabsTrigger value="vanilla">
+            {t("landing.documentation.sdk_integration.tabs.vanilla")}
+          </TabsTrigger>
+          <TabsTrigger value="vue">
+            {t("landing.documentation.sdk_integration.tabs.vue")}
+          </TabsTrigger>
+          <TabsTrigger value="angular">
+            {t("landing.documentation.sdk_integration.tabs.angular")}
+          </TabsTrigger>
         </TabsList>
 
         {Object.entries(integrationExamples).map(([key, example]) => (

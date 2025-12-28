@@ -2,6 +2,7 @@ import { deleteUser } from "@/services/auth"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,45 +12,50 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
-export interface DeleteAccountModalProps {
-  showModal: boolean
-  setShowModal: (show: boolean) => void
-}
-
-export const DeleteAccountModal = ({ showModal, setShowModal }: DeleteAccountModalProps) => {
+export const DeleteAccountModal = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+
+  const handleLogout = useAuthStore((state) => state.logout)
 
   const deleteAccount = async () => {
     try {
       await deleteUser()
-      toast.success("Account deleted successfully")
-      useAuthStore.getState().logout()
+      toast.success(t("account.toast.account_deleted"))
+      handleLogout()
       navigate("/")
     } catch {
-      toast.error("Failed to delete account")
+      toast.error(t("account.toast.update_failed"))
     } finally {
-      setShowModal(false)
+      setOpen(false)
     }
   }
 
   return (
-    <AlertDialog open={showModal} onOpenChange={setShowModal}>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive">{t("account.delete_account")}</Button>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Account</AlertDialogTitle>
+          <AlertDialogTitle>{t("account.delete_account")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete your account? This action cannot be undone.
+            {t("account.delete_desc")} {t("account.delete_warning")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={deleteAccount}
             className="bg-red-600 text-white hover:bg-red-700"
           >
-            Delete
+            {t("common.delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

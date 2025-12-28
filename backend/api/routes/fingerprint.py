@@ -10,20 +10,21 @@ from helpers.firebase_utils import (
     firestore_delete,
     firestore_get_all,
 )
+from helpers.api_rate_limiting import rate_limit
 
 from datetime import datetime
 import re
 
 fingerprint_bp = Blueprint('fingerprint', __name__)
 
-# --- LIST FINGERPRINTS ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints', methods=['GET'])
 @jwt_protected
 def list_fingerprints(current_user):
     docs = firestore_get_all('fingerprints')
     return jsonify(docs), 200
 
-# --- GET SINGLE FINGERPRINT ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['GET'])
 @jwt_protected
 def get_fingerprint(current_user, doc_id):
@@ -61,7 +62,7 @@ def _parse_ja3(ja3_str: str):
     except Exception:
         return {"ja3": ja3_str, "ja3_hash": hashlib.md5(ja3_str.encode()).hexdigest()}
 
-# --- CREATE FINGERPRINT ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints', methods=['POST'])
 @api_key_required
 def create_fingerprint(current_user):
@@ -116,7 +117,7 @@ def create_fingerprint(current_user):
         'ja3_hash': data.get('ja3_hash')
     }), 201
 
-# --- UPDATE FINGERPRINT ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['PUT'])
 @jwt_protected
 def update_fingerprint(current_user, doc_id):
@@ -126,7 +127,7 @@ def update_fingerprint(current_user, doc_id):
     firestore_update('fingerprints', doc_id, data)
     return jsonify({'message': 'Fingerprint updated'}), 200
 
-# --- DELETE FINGERPRINT ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints/<doc_id>', methods=['DELETE'])
 @jwt_protected
 def delete_fingerprint(current_user, doc_id):
@@ -188,7 +189,7 @@ def _apply_pagination(data, page, page_size):
     
     return paginated_data, total_items, total_pages
 
-# --- LIST MERGED FINGERPRINTS WITH PAGINATION ---
+@rate_limit('fingerprint')
 @fingerprint_bp.route('/fingerprints/merged', methods=['GET'])
 @jwt_protected
 def list_merged_fingerprints(current_user):

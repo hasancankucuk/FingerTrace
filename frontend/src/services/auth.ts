@@ -37,6 +37,7 @@ export const loginUser = async (email: string, password: string, turnstileToken?
 
   return result;
 };
+
 export const getAuthHeaders = () => {
   const token = getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -46,7 +47,7 @@ export const getCurrentUser = async () => {
   const token = getToken();
   if (!token) throw new Error('No token found');
 
-  const user = await httpRequest<{ email: string; name: string; phone?: string }>(
+  const user = await httpRequest<{ email: string; name: string; phone: string }>(
     `${API_BASE_URL}/user`,
     { method: 'GET', token }
   );
@@ -55,18 +56,26 @@ export const getCurrentUser = async () => {
 
 export const logout = () => {
   localStorage.removeItem('access_token');
-  useAuthStore.setState({ token: null });
+  useAuthStore.setState({ token: null, user: null });
 };
 
-export const updateUser = async (name: string, email: string) => {
+export const updateUser = async (name: string, email: string, phone?: string) => {
   const token = getToken();
   if (!token) throw new Error('No token found');
 
   return httpRequest<{ message: string }>(`${API_BASE_URL}/user`, {
     method: 'PUT',
     token,
-    body: { name, email },
+    body: { name, email, phone },
   });
+};
+
+export const updateProfile = async (data: { name: string; email: string; phone: string }) => {
+  const result = await updateUser(data.name, data.email, data.phone);
+  if (result.message) {
+    return data;
+  }
+  throw new Error("Failed to update profile");
 };
 
 export const deleteUser = async () => {

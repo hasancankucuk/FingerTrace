@@ -10,28 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MapPin, Mail, Clock, Send, Bug, HeadphonesIcon, CheckCircle, AlertCircle, Copy } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 const BASE_URL = import.meta.env.VITE_APP_URL
-const contactMethods = [
-    {
-        icon: <Mail className="h-6 w-6" />,
-        title: "Email Support",
-        description: "Get help via email",
-        contact: "support@fingertrace.app",
-    },
-    {
-        icon: <Bug className="h-6 w-6" />,
-        title: "Security Issues",
-        description: "Report security vulnerabilities",
-        contact: "security@fingertrace.app",
-    },
-    {
-        icon: <HeadphonesIcon className="h-6 w-6" />,
-        title: "Technical Support",
-        description: "Integration and technical help",
-        contact: "tech@fingertrace.app",
-    },
-]
 
 interface ContactFormData {
     name: string
@@ -43,6 +24,7 @@ interface ContactFormData {
 }
 
 export const Contact = () => {
+    const { t } = useTranslation("landing")
     const [formData, setFormData] = useState<ContactFormData>({
         name: "",
         email: "",
@@ -56,6 +38,27 @@ export const Contact = () => {
     const [referenceId, setReferenceId] = useState("")
     const [error, setError] = useState("")
     const [copiedEmail, setCopiedEmail] = useState("")
+
+    const contactMethods = [
+        {
+            icon: <Mail className="h-6 w-6" />,
+            title: t("contact.info.methods.email.title"),
+            description: t("contact.info.methods.email.description"),
+            contact: "support@fingertrace.app",
+        },
+        {
+            icon: <Bug className="h-6 w-6" />,
+            title: t("contact.info.methods.security.title"),
+            description: t("contact.info.methods.security.description"),
+            contact: "security@fingertrace.app",
+        },
+        {
+            icon: <HeadphonesIcon className="h-6 w-6" />,
+            title: t("contact.info.methods.tech.title"),
+            description: t("contact.info.methods.tech.description"),
+            contact: "tech@fingertrace.app",
+        },
+    ]
 
     const handleInputChange = (field: keyof ContactFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
@@ -117,7 +120,7 @@ export const Contact = () => {
             setIsSubmitted(true)
         } catch (error) {
             console.error("Error submitting contact form:", error)
-            
+
             if (error instanceof TypeError && error.message.includes('fetch')) {
                 setError("Unable to connect to server. Please check your internet connection.")
             } else if (error instanceof Error) {
@@ -171,15 +174,14 @@ export const Contact = () => {
                             <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                         </div>
                         <h1 className="text-3xl font-bold">
-                            Message Sent Successfully!
+                            {t("contact.success.title")}
                         </h1>
                         <div className="space-y-2">
                             <p className="text-lg text-muted-foreground">
-                                Thank you for contacting us. We'll get back to you within 24
-                                hours.
+                                {t("contact.success.description")}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                Reference ID:{" "}
+                                {t("contact.success.reference_id")}{" "}
                                 <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
                                     {referenceId}
                                 </code>
@@ -188,11 +190,10 @@ export const Contact = () => {
                         <Alert>
                             <Mail className="h-4 w-4" />
                             <AlertDescription>
-                                You should receive a confirmation email at{" "}
-                                <strong>{formData.email}</strong> shortly.
+                                {t("contact.success.email_confirm", { email: formData.email })}
                             </AlertDescription>
                         </Alert>
-                        <Button onClick={resetForm}>Send Another Message</Button>
+                        <Button onClick={resetForm}>{t("contact.success.send_another")}</Button>
                     </div>
                 </div>
                 <FooterSection />
@@ -208,14 +209,13 @@ export const Contact = () => {
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="text-center space-y-6 max-w-4xl mx-auto">
                     <Badge variant="outline" className="px-4 py-2">
-                        💬 Get in Touch
+                        {t("contact.badge")}
                     </Badge>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                        Contact <span className="text-primary">Our Team</span>
+                        {t("contact.title_1")}<span className="text-primary">{t("contact.title_2")}</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                        Have questions about FingerTrace? We're here to help. Reach out to
-                        our team and we'll get back to you as soon as possible.
+                        {t("contact.description")}
                     </p>
                 </div>
             </section>
@@ -226,10 +226,9 @@ export const Contact = () => {
                     <div className="lg:col-span-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-2xl">Send us a message</CardTitle>
+                                <CardTitle className="text-2xl">{t("contact.form.title")}</CardTitle>
                                 <CardDescription>
-                                    Fill out the form below and we'll get back to you within 24
-                                    hours.
+                                    {t("contact.form.description")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -243,20 +242,20 @@ export const Contact = () => {
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="name">Name *</Label>
+                                            <Label htmlFor="name">{t("contact.form.name")}</Label>
                                             <Input
                                                 id="name"
                                                 value={formData.name}
                                                 onChange={(e) =>
                                                     handleInputChange("name", e.target.value)
                                                 }
-                                                placeholder="Your full name"
+                                                placeholder={t("contact.form.placeholders.name")}
                                                 required
                                                 disabled={isSubmitting}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="email">Email *</Label>
+                                            <Label htmlFor="email">{t("contact.form.email")}</Label>
                                             <Input
                                                 id="email"
                                                 type="email"
@@ -264,7 +263,7 @@ export const Contact = () => {
                                                 onChange={(e) =>
                                                     handleInputChange("email", e.target.value)
                                                 }
-                                                placeholder="your@email.com"
+                                                placeholder={t("contact.form.placeholders.email")}
                                                 required
                                                 disabled={isSubmitting}
                                             />
@@ -273,19 +272,19 @@ export const Contact = () => {
 
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="company">Company</Label>
+                                            <Label htmlFor="company">{t("contact.form.company")}</Label>
                                             <Input
                                                 id="company"
                                                 value={formData.company}
                                                 onChange={(e) =>
                                                     handleInputChange("company", e.target.value)
                                                 }
-                                                placeholder="Your company name"
+                                                placeholder={t("contact.form.placeholders.company")}
                                                 disabled={isSubmitting}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="inquiryType">Inquiry Type *</Label>
+                                            <Label htmlFor="inquiryType">{t("contact.form.inquiry_type")}</Label>
                                             <Select
                                                 value={formData.inquiry_type}
                                                 onValueChange={(value) =>
@@ -294,53 +293,53 @@ export const Contact = () => {
                                                 disabled={isSubmitting}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select inquiry type" />
+                                                    <SelectValue placeholder={t("contact.form.placeholders.inquiry_type")} />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="general">
-                                                        General Question
+                                                        {t("contact.form.options.general")}
                                                     </SelectItem>
                                                     <SelectItem value="technical">
-                                                        Technical Support
+                                                        {t("contact.form.options.technical")}
                                                     </SelectItem>
                                                     <SelectItem value="enterprise">
-                                                        Enterprise Solutions
+                                                        {t("contact.form.options.enterprise")}
                                                     </SelectItem>
                                                     <SelectItem value="partnership">
-                                                        Partnership
+                                                        {t("contact.form.options.partnership")}
                                                     </SelectItem>
                                                     <SelectItem value="security">
-                                                        Security Issue
+                                                        {t("contact.form.options.security")}
                                                     </SelectItem>
-                                                    <SelectItem value="other">Other</SelectItem>
+                                                    <SelectItem value="other">{t("contact.form.options.other")}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="subject">Subject *</Label>
+                                        <Label htmlFor="subject">{t("contact.form.subject")}</Label>
                                         <Input
                                             id="subject"
                                             value={formData.subject}
                                             onChange={(e) =>
                                                 handleInputChange("subject", e.target.value)
                                             }
-                                            placeholder="Brief description of your inquiry"
+                                            placeholder={t("contact.form.placeholders.subject")}
                                             required
                                             disabled={isSubmitting}
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="message">Message *</Label>
+                                        <Label htmlFor="message">{t("contact.form.message")}</Label>
                                         <Textarea
                                             id="message"
                                             value={formData.message}
                                             onChange={(e) =>
                                                 handleInputChange("message", e.target.value)
                                             }
-                                            placeholder="Please provide details about your inquiry..."
+                                            placeholder={t("contact.form.placeholders.message")}
                                             rows={6}
                                             required
                                             disabled={isSubmitting}
@@ -354,10 +353,10 @@ export const Contact = () => {
                                         disabled={!isFormValid || isSubmitting}
                                     >
                                         {isSubmitting ? (
-                                            <>Sending...</>
+                                            <>{t("contact.form.sending")}</>
                                         ) : (
                                             <>
-                                                Send Message
+                                                {t("contact.form.submit")}
                                                 <Send className="ml-2 h-4 w-4" />
                                             </>
                                         )}
@@ -372,9 +371,9 @@ export const Contact = () => {
                         {/* Contact Methods */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Contact Information</CardTitle>
+                                <CardTitle>{t("contact.info.title")}</CardTitle>
                                 <CardDescription>
-                                    Use the form on the left or copy these email addresses.
+                                    {t("contact.info.description")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -407,7 +406,7 @@ export const Contact = () => {
                                                 </Button>
                                                 {copiedEmail === method.contact && (
                                                     <span className="text-xs text-green-600">
-                                                        Copied!
+                                                        {t("contact.info.copied")}
                                                     </span>
                                                 )}
                                             </div>
@@ -422,21 +421,21 @@ export const Contact = () => {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Clock className="h-5 w-5" />
-                                    Response Time
+                                    {t("contact.response_time.title")}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="flex justify-between">
-                                    <span className="text-sm">General Inquiries</span>
-                                    <span className="text-sm font-medium">24 hours</span>
+                                    <span className="text-sm">{t("contact.response_time.general")}</span>
+                                    <span className="text-sm font-medium">{t("contact.response_time.hours_24")}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-sm">Technical Support</span>
-                                    <span className="text-sm font-medium">12 hours</span>
+                                    <span className="text-sm">{t("contact.response_time.technical")}</span>
+                                    <span className="text-sm font-medium">{t("contact.response_time.hours_12")}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-sm">Security Issues</span>
-                                    <span className="text-sm font-medium text-red-600">2 hours</span>
+                                    <span className="text-sm">{t("contact.response_time.security")}</span>
+                                    <span className="text-sm font-medium text-red-600">{t("contact.response_time.hours_2")}</span>
                                 </div>
                             </CardContent>
                         </Card>
@@ -446,23 +445,23 @@ export const Contact = () => {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <MapPin className="h-5 w-5" />
-                                    Office Hours
+                                    {t("contact.office_hours.title")}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
-                                        <span>Monday - Friday</span>
+                                        <span>{t("contact.office_hours.mon_fri")}</span>
                                         <span className="font-medium">9:00 AM - 6:00 PM EST</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Saturday</span>
+                                        <span>{t("contact.office_hours.sat")}</span>
                                         <span className="font-medium">10:00 AM - 2:00 PM EST</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Sunday</span>
+                                        <span>{t("contact.office_hours.sun")}</span>
                                         <span className="font-medium text-muted-foreground">
-                                            Closed
+                                            {t("contact.office_hours.closed")}
                                         </span>
                                     </div>
                                 </div>

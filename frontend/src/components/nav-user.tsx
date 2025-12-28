@@ -23,6 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
+import { useTranslation } from "react-i18next";
 
 export function NavUser({
   user,
@@ -35,6 +36,8 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
 
   const signOut = () => {
     localStorage.removeItem("selectedWorkspace");
@@ -59,10 +62,10 @@ export function NavUser({
                 <AvatarFallback className="rounded-lg">
                   {user.name
                     ? user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
                     : "?"}
                 </AvatarFallback>
               </Avatar>
@@ -88,10 +91,10 @@ export function NavUser({
                   <AvatarFallback className="rounded-lg">
                     {user.name
                       ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
                       : "?"}
                   </AvatarFallback>
                 </Avatar>
@@ -107,7 +110,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => navigate("/account")}>
                 <IconUserCircle />
-                Account
+                {t("account.title")}
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
                 <IconCreditCard />
@@ -121,7 +124,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               <IconLogout />
-              Log out
+              {t("common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { logout } from "./auth";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export interface HttpOptions {
-    method?: HttpMethod;
-    body?: any;
-    token?: string;
+  method?: HttpMethod;
+  body?: unknown;
+  token?: string;
 }
 
 export const httpRequest = async <T>(url: string, options: HttpOptions = {}): Promise<T> => {
@@ -31,8 +30,8 @@ export const httpRequest = async <T>(url: string, options: HttpOptions = {}): Pr
     throw new Error("Session expired. Please log in again.");
   }
 
-  let data: any = null;
   const text = await res.text();
+  let data: unknown;
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
@@ -40,8 +39,8 @@ export const httpRequest = async <T>(url: string, options: HttpOptions = {}): Pr
   }
 
   if (!res.ok) {
-    // error mesajını backend’den alabiliyorsak al, yoksa status + statusText kullan
-    const errMsg = data?.error || data?.message || `${res.status} ${res.statusText}`;
+    const errorData = data as Record<string, unknown> | null;
+    const errMsg = (errorData?.error as string) || (errorData?.message as string) || `${res.status} ${res.statusText}`;
     throw new Error(errMsg);
   }
 

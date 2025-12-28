@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token # type: ignore
+from helpers.api_rate_limiting import rate_limit
 import os
 import requests # type: ignore
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ def verify_turnstile(token: str, ip: str) -> bool:
     result = response.json()
     return result.get('success', False)
 
-
+@rate_limit('login')
 @login_bp.route('/login', methods=['POST'])
 def login():
     data = request.json

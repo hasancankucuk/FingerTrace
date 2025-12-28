@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify
+from helpers.api_rate_limiting import rate_limit
 import os
 from dotenv import load_dotenv
 
@@ -6,6 +7,7 @@ health_bp = Blueprint("health", __name__)
 
 load_dotenv()
 
+@rate_limit('health')
 @health_bp.route("/health", methods=["GET"])
 def health_check():
     checks = {}

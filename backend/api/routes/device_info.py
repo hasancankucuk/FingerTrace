@@ -7,9 +7,11 @@ from flask import Blueprint, jsonify, request
 from helpers.firebase_utils import firestore_get, firestore_get_all, firestore_set
 from helpers.api_key_helper import api_key_required
 from helpers.jwt_token_helper import jwt_protected
+from helpers.api_rate_limiting import rate_limit
 
 deviceinfo_bp = Blueprint("device_info_bp", __name__)
 
+@rate_limit('deviceinfo')
 @deviceinfo_bp.route('/deviceinfo', methods=['POST'])
 @api_key_required
 def create_device_info(current_user):
@@ -45,7 +47,7 @@ def create_device_info(current_user):
     firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201
 
-
+@rate_limit('deviceinfo')
 @deviceinfo_bp.route('/deviceinfo', methods=['GET'])
 @jwt_protected
 def get_device_info(current_user):
@@ -59,7 +61,7 @@ def get_device_info(current_user):
 
     return jsonify(device_info), 200
 
-
+@rate_limit('deviceinfo')
 @deviceinfo_bp.route('/deviceinfo/<doc_id>', methods=['GET'])
 @jwt_protected
 def get_device_info_by_id(current_user, doc_id):

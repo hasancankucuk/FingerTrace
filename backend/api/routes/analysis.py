@@ -1,5 +1,6 @@
-from helpers.firebase_utils import get_user
+from helpers.firebase_utils import get_user, db
 from helpers.jwt_token_helper import jwt_protected
+from helpers.api_rate_limiting import rate_limit
 from flask import Blueprint, jsonify, request
 import random
 import datetime
@@ -9,7 +10,7 @@ from helpers.get_country_from_timezone import get_country_from_timezone
 
 analysis_bp = Blueprint("analysis", __name__)
 
-
+@rate_limit("analysis")
 @analysis_bp.route("/analysis", methods=["GET"])
 @jwt_protected
 def analysis(current_user):
