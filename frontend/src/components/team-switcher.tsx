@@ -79,7 +79,7 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-muted-foreground text-xs">Workspaces</DropdownMenuLabel>
-            {workspaces.map((workspace) => (
+            {workspaces && workspaces.map((workspace) => (
               <DropdownMenuItem
                 key={workspace.id}
                 onClick={() => {
