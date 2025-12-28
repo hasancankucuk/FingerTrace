@@ -1,31 +1,31 @@
-import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { SessionMetrics, UserSegmentation } from "@/models/AnalysisInterfaces";
 import {
     detectDialogueAnomalies,
-    getStatisticalDialogueTesting,
-    getPerformanceTrends,
     getABTestResults,
-    getExecutiveDashboard,
     getCrossPlatformPerformance,
-    getSessionMetrics,
+    getExecutiveDashboard,
+    getPerformanceTrends,
     getSessionHeatMap,
-    listAllABTests,
-    getUserSegmentation
+    getSessionMetrics,
+    getStatisticalDialogueTesting,
+    getUserSegmentation,
+    listAllABTests
 } from "@/services/tracey";
-import { SessionMetricsComponent } from "./SessionMetrics";
-import { HeatMap } from "./Heatmap";
-import { UserSegmentationComponent } from "./UserSegmentation";
-import { ExportComponent } from "./ExportComponent";
+import { useEffect, useState } from "react";
+import { Button } from "../../ui/button";
+import { AccessibilityComponent } from "./AccessibilityComponent";
+import { AnomaliesComponent } from "./AnomaliesComponent";
 import { CrossPlatformComponent } from "./CrossPlatfromComponent";
 import { ExecutiveSummaryComponent } from "./ExecutiveSummaryComponent";
+import { ExportComponent } from "./ExportComponent";
+import { HeatMap } from "./Heatmap";
 import { OverviewComponent } from "./OverviewComponent";
-import { AnomaliesComponent } from "./AnomaliesComponent";
+import { SessionMetricsComponent } from "./SessionMetrics";
 import { StatisticsComponent } from "./StatisticsComponent";
-import { TrendsComponent } from "./TrendsComponent";
 import { TestingComponent } from "./TestingComponent";
-import { Button } from "../ui/button";
-import type { SessionMetrics, UserSegmentation } from "@/models/AnalysisInterfaces";
-import { AccessibilityComponent } from "./AccessibilityComponent";
+import { TrendsComponent } from "./TrendsComponent";
+import { UserSegmentationComponent } from "./UserSegmentation";
 
 export const BotAnalytics = () => {
     const [anomalies, setAnomalies] = useState<any>(null);
@@ -204,12 +204,12 @@ export const BotAnalytics = () => {
                     <UserSegmentationComponent
                         segmentation={segmentation}
                         loading={loading}
-                     />
+                    />
                 </TabsContent>
 
                 <TabsContent value="accessibility" className="space-y-4">
                     <AccessibilityComponent
-                     />
+                    />
                 </TabsContent>
 
                 <TabsContent value="export" className="space-y-4">

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react"
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { useEffect, useRef } from "react";
+import { Card, CardContent, CardHeader } from "../../ui/card";
 
 interface HeatMapProps {
     data: { heatmap: string; } | null;
