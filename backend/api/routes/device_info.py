@@ -52,6 +52,8 @@ def create_device_info(current_user):
     current_location = get_location(client_ip)
     print("client_ip:", client_ip, current_location)
 
+
+
     if existing_device:
         device_info['updated_at'] = datetime.utcnow().isoformat()
         device_info['previous_location'] = existing_device.get('previous_location')
@@ -67,8 +69,6 @@ def create_device_info(current_user):
     device_info['fingerprint'] = doc_id
     device_info['raw_fingerprint'] = raw_fp
     device_info['ja3_fingerprint'] = ja3_fp
-    device_info['previous_location'] = get_location(client_ip)
-    device_info['previous_location_timestamp'] = datetime.utcnow().isoformat()
     
     is_vpn, vpn_details = check_vpn_proxy(client_ip)
     device_info['is_vpn'] = is_vpn
