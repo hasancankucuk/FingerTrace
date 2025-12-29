@@ -8,6 +8,8 @@ from helpers.firebase_utils import firestore_get, firestore_get_all, firestore_s
 from helpers.api_key_helper import api_key_required
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
+from helpers.location_helper import get_location
+from helpers.vpn_proxy_helper import check_vpn_proxy
 
 deviceinfo_bp = Blueprint("device_info_bp", __name__)
 
@@ -43,7 +45,7 @@ def create_device_info(current_user):
     device_info['updated_at'] = datetime.utcnow().isoformat()
     current_location = get_location(client_ip)
 
-    existing_device = firestore_get('deviceinfo', doc_id)
+    existing_device = firestore_get('deviceinfo', device_info.get('fingerprint'))
     if existing_device:
         device_info['updated_at'] = datetime.utcnow().isoformat()
         device_info['previous_location'] = existing_device.get('previous_location')
@@ -61,7 +63,7 @@ def create_device_info(current_user):
     device_info['fingerprint'] = doc_id
     device_info['raw_fingerprint'] = raw_fp
     device_info['ja3_fingerprint'] = ja3_fp
-    device_info['previous_location'] = get_location()
+    device_info['previous_location'] = get_location(client_ip)
     device_info['previous_location_timestamp'] = datetime.utcnow().isoformat()
     device_info['is_vpn'] = check_vpn_proxy(client_ip)[0]
 
