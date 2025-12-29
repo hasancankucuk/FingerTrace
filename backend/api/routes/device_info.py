@@ -37,10 +37,8 @@ def create_device_info(current_user):
         device_info['workspace_id'] = workspace_id
     if workspace_name:
         device_info['workspace'] = workspace_name
-        
     
     client_ip = request.headers.get('CF-Connecting-IP')
-
 
     from helpers.fingerprint_helper import get_fingerprint_from_context
     doc_id, raw_fp, ja3_fp = get_fingerprint_from_context(device_info)
@@ -50,9 +48,6 @@ def create_device_info(current_user):
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
     current_location = get_location(client_ip)
-    print("client_ip:", client_ip, current_location)
-
-
 
     if existing_device:
         device_info['updated_at'] = datetime.utcnow().isoformat()
@@ -73,7 +68,15 @@ def create_device_info(current_user):
     is_vpn, vpn_details = check_vpn_proxy(client_ip)
     device_info['is_vpn'] = is_vpn
     device_info['vpn_details'] = vpn_details
+    device_info['location_flag'] = device_location_flag(device_info)
+    anomaly_result = check_fast_travel_anomaly(device_info)
 
+    if anomaly_result:
+        device_info['is_fast_travel'] = True
+        device_info['fast_travel_details'] = anomaly_result
+    else:
+        device_info['is_fast_travel'] = False
+    
     firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201
 
@@ -103,3 +106,16 @@ def get_device_info_by_id(current_user, doc_id):
         return jsonify({"error": "Device info not found"}), 404
 
     return jsonify(device_info), 200
+
+
+def device_location_flag(device_info):
+    if not device_info.get('current_location') or not device_info.get('previous_location'):
+        return False
+    
+    current_location = device_info.get('current_location')
+    previous_location = device_info.get('previous_location')
+    
+    if current_location.get('lat') == previous_location.get('lat') and current_location.get('lon') == previous_location.get('lon'):
+        return False
+    
+    return True

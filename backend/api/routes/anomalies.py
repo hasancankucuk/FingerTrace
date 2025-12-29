@@ -50,65 +50,15 @@ def save_rules():
 
 @anomalies_bp.route("/get-fast-travel", methods=["GET"])
 def get_fast_travel():
-    devices = firestore_get_all('deviceinfo')
+    workspace_id = request.args.get('workspace_id')
     
-    rules_doc = firestore_get('settings', 'fast_travel') or {}
-    dynamic_rules = rules_doc.get('conditions', [])
-    
-    fast_travel_anomalies = []
+    if workspace_id:
+        devices = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
+        anomalies = [d for d in devices if d.get('is_fast_travel') == True]
+    else:
+        anomalies = firestore_query('deviceinfo', 'is_fast_travel', '==', True)
 
-    for device in devices:
-        current = device.get('current_location')
-        previous = device.get('previous_location')
-        
-        if current and previous and all(k in current for k in ('lat', 'lon')) and all(k in previous for k in ('lat', 'lon')):
-            
-            distance = calculate_distance(
-                previous['lat'], previous['lon'],
-                current['lat'], current['lon']
-            )
-
-            try:
-                t1 = datetime.fromisoformat(device.get('previous_location_timestamp'))
-                t2 = datetime.utcnow() # Veya current_location_timestamp
-                time_diff = (t2 - t1).total_seconds() / 3600
-                speed = distance / time_diff if time_diff > 0 else 0
-            except:
-                continue
-
-            metrics = {
-                "estimated_speed": speed,
-                "distance_km": distance,
-                "time_diff": time_diff
-            }
-
-            is_anomaly = False
-            triggered_by = None
-
-            for rule in dynamic_rules:
-                field = rule.get('field')
-                op = rule.get('operator')
-                val = rule.get('value')
-                
-                if field in metrics:
-                    if evaluate_condition(metrics[field], op, val):
-                        is_anomaly = True
-                        triggered_by = rule
-                        break # Şimdilik bir kuralın tutması yeterli (OR)
-
-            if is_anomaly:
-                fast_travel_anomalies.append({
-                    "fingerprint": device.get('fingerprint'),
-                    "distance_km": round(distance, 2),
-                    "estimated_speed_kmh": round(speed, 2),
-                    "from": previous.get('city'),
-                    "to": current.get('city'),
-                    "triggered_rule": triggered_by,
-                    "severity": rules_doc.get('risk_level', 'medium')
-                })
-
-    return jsonify(fast_travel_anomalies)
-
+    return jsonify(anomalies)
 @anomalies_bp.route("/get-rate-limiting", methods=["GET"])
 def get_rate_limiting():
     rate_limit_alerts = firestore_query('alerts', 'type', '==', 'Velocity Attack')

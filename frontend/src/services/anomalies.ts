@@ -38,9 +38,13 @@ export const getRateLimiting = async (): Promise<RateLimitingAlert[]> => {
   });
 };
 
-export const getFastTravel = async (): Promise<FastTravelAlert[]> => {
+export const getFastTravel = async (workspaceId?: string): Promise<FastTravelAlert[]> => {
   const token = getToken();
-  return httpRequest<FastTravelAlert[]>(`${API_BASE_URL}/api/get-fast-travel`, {
+  const url = workspaceId
+    ? `${API_BASE_URL}/api/get-fast-travel?workspace_id=${workspaceId}`
+    : `${API_BASE_URL}/api/get-fast-travel`;
+
+  return httpRequest<FastTravelAlert[]>(url, {
     method: "GET",
     token,
   });

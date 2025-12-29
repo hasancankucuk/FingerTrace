@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { AnomalyDetection } from "./AnomalyDetection";
 import { FastTravel } from "./FastTravel";
 import { RateLimiting } from "./RateLimiting";
-import { VPNProxy } from "./VPNProxy";
+import { VPNProxy } from "./VpnProxy";
 
 type RuleConfig = {
     riskLevel: RiskLevel;
