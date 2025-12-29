@@ -1,23 +1,3 @@
-import math
-from datetime import datetime
-from helpers.firebase_utils import firestore_get
-import operator
-
-OPERATORS = {
-    "gt": operator.gt,
-    "lt": operator.lt,
-    "eq": operator.eq,
-    "neq": operator.ne,
-}
-
-def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371 
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    return R * c
-
 def check_fast_travel_anomaly(device_info):
     current = device_info.get('current_location')
     previous = device_info.get('previous_location')
@@ -26,6 +6,7 @@ def check_fast_travel_anomaly(device_info):
         return None
 
     dist = calculate_distance(previous['lat'], previous['lon'], current['lat'], current['lon'])
+    
     if dist < 0.5:
         return None
 
@@ -42,6 +23,12 @@ def check_fast_travel_anomaly(device_info):
     
     metrics = {"estimated_speed": speed, "distance_km": dist, "time_diff": diff}
     
+    if not dynamic_rules:
+        dynamic_rules = [
+            {"field": "estimated_speed", "operator": "gt", "value": 800},
+            {"field": "distance_km", "operator": "gt", "value": 500}
+        ]
+
     for rule in dynamic_rules:
         f, op, val = rule.get('field'), rule.get('operator'), rule.get('value')
         if f in metrics:
@@ -51,8 +38,10 @@ def check_fast_travel_anomaly(device_info):
                         "is_anomaly": True,
                         "speed": round(speed, 2),
                         "distance": round(dist, 2),
-                        "severity": rules_doc.get('risk_level', 'medium')
+                        "severity": rules_doc.get('risk_level', 'medium'),
+                        "rule_triggered": f"{f} {op} {val}"
                     }
-            except: continue
+            except: 
+                continue
             
     return None

@@ -17,13 +17,6 @@ type RuleConfig = {
     conditions: RuleCondition[];
 };
 
-type AllRulesConfig = {
-    anomalyDetection: RuleConfig;
-    rateLimiting: RuleConfig;
-    fastTravel: RuleConfig;
-    vpnProxy: RuleConfig;
-};
-
 export const Rules = () => {
     const { t } = useTranslation();
     const [isSaving, setIsSaving] = useState(false);
@@ -36,36 +29,37 @@ export const Rules = () => {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const rulesConfig: AllRulesConfig = {
-                anomalyDetection: anomalyDetectionConfig || { riskLevel: RiskLevel.LOW, conditions: [] },
-                rateLimiting: rateLimitingConfig || { riskLevel: RiskLevel.LOW, conditions: [] },
-                fastTravel: fastTravelConfig || { riskLevel: RiskLevel.LOW, conditions: [] },
-                vpnProxy: vpnProxyConfig || { riskLevel: RiskLevel.LOW, conditions: [] },
-            };
-
-            const ruleTypes: Array<{ key: keyof AllRulesConfig; type: string }> = [
-                { key: 'anomalyDetection', type: 'anomaly_detection' },
-                { key: 'rateLimiting', type: 'rate_limiting' },
-                { key: 'fastTravel', type: 'fast_travel' },
-                { key: 'vpnProxy', type: 'vpn_proxy' },
+            const payload = [
+                {
+                    type: 'anomaly_detection',
+                    conditions: anomalyDetectionConfig?.conditions || [],
+                    risk_level: anomalyDetectionConfig?.riskLevel || RiskLevel.LOW,
+                },
+                {
+                    type: 'rate_limiting',
+                    conditions: rateLimitingConfig?.conditions || [],
+                    risk_level: rateLimitingConfig?.riskLevel || RiskLevel.LOW,
+                },
+                {
+                    type: 'fast_travel',
+                    conditions: fastTravelConfig?.conditions || [],
+                    risk_level: fastTravelConfig?.riskLevel || RiskLevel.LOW,
+                },
+                {
+                    type: 'vpn_proxy',
+                    conditions: vpnProxyConfig?.conditions || [],
+                    risk_level: vpnProxyConfig?.riskLevel || RiskLevel.LOW,
+                }
             ];
 
-            await Promise.all(
-                ruleTypes.map(({ key, type }) =>
-                    saveRules({
-                        type,
-                        conditions: rulesConfig[key].conditions,
-                        risk_level: rulesConfig[key].riskLevel,
-                    })
-                )
-            );
+            console.log("Saving rules:", payload);
 
-            console.log("Saving rules:", rulesConfig);
+            await saveRules(payload);
 
-            toast.success(t("rules.save_success") || "Rules published successfully!");
+            toast.success(t("rules.save_success") || "All rules published successfully!");
         } catch (error) {
             toast.error(t("rules.save_error") || "Failed to save rules.");
-            console.error(error);
+            console.error("Save all rules error:", error);
         } finally {
             setIsSaving(false);
         }
@@ -74,29 +68,21 @@ export const Rules = () => {
     return (
         <Card className="w-full max-w-4xl shadow-lg border-t-4 border-t-destructive">
             <div className="p-6 space-y-8">
-                <AnomalyDetection
-                    onConfigChange={setAnomalyDetectionConfig}
-                />
+                <AnomalyDetection onConfigChange={setAnomalyDetectionConfig} />
                 <Separator className="h-px bg-border" />
 
-                <RateLimiting
-                    onConfigChange={setRateLimitingConfig}
-                />
+                <RateLimiting onConfigChange={setRateLimitingConfig} />
                 <Separator className="h-px bg-border" />
 
-                <FastTravel
-                    onConfigChange={setFastTravelConfig}
-                />
+                <FastTravel onConfigChange={setFastTravelConfig} />
                 <Separator className="h-px bg-border" />
 
-                <VPNProxy
-                    onConfigChange={setVpnProxyConfig}
-                />
+                <VPNProxy onConfigChange={setVpnProxyConfig} />
             </div>
 
             <CardFooter className="border-t p-6 bg-muted/20">
                 <Button
-                    className="w-full shadow-md"
+                    className="w-full shadow-md font-bold uppercase tracking-wide"
                     onClick={handleSave}
                     disabled={isSaving}
                 >

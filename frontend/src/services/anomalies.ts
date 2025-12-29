@@ -50,9 +50,9 @@ export const getFastTravel = async (workspaceId?: string): Promise<FastTravelAle
   });
 };
 
-export const saveRules = async (payload: SaveRulesRequest): Promise<{ status: string; message: string }> => {
+export const saveRules = async (payload: SaveRulesRequest[]): Promise<{ status: string; message: string }> => {
   const token = getToken();
-  return httpRequest<{ status: string; message: string }>(`${API_BASE_URL}/api/save-rules`, {
+  return httpRequest<{ status: string; message: string }>(`${API_BASE_URL}/save-rules`, {
     method: "POST",
     token,
     body: JSON.stringify(payload),

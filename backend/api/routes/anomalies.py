@@ -28,26 +28,45 @@ def evaluate_condition(current_val, op_key, target_val):
 @anomalies_bp.route("/save-rules", methods=["POST"])
 def save_rules():
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
+        
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        rule_type = data.get('type')
-        if not rule_type:
-            return jsonify({"error": "Rule type is required"}), 400
+        if isinstance(data, str):
+            import json
+            data = json.loads(data)
 
-        rule_config = {
-            "type": rule_type,
-            "conditions": data.get('conditions', []),
-            "risk_level": data.get('risk_level', 'low'),
-            "updated_at": datetime.utcnow().isoformat()
-        }
+        if isinstance(data, list):
+            for rule in data:
+                print(rule)
+                rule_type = rule.get('type')
+                if not rule_type:
+                    continue
 
-        firestore_set('settings', rule_type, rule_config)
-        return jsonify({"status": "success", "message": f"Rules for {rule_type} saved"}), 200
+                rule_config = {
+                    "type": rule_type,
+                    "conditions": rule.get('conditions', []),
+                    "risk_level": rule.get('risk_level', 'low'),
+                    "updated_at": datetime.utcnow().isoformat()
+                }
+                firestore_set('settings', rule_type, rule_config)
+            
+            return jsonify({"status": "success", "message": "All rules saved"}), 200
+
+        # Tekil obje gelirse işle
+        else:
+            rule_type = data.get('type')
+            if not rule_type:
+                return jsonify({"error": "Rule type is required"}), 400
+            
+            # ... tekil kaydetme mantığı ...
+            firestore_set('settings', rule_type, data)
+            return jsonify({"status": "success", "message": "Rule saved"}), 200
+
     except Exception as e:
+        print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
 @anomalies_bp.route("/get-fast-travel", methods=["GET"])
 def get_fast_travel():
     workspace_id = request.args.get('workspace_id')
