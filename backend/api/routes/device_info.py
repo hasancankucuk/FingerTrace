@@ -39,18 +39,19 @@ def create_device_info(current_user):
         device_info['workspace'] = workspace_name
 
     # Get best client IP (prioritize IPv4)
-    from helpers.ip_helper import get_best_ip
-    client_ip = get_best_ip(request)
+    # from helpers.ip_helper import get_best_ip
+    # client_ip = get_best_ip(request)
 
-    print(f"Headers: {dict(request.headers)}")
-    print(f"Detected IP: {client_ip}")
+    # print(f"Headers: {dict(request.headers)}")
+    # print(f"Detected IP: {client_ip}")
     
-
+    client_ip = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For').split(',')[0]
+    print("client_ip:", client_ip)
     
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
-    print("client_ip:", client_ip)
+    # print("client_ip:", client_ip)
     current_location = get_location(client_ip)
 
     existing_device = firestore_get('deviceinfo', device_info.get('fingerprint'))
