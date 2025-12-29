@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RiskLevel, type RuleCondition } from "@/models/RiskLevelModel";
+import { saveRules } from "@/services/anomalies";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +11,6 @@ import { AnomalyDetection } from "./AnomalyDetection";
 import { FastTravel } from "./FastTravel";
 import { RateLimiting } from "./RateLimiting";
 import { VPNProxy } from "./VpnProxy";
-import { saveRules } from "@/services/anomalies";
 
 type RuleConfig = {
     riskLevel: RiskLevel;
@@ -43,8 +43,22 @@ export const Rules = () => {
                 vpnProxy: vpnProxyConfig || { riskLevel: RiskLevel.LOW, conditions: [] },
             };
 
+            const ruleTypes: Array<{ key: keyof AllRulesConfig; type: string }> = [
+                { key: 'anomalyDetection', type: 'anomaly_detection' },
+                { key: 'rateLimiting', type: 'rate_limiting' },
+                { key: 'fastTravel', type: 'fast_travel' },
+                { key: 'vpnProxy', type: 'vpn_proxy' },
+            ];
 
-            await saveRules(rulesConfig);
+            await Promise.all(
+                ruleTypes.map(({ key, type }) =>
+                    saveRules({
+                        type,
+                        conditions: rulesConfig[key].conditions,
+                        risk_level: rulesConfig[key].riskLevel,
+                    })
+                )
+            );
 
             console.log("Saving rules:", rulesConfig);
 
