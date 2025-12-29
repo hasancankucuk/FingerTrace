@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_APP_URL;
 export const createWorkspace = async (workspaceData: WorkspacesType) => {
   const token = getToken();
   return httpRequest<{ message: string; id: string }>(
-  `${API_BASE_URL}/api/workspaces`,
+  `${API_BASE_URL}/workspaces`,
     {
       method: "POST",
       token,
@@ -19,7 +19,7 @@ export const createWorkspace = async (workspaceData: WorkspacesType) => {
 
 export const getWorkspaces = async (): Promise<WorkspacesType[]> => {
   const token = getToken();
-  return httpRequest<WorkspacesType[]>(`${API_BASE_URL}/api/workspaces`, {
+  return httpRequest<WorkspacesType[]>(`${API_BASE_URL}/workspaces`, {
     method: "GET",
     token,
   });
@@ -36,7 +36,7 @@ export const getWorkspace = async (workspaceId: string) => {
 export const deleteWorkspace = async (workspaceId: string) => {
   const token = getToken();
   return httpRequest<{ message: string }>(
-    `${API_BASE_URL}/api/workspaces/${workspaceId}`,
+    `${API_BASE_URL}/workspaces/${workspaceId}`,
     { method: "DELETE", token }
   );
 };
