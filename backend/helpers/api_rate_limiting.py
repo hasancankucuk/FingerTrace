@@ -23,9 +23,15 @@ def rate_limit(key_prefix: str, quota: int = None):
             if not THROTTLED_AVAILABLE:
                 return func(*args, **kwargs)
             
-            client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
-            if client_ip and "," in client_ip:
-                client_ip = client_ip.split(",")[0].strip()
+            # Get real client IP - prioritize IPv4
+            from helpers.ip_helper import ensure_ipv4
+            raw_ip = (
+                request.headers.get("CF-Connecting-IP") or
+                request.headers.get("X-Real-IP") or
+                request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
+                request.remote_addr
+            )
+            client_ip = ensure_ipv4(raw_ip) or raw_ip
 
             from helpers.firebase_utils import firestore_query
             device_results = firestore_query('deviceinfo', 'IP', '==', client_ip)

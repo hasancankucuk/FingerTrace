@@ -37,17 +37,40 @@ def create_device_info(current_user):
     if workspace_name:
         device_info['workspace'] = workspace_name
 
-    # Get real client IP - prioritize Cloudflare header if behind CF proxy
-    client_ip = (
+    # Get real client IP - prioritize IPv4 addresses
+    from helpers.ip_helper import ensure_ipv4
+    
+    # Try to get IPv4 first, Cloudflare may provide both IPv4 and IPv6
+    raw_ip = (
         request.headers.get("CF-Connecting-IP") or
         request.headers.get("X-Real-IP") or
         request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
         request.remote_addr
     )
     
+    # Ensure we have IPv4 (extract from IPv4-mapped IPv6 if needed)
+    client_ip = ensure_ipv4(raw_ip)
+    
+    # If we got IPv6 and couldn't convert, try to use X-Forwarded-For which might have IPv4
+    if not client_ip:
+        # Fallback: try all IPs in X-Forwarded-For to find an IPv4
+        forwarded = request.headers.get("X-Forwarded-For", "")
+        for ip in forwarded.split(","):
+            ip = ip.strip()
+            ipv4 = ensure_ipv4(ip)
+            if ipv4:
+                client_ip = ipv4
+                break
+        
+        # If still no IPv4, use the raw IP (IPv6) but log a warning
+        if not client_ip:
+            client_ip = raw_ip
+            print(f"[WARNING] Using IPv6 address: {client_ip}")
+    
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
+    print("client_ip:", client_ip)
     current_location = get_location(client_ip)
 
     existing_device = firestore_get('deviceinfo', device_info.get('fingerprint'))

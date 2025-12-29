@@ -105,7 +105,15 @@ def create_fingerprint(current_user):
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
-    data['IP'] = request.remote_addr
+    # Get real client IP - prioritize IPv4
+    from helpers.ip_helper import ensure_ipv4
+    raw_ip = (
+        request.headers.get("CF-Connecting-IP") or
+        request.headers.get("X-Real-IP") or
+        request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
+        request.remote_addr
+    )
+    data['IP'] = ensure_ipv4(raw_ip) or raw_ip
 
     data['fingerprint'] = doc_id
 
