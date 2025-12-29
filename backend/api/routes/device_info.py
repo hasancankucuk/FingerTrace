@@ -11,6 +11,7 @@ from helpers.api_rate_limiting import rate_limit
 from helpers.location_helper import get_location
 from helpers.vpn_proxy_helper import check_vpn_proxy
 from helpers.ip_helper import ensure_ipv4
+from helpers.fast_travel_helper import check_fast_travel_anomaly
 
 deviceinfo_bp = Blueprint("device_info_bp", __name__)
 
