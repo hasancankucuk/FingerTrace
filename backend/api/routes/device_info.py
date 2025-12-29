@@ -51,13 +51,16 @@ def create_device_info(current_user):
     current_location = get_location(client_ip)
 
     if existing_device:
-        device_info['updated_at'] = datetime.utcnow().isoformat()
-        device_info['previous_location'] = existing_device.get('previous_location')
-        device_info['previous_location_timestamp'] = existing_device.get('previous_location_timestamp')
+        device_info['previous_location'] = existing_device.get('current_location')
+        device_info['previous_location_timestamp'] = existing_device.get('current_location_timestamp')
+
         device_info['created_at'] = existing_device.get('created_at')
+        device_info['updated_at'] = datetime.utcnow().isoformat()
     else:
         device_info['previous_location'] = None
+        device_info['previous_location_timestamp'] = None
         device_info['created_at'] = datetime.utcnow().isoformat()
+        device_info['updated_at'] = device_info['created_at']
 
     device_info['current_location'] = current_location
     device_info['current_location_timestamp'] = datetime.utcnow().isoformat()
