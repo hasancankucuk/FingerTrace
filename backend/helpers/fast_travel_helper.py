@@ -1,7 +1,6 @@
-from api.routes.anomalies import calculate_distance
+from api.routes.anomalies import calculate_distance, OPERATORS
 from datetime import datetime
 from helpers.firebase_utils import firestore_get
-from helpers.rule_utils import OPERATORS
 
 
 def check_fast_travel_anomaly(device_info):
