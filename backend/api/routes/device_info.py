@@ -37,24 +37,21 @@ def create_device_info(current_user):
         device_info['workspace_id'] = workspace_id
     if workspace_name:
         device_info['workspace'] = workspace_name
-
-    # Get best client IP (prioritize IPv4)
-    # from helpers.ip_helper import get_best_ip
-    # client_ip = get_best_ip(request)
-
-    # print(f"Headers: {dict(request.headers)}")
-    # print(f"Detected IP: {client_ip}")
+        
     
-    client_ip = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For').split(',')[0]
-    print("client_ip:", request.headers.get('X-Forwarded-For'), request.headers.get('CF-Connecting-IP'), request.headers.get('True-Client-IP'))
+    client_ip = request.headers.get('CF-Connecting-IP')
+
+
+    from helpers.fingerprint_helper import get_fingerprint_from_context
+    doc_id, raw_fp, ja3_fp = get_fingerprint_from_context(device_info)
+    existing_device = firestore_get('deviceinfo', doc_id)
     
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
-    # print("client_ip:", client_ip)
     current_location = get_location(client_ip)
+    print("client_ip:", client_ip, current_location)
 
-    existing_device = firestore_get('deviceinfo', device_info.get('fingerprint'))
     if existing_device:
         device_info['updated_at'] = datetime.utcnow().isoformat()
         device_info['previous_location'] = existing_device.get('previous_location')
@@ -67,8 +64,6 @@ def create_device_info(current_user):
     device_info['current_location'] = current_location
     device_info['current_location_timestamp'] = datetime.utcnow().isoformat()
 
-    from helpers.fingerprint_helper import get_fingerprint_from_context
-    doc_id, raw_fp, ja3_fp = get_fingerprint_from_context(device_info)
     device_info['fingerprint'] = doc_id
     device_info['raw_fingerprint'] = raw_fp
     device_info['ja3_fingerprint'] = ja3_fp
