@@ -37,8 +37,13 @@ def create_device_info(current_user):
     if workspace_name:
         device_info['workspace'] = workspace_name
 
-    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
-    if "," in client_ip: client_ip = client_ip.split(",")[0].strip()
+    # Get real client IP - prioritize Cloudflare header if behind CF proxy
+    client_ip = (
+        request.headers.get("CF-Connecting-IP") or
+        request.headers.get("X-Real-IP") or
+        request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
+        request.remote_addr
+    )
     
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
