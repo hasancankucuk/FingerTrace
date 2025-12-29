@@ -1,15 +1,15 @@
 import {
     AlertDialog,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogCancel,
-    AlertDialogDescription
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import type { Table as ReactTable } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface IdentificationDetailModalProps {
     open: boolean;
@@ -54,11 +54,18 @@ export const IdentificationDetailModal = ({ open, setOpen, table }: Identificati
     );
 };
 
-const DetailRow = ({ label, value, isMono = false, className = "" }: { label: string, value: any, isMono?: boolean, className?: string }) => (
-    <TableRow className="hover:bg-transparent">
-        <TableCell className="font-medium bg-muted/50 w-1/3 py-3 border-r">{label}</TableCell>
-        <TableCell className={`py-3 ${isMono ? "font-mono text-[11px]" : "text-sm"} ${className}`}>
-            {value || "-"}
-        </TableCell>
-    </TableRow>
-);
+const DetailRow = ({ label, value, isMono = false, className = "" }: { label: string, value: any, isMono?: boolean, className?: string }) => {
+    // Convert objects to JSON string for display
+    const displayValue = typeof value === 'object' && value !== null
+        ? JSON.stringify(value, null, 2)
+        : value;
+
+    return (
+        <TableRow className="hover:bg-transparent">
+            <TableCell className="font-medium bg-muted/50 w-1/3 py-3 border-r">{label}</TableCell>
+            <TableCell className={`py-3 ${isMono ? "font-mono text-[11px]" : "text-sm"} ${className}`}>
+                {displayValue || "-"}
+            </TableCell>
+        </TableRow>
+    );
+};

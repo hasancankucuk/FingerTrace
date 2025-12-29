@@ -66,6 +66,7 @@ def create_device_info(current_user):
     device_info['previous_location'] = get_location(client_ip)
     device_info['previous_location_timestamp'] = datetime.utcnow().isoformat()
     device_info['is_vpn'] = check_vpn_proxy(client_ip)
+    print("is_vpn:", check_vpn_proxy(client_ip))
 
     firestore_set('deviceinfo', doc_id, device_info)
     return jsonify({"message": "Device info received", "fingerprint": device_info.get("fingerprint")}), 201
