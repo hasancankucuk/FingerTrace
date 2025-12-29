@@ -1,21 +1,33 @@
 from functools import wraps
 from flask import request, jsonify
-from throttled import Throttled, exceptions, rate_limiter
 from helpers.firebase_utils import firestore_set
 import uuid
 from datetime import datetime
 
-default_quota = rate_limiter.per_min(100)
+# Try to import throttled, but make it optional
+try:
+    from throttled import Throttled, exceptions, rate_limiter
+    THROTTLED_AVAILABLE = True
+    default_quota = rate_limiter.per_min(100)
+except ImportError:
+    THROTTLED_AVAILABLE = False
+    print("WARNING: throttled-py not installed. Rate limiting disabled.")
+
 limiters = {}
 
 def rate_limit(key_prefix: str, quota: int = None):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            # If throttled is not available, skip rate limiting
+            if not THROTTLED_AVAILABLE:
+                return func(*args, **kwargs)
+            
             client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
             if client_ip and "," in client_ip:
                 client_ip = client_ip.split(",")[0].strip()
 
+            from helpers.firebase_utils import firestore_query
             device_results = firestore_query('deviceinfo', 'IP', '==', client_ip)
             
             fingerprint = "unknown"
