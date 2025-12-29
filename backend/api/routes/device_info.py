@@ -44,9 +44,29 @@ def create_device_info(current_user):
     print(f"Headers: {dict(request.headers)}")
     print(f"Detected IP: {client_ip}")
     
+    # Ensure we have IPv4 (extract from IPv4-mapped IPv6 if needed)
+    client_ip = ensure_ipv4(raw_ip)
+    
+    # If we got IPv6 and couldn't convert, try to use X-Forwarded-For which might have IPv4
+    if not client_ip:
+        # Fallback: try all IPs in X-Forwarded-For to find an IPv4
+        forwarded = request.headers.get("X-Forwarded-For", "")
+        for ip in forwarded.split(","):
+            ip = ip.strip()
+            ipv4 = ensure_ipv4(ip)
+            if ipv4:
+                client_ip = ipv4
+                break
+        
+        # If still no IPv4, use the raw IP (IPv6) but log a warning
+        if not client_ip:
+            client_ip = raw_ip
+            print(f"[WARNING] Using IPv6 address: {client_ip}")
+    
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
     device_info['updated_at'] = datetime.utcnow().isoformat()
+    print("client_ip:", client_ip)
     current_location = get_location(client_ip)
 
     existing_device = firestore_get('deviceinfo', device_info.get('fingerprint'))
