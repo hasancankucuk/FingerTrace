@@ -46,7 +46,7 @@ def create_device_info(current_user):
     # print(f"Detected IP: {client_ip}")
     
     client_ip = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For').split(',')[0]
-    print("client_ip:", client_ip)
+    print("client_ip:", request.headers.get('X-Forwarded-For'), request.headers.get('CF-Connecting-IP'), request.headers.get('True-Client-IP'))
     
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
