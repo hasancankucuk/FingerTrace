@@ -45,25 +45,35 @@ def get_best_ip(request):
         return cf_ipv4
 
     # 2. Check standard headers for any valid IPv4
-    # Order: CF-Connecting-IP -> X-Forwarded-For -> X-Real-IP
+    # Order: CF-Connecting-IP -> X-Forwarded-For
+    # REMOVED X-Real-IP because Caddy sets it to Cloudflare IP (remote_host)
     headers_to_check = [
         "CF-Connecting-IP",
-        "X-Forwarded-For",
-        "X-Real-IP"
+        "X-Forwarded-For"
     ]
     
     for header in headers_to_check:
         val = request.headers.get(header)
-        ipv4 = ensure_ipv4(val)
-        if ipv4:
-            return ipv4
+        # Check for multiple IPs in one header (comma separated)
+        if val and ',' in val:
+            for part in val.split(','):
+                ipv4 = ensure_ipv4(part.strip())
+                if ipv4:
+                    return ipv4
+        else:
+            ipv4 = ensure_ipv4(val)
+            if ipv4:
+                return ipv4
             
-    # 3. Fallback: Accept IPv6 from CF-Connecting-IP or Remote Addr
-    # If we are here, we couldn't find an IPv4.
-    best_ipv6 = (
+    # 3. Fallback: Accept IPv6 from CF-Connecting-IP or X-Forwarded-For
+    # We avoid X-Real-IP and remote_addr if possible as they might be the proxy
+    best_ip = (
         request.headers.get("CF-Connecting-IP") or
-        request.headers.get("X-Forwarded-For", "").split(',')[0] or
-        request.remote_addr
+        request.headers.get("X-Forwarded-For", "").split(',')[0]
     )
     
-    return best_ipv6.strip() if best_ipv6 else None
+    if best_ip:
+        return best_ip.strip()
+        
+    # Last resort: remote_addr (might be Caddy/Cloudflare IP)
+    return request.remote_addr
