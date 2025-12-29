@@ -52,7 +52,6 @@ export const Rules = () => {
                 }
             ];
 
-            console.log("Saving rules:", payload);
 
             await saveRules(payload);
 

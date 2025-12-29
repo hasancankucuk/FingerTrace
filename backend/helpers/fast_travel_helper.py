@@ -1,3 +1,9 @@
+from api.routes.anomalies import calculate_distance
+from datetime import datetime
+from helpers.firebase_utils import firestore_get
+from helpers.rule_utils import OPERATORS
+
+
 def check_fast_travel_anomaly(device_info):
     current = device_info.get('current_location')
     previous = device_info.get('previous_location')
