@@ -41,7 +41,8 @@ def login():
     api_key = os.environ.get('FIREBASE_API_KEY')
 
     if turnstile_token:
-        client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        from helpers.ip_helper import get_best_ip
+        client_ip = get_best_ip(request)
         if not verify_turnstile(turnstile_token, client_ip):
             return jsonify({'error': 'CAPTCHA verification failed'}), 400
     

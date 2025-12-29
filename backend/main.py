@@ -18,6 +18,15 @@ ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 
+# Fix for handling X-Forwarded-For headers behind a proxy (Cloudflare -> Caddy -> Flask)
+from werkzeug.middleware.proxy_fix import ProxyFix
+# x_for=1: Trust the first X-Forwarded-For header (from Caddy)
+# x_proto=1: Trust the X-Forwarded-Proto header (https)
+# x_host=1: Trust the X-Forwarded-Host header
+# x_port=1: Trust the X-Forwarded-Port header
+# x_prefix=1: Trust the X-Forwarded-Prefix header
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 allowed_origins = os.getenv("ALLOWED_ORIGINS",   "*").split(",")
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=True)
 

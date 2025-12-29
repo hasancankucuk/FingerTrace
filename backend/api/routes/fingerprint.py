@@ -105,7 +105,9 @@ def create_fingerprint(current_user):
     now = datetime.utcnow().isoformat()
     data['created_at'] = now
     data['updated_at'] = now
-    data['IP'] = request.remote_addr
+    # Get best client IP (prioritize IPv4)
+    from helpers.ip_helper import get_best_ip
+    data['IP'] = get_best_ip(request)
 
     data['fingerprint'] = doc_id
 

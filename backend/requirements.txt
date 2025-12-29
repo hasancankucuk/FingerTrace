@@ -13,3 +13,4 @@ uvicorn[standard]
 throttled-py
 reportlab 
 Pillow
+Werkzeug

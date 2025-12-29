@@ -37,13 +37,12 @@ def create_device_info(current_user):
     if workspace_name:
         device_info['workspace'] = workspace_name
 
-    # Get real client IP - prioritize Cloudflare header if behind CF proxy
-    client_ip = (
-        request.headers.get("CF-Connecting-IP") or
-        request.headers.get("X-Real-IP") or
-        request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
-        request.remote_addr
-    )
+    # Get best client IP (prioritize IPv4)
+    from helpers.ip_helper import get_best_ip
+    client_ip = get_best_ip(request)
+
+    print(f"Headers: {dict(request.headers)}")
+    print(f"Detected IP: {client_ip}")
     
     device_info['IP'] = client_ip
     device_info['created_at'] = datetime.utcnow().isoformat()
