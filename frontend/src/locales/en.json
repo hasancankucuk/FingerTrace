@@ -142,7 +142,13 @@
             "color_gamut": "Color Gamut",
             "bar_visibility": "Bar Visibility",
             "browser_feature_support": "Browser Features",
-            "status": "Connection Status"
+            "status": "Connection Status",
+            "vpn_details": "VPN Details",
+            "previous_location": "Previous Location",
+            "current_location": "Current Location",
+            "is_fast_travel": "Fast Travel",
+            "is_vpn": "VPN",
+            "ip": "IP"
         }
     },
     "rules": {

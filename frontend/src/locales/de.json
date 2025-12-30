@@ -33,7 +33,6 @@
         "noWorkspace": "Kein Arbeitsbereich gefunden. Bitte erstellen Sie einen Arbeitsbereich, um fortzufahren.",
         "createWorkspace": "+ Arbeitsbereich erstellen",
         "value": "Wert"
-    
     },
     "nav": {
         "main_nav": "Hauptnavigation",
@@ -144,7 +143,13 @@
             "color_gamut": "Color Gamut",
             "bar_visibility": "Bar Visibility",
             "browser_feature_support": "Browser Features",
-            "status": "Connection Status"
+            "status": "Connection Status",
+            "vpn_details": "VPN-Details",
+            "previous_location": "Vorheriger Standort",
+            "current_location": "Aktueller Standort",
+            "is_fast_travel": "Schnellreise erkannt",
+            "is_vpn": "VPN-Verbindung",
+            "ip": "IP"
         }
     },
     "rules": {

@@ -142,7 +142,13 @@
             "color_gamut": "Color Gamut",
             "bar_visibility": "Bar Visibility",
             "browser_feature_support": "Browser Features",
-            "status": "Connection Status"
+            "status": "Connection Status",
+            "vpn_details": "VPN Detayları",
+            "previous_location": "Önceki Konum",
+            "current_location": "Güncel Konum",
+            "is_fast_travel": "Hızlı Seyahat",
+            "is_vpn": "VPN",
+            "ip": "IP"
         }
     },
     "rules": {

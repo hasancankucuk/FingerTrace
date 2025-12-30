@@ -19,7 +19,6 @@ def check_vpn_proxy(ip):
             "probability": probability,
             "is_vpn": is_vpn,
             "threshold": 0.95,
-            "source": "getipintel.net"
         }
         
         return is_vpn, details
