@@ -15,13 +15,7 @@ def get_workspaces(current_user):
         user = get_user(current_user)
         workspaces = firestore_query('workspaces', 'created_by', '==', user['email'])
         
-        results = []
-        for doc in workspaces:
-            d = doc.to_dict()
-            d["id"] = doc.id
-            results.append(d)
-
-        return jsonify(results), 200
+        return jsonify(workspaces), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
