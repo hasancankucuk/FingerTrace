@@ -210,9 +210,12 @@ def list_merged_fingerprints(current_user):
     if page_size < 1 or page_size > 100:
         page_size = 10
     
-    fingerprints = firestore_query('fingerprints', 'workspace_id', '==', workspace_id)
-    deviceinfo = firestore_query('deviceinfo', 'workspace_id', '==', workspace_id)
+    fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
+    deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
     workspace_keys = ("workspace_id", "workspace", "ws_id")
+    print(fingerprints)
+    print(deviceinfo)
+    print(workspace_keys)
 
     if workspace_id:
         def in_workspace_rec(obj):
