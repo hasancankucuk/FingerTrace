@@ -9,6 +9,7 @@ from helpers.firebase_utils import (
     firestore_update,
     firestore_delete,
     firestore_get_all,
+    firestore_query
 )
 from helpers.api_rate_limiting import rate_limit
 
