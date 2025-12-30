@@ -103,6 +103,14 @@ def firebase_reset_password(email):
         print(f"Error: {e}")
         return {"error": str(e)}
 
+def firebase_update_password(uid, password):
+    try:
+        auth.update_user(uid, password=password)
+        return {"uid": uid, "password": True}
+    except Exception as e:
+        print(f"Error updating password for user {uid}: {e}")
+        return {"error": str(e)}
+
 def firestore_set(collection, document_id, data):
     try:
         db.collection(collection).document(document_id).set(data)

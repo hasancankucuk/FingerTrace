@@ -1,32 +1,43 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { updatePassword, updateProfile } from "@/services/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { DeleteAccountModal } from "./DeleteAccountModal";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useTranslation } from "react-i18next";
-import { updateProfile } from "@/services/auth";
 
 export default function Account() {
   const { user, setUser } = useAuthStore();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-  });
+  const [password, setPassword] = useState("");
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const updatedUser = await updateProfile(formData);
+      const updatedUser = await updateProfile(user);
       setUser(updatedUser);
       toast.success(t("account.toast.profile_updated"));
+    } catch (err) {
+      toast.error(t("account.toast.update_failed"));
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await updatePassword(user?.email || "", password);
+      toast.success(t("account.toast.password_updated"));
+      setPassword("");
     } catch (err) {
       toast.error(t("account.toast.update_failed"));
       console.error(err);
@@ -54,36 +65,29 @@ export default function Account() {
           </div>
           <Card>
             <CardContent className="pt-6">
-              <form onSubmit={handleUpdate} className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">{t("common.name")}</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">{t("common.email")}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="phone">{t("common.phone")}</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-                <Button type="submit" disabled={loading}>
-                  {loading ? t("common.loading") : t("common.save")}
-                </Button>
+              <form onSubmit={handleUpdate}>
+                <FieldSet>
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="username">{t("common.name")}</FieldLabel>
+                      <Input id="username" type="text" placeholder={user?.name} />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="email">{t("common.email")}</FieldLabel>
+                      <Input id="email" type="email" placeholder={user?.email} />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="phone">{t("common.phone")}</FieldLabel>
+                      <Input id="phone" type="tel" placeholder={user?.phone} />
+                    </Field>
+
+                    <Field orientation="horizontal">
+                      <Button type="submit" disabled={loading}>
+                        {loading ? t("common.loading") : t("common.save")}
+                      </Button>
+                    </Field>
+                  </FieldGroup>
+                </FieldSet>
               </form>
             </CardContent>
           </Card>
@@ -100,17 +104,22 @@ export default function Account() {
           </div>
           <Card>
             <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">{t("common.password")}</p>
-                  <p className="text-sm text-muted-foreground">
-                    ••••••••••••
-                  </p>
-                </div>
-                <Button variant="outline" size="sm" disabled>
-                  {t("common.coming_soon")}
-                </Button>
-              </div>
+              <form onSubmit={handleUpdatePassword}>
+                <FieldSet>
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="password">{t("common.password")}</FieldLabel>
+                      <Input id="password" type="password" placeholder="••••••••••••" />
+                    </Field>
+
+                    <Field orientation="horizontal">
+                      <Button type="submit" disabled={loading}>
+                        {loading ? t("common.loading") : t("common.save")}
+                      </Button>
+                    </Field>
+                  </FieldGroup>
+                </FieldSet>
+              </form>
             </CardContent>
           </Card>
         </section>
@@ -127,13 +136,11 @@ export default function Account() {
             </p>
           </div>
           <Card className="border-destructive/50">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-destructive">
-                    {t("account.delete_warning")}
-                  </p>
-                </div>
+            <CardContent className=" align-middle">
+              <div className="flex items-center justify-between ">
+                <p className="font-medium text-destructive">
+                  {t("account.delete_warning")}
+                </p>
                 <DeleteAccountModal />
               </div>
             </CardContent>

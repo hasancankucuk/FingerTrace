@@ -1,9 +1,9 @@
-import { useAuthStore } from '@/store/useAuthStore';
-import { httpRequest } from './http';
 import type { AuthResponse } from '@/models/AuthResponse';
+import type { User } from '@/models/UserInterface';
+import { useAuthStore } from '@/store/useAuthStore';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
-import type { User } from '@/models/UserInterface';
+import { httpRequest } from './http';
 
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
@@ -71,7 +71,8 @@ export const updateUser = async (name: string, email: string, phone?: string) =>
   });
 };
 
-export const updateProfile = async (data: { name: string; email: string; phone: string }) => {
+export const updateProfile = async (data: User | null) => {
+  if (!data) return null;
   const result = await updateUser(data.name, data.email, data.phone);
   if (result.message) {
     return data;
@@ -113,4 +114,11 @@ export const sendPasswordResetEmails = async (email: string,) => {
     console.error("Error sending password reset email:", error);
     throw error;
   }
+}
+
+export const updatePassword = (email: string, password: string) => {
+  return httpRequest<{ message: string }>(`${API_BASE_URL}/reset`, {
+    method: 'POST',
+    body: { email, password },
+  });
 }

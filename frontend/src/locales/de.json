@@ -149,7 +149,12 @@
             "current_location": "Aktueller Standort",
             "is_fast_travel": "Schnellreise erkannt",
             "is_vpn": "VPN-Verbindung",
-            "ip": "IP"
+            "ip": "IP",
+            "probability": "Wahrscheinlichkeit",
+            "location_info": "Standortinformationen",
+            "security_and_network": "Sicherheit & Netzwerk",
+            "browser_features": "Browser-Funktionen",
+            "technical_details": "Technische Details"
         }
     },
     "rules": {

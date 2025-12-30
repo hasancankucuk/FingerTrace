@@ -17,7 +17,6 @@ def register():
     password = data.get('password')
     name = data.get('name')
 
-
     if not email or not password or not name:
         return jsonify({"error": "Missing fields"}), 400
 
@@ -62,8 +61,6 @@ def delete_user():
     try:
         user = get_user(uid)
         email = user["email"]
-
-
         user_workspaces = firestore_query('workspaces', 'created_by', '==', email)
         for ws in user_workspaces:
             firestore_delete("workspaces", ws["id"])
@@ -99,3 +96,20 @@ def forgot_password():
         return jsonify({"error": str(e)}), 400
 
     return jsonify({"message": "Password reset email sent", "reset_link": response.get("reset_link")}), 200
+
+@rate_limit('reset')
+@auth_bp.route('/reset', methods=['POST'])
+def reset_password():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+
+    try:
+        response = firebase_update_password(email, password)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({"message": "Password updated successfully"}), 200

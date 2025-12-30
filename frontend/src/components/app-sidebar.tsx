@@ -1,5 +1,6 @@
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -11,17 +12,18 @@ import {
 } from "@/components/ui/sidebar";
 import { useUserQuery } from "@/queries/userQueries";
 import { useWorkspacesQuery } from "@/queries/workspaceQueries";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   IconEye,
   IconFingerprint,
   IconFlagPin,
   IconInnerShadowTop,
   IconKey,
-  IconQuestionMark,
+  IconQuestionMark
 } from "@tabler/icons-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -60,6 +62,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navSecondary: [],
   };
 
+  if (!userError) {
+    useAuthStore.setState({ user: currentUser });
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -68,12 +74,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
-              onClick={() => navigate("/")}
             >
-              <a href="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Finger Trace</span>
-              </a>
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <div className="h-8 w-8 rounded-lg flex items-center justify-center">
+                  <IconInnerShadowTop className="!size-5" />
+                </div>
+                <span className="text-base font-semibold">FingerTrace</span>
+                <Badge variant="secondary" className="ml-2">
+                  Beta
+                </Badge>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -148,7 +148,12 @@
             "current_location": "Current Location",
             "is_fast_travel": "Fast Travel",
             "is_vpn": "VPN",
-            "ip": "IP"
+            "ip": "IP",
+            "probability": "Probability",
+            "location_info": "Location Info",
+            "security_and_network": "Security & Network",
+            "browser_features": "Browser Features",
+            "technical_details": "Technical Details"
         }
     },
     "rules": {

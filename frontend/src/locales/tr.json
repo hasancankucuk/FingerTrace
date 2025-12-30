@@ -148,7 +148,12 @@
             "current_location": "Güncel Konum",
             "is_fast_travel": "Hızlı Seyahat",
             "is_vpn": "VPN",
-            "ip": "IP"
+            "ip": "IP",
+            "probability": "Olasılık",
+            "location_info": "Konum Bilgisi",
+            "security_and_network": "Güvenlik & İnternet",
+            "browser_features": "Tarayıcı Özellikleri",
+            "technical_details": "Teknik Detaylar"
         }
     },
     "rules": {

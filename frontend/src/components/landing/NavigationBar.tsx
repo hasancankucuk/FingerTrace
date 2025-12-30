@@ -1,9 +1,5 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useNavigate, useLocation, Link } from "react-router-dom"
-import { IconInnerShadowTop } from "@tabler/icons-react"
-import { useAuthStore } from "@/store/useAuthStore"
+import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,14 +7,18 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useAuthStore } from "@/store/useAuthStore"
+import { IconInnerShadowTop } from "@tabler/icons-react"
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { LanguageToggle } from "../language-toggle"
 import { ModeToggle } from "../mode-toggle"
-import { useTranslation } from "react-i18next"
 
 export const NavigationBar = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const { token: storeToken } = useAuthStore()
   const token = storeToken || localStorage.getItem("access_token")
   const [open, setOpen] = useState(false)
@@ -26,11 +26,7 @@ export const NavigationBar = () => {
   const isActive = (path: string) => location.pathname === path
 
   const navItems = [
-    { name: "nav.documentation", href: "/docs" },
-    // { name: "Features", href: "/features" },
-    // { name: "Pricing", href: "/pricing" },
-    // { name: "Blog", href: "/blog" },
-    // { name: "Health", href: "/health" },
+    { name: "nav.documentation", href: "/docs" }
   ]
 
   return (
