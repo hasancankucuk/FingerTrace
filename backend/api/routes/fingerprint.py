@@ -213,9 +213,6 @@ def list_merged_fingerprints(current_user):
     fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
     deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
     workspace_keys = ("workspace_id", "workspace", "ws_id")
-    print(fingerprints)
-    print(deviceinfo)
-    print(workspace_keys)
 
     if workspace_id:
         def in_workspace_rec(obj):
@@ -255,6 +252,12 @@ def list_merged_fingerprints(current_user):
             "color_gamut": device.get("color_gamut") or fp_data.get("color_gamut", ""),
             "bar_visibility": device.get("bar_visibility") or fp_data.get("bar_visibility", ""),
             "browser_feature_support": device.get("browser_feature_support") or fp_data.get("browser_feature_support", ""),
+            "ip": device.get("ip") or fp_data.get("ip", ""),
+            "is_fast_travel": device.get("is_fast_travel") or fp_data.get("is_fast_travel", False),
+            "is_vpn": device.get("is_vpn") or fp_data.get("is_vpn", False),
+            "vpn_details": device.get("vpn_details") or fp_data.get("vpn_details", {}),
+            "previous_location": device.get("previous_location") or fp_data.get("previous_location", {}),
+            "current_location": device.get("current_location") or fp_data.get("current_location", {}),
         }
         merged_data.append(merged_entry)
 
