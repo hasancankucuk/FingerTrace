@@ -1,7 +1,8 @@
 export const RiskLevel = {
+  NONE: "none",
   LOW: "low",
   MEDIUM: "medium",
-  HIGH: "high",
+  HIGH: "high"
 } as const;
 
 export type RiskLevel = (typeof RiskLevel)[keyof typeof RiskLevel];

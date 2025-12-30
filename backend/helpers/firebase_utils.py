@@ -200,6 +200,28 @@ def firestore_query(collection_name, field, operator, value):
         print(f"Error querying {collection_name}: {e}")
         return []
 
+def firestore_query_multi(collection_name, *args):
+    try:
+        query = db.collection(collection_name)
+        
+        if len(args) >= 3:
+            for i in range(0, len(args), 3):
+                field = args[i]
+                operator = args[i+1]
+                value = args[i+2]
+                query = query.where(filter=FieldFilter(field, operator, value))
+            
+        docs = query.stream()
+        results = []
+        for doc in docs:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            results.append(data)
+        return results
+    except Exception as e:
+        print(f"Error querying {collection_name}: {e}")
+        return []
+
 def firestore_get_with_pagination(collection_name, limit=10, start_after=None, order_by=None):
     try:
         query = db.collection(collection_name)

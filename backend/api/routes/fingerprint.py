@@ -209,8 +209,8 @@ def list_merged_fingerprints(current_user):
     if page_size < 1 or page_size > 100:
         page_size = 10
     
-    fingerprints = firestore_get_all('fingerprints')
-    deviceinfo_list = firestore_get_all('deviceinfo')
+    fingerprints = firestore_query('fingerprints', 'workspace_id', '==', workspace_id)
+    deviceinfo = firestore_query('deviceinfo', 'workspace_id', '==', workspace_id)
     workspace_keys = ("workspace_id", "workspace", "ws_id")
 
     if workspace_id:
@@ -223,44 +223,34 @@ def list_merged_fingerprints(current_user):
                     return True
             return False
 
-        deviceinfo_filtered = [d for d in deviceinfo_list if in_workspace_rec(d)]
+        deviceinfo_filtered = [d for d in deviceinfo if in_workspace_rec(d)]
         fingerprints_filtered = [f for f in fingerprints if in_workspace_rec(f)]
     else:
-        deviceinfo_filtered = deviceinfo_list
+        deviceinfo_filtered = deviceinfo
         fingerprints_filtered = fingerprints
 
-    fingerprints_dict = {}
-    for fp in fingerprints_filtered:
-        if isinstance(fp, dict) and fp.get('fingerprint'):
-            fingerprints_dict[fp.get('fingerprint')] = fp
+    fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints_filtered if isinstance(fp, dict) and fp.get('fingerprint')}
 
     merged_data = []
     matched_count = 0
     unmatched_count = 0
     
     for device in deviceinfo_filtered:
-        fp = device.get('fingerprint')
-        
-        if fp and fp in fingerprints_dict:
-            fp_data = fingerprints_dict[fp]
-            matched_count += 1
-        else:
-            fp_data = {}
-            unmatched_count += 1
-        
+        fp_id = device.get('fingerprint')
+        fp_data = fingerprints_dict.get(fp_id, {})
         merged_entry = {
-            "request_id": fp_data.get("id", device.get("id", "")),
-            "fingerprint": fp or "",
-            "created_at": device.get("created_at", "") or fp_data.get("created_at", ""),
-            "updated_at": device.get("updated_at", "") or fp_data.get("updated_at", ""),
+            "request_id": fp_data.get("id") or device.get("id") or "",
+            "fingerprint": fp_id or "",
+            "created_at": device.get("created_at") or fp_data.get("created_at", ""),
+            "updated_at": device.get("updated_at") or fp_data.get("updated_at", ""),
             "device_type": map_device_type(device.get("device_type")),
-            "platform": device.get("platform", ""),
-            "time_zone": device.get("time_zone", "") or fp_data.get("time_zone", ""),
-            "user_agent": device.get("user_agent", "") or fp_data.get("user_agent", ""),
-            "color_depth": device.get("color_depth", "") or fp_data.get("color_depth", ""),
-            "color_gamut": device.get("color_gamut", "") or fp_data.get("color_gamut", ""),
-            "bar_visibility": device.get("bar_visibility", "") or fp_data.get("bar_visibility", ""),
-            "browser_feature_support": device.get("browser_feature_support", "") or fp_data.get("browser_feature_support", ""),
+            "platform": device.get("platform") or fp_data.get("platform", ""),
+            "time_zone": device.get("time_zone") or fp_data.get("time_zone", ""),
+            "user_agent": device.get("user_agent") or fp_data.get("user_agent", ""),
+            "color_depth": device.get("color_depth") or fp_data.get("color_depth", ""),
+            "color_gamut": device.get("color_gamut") or fp_data.get("color_gamut", ""),
+            "bar_visibility": device.get("bar_visibility") or fp_data.get("bar_visibility", ""),
+            "browser_feature_support": device.get("browser_feature_support") or fp_data.get("browser_feature_support", ""),
         }
         merged_data.append(merged_entry)
 
@@ -283,11 +273,9 @@ def list_merged_fingerprints(current_user):
         merged_data = _apply_filtering(merged_data, search_query)
     
     merged_data = _apply_sorting(merged_data, sort_field, sort_direction)
-    
-    # Apply pagination
+
     paginated_data, total_items, total_pages = _apply_pagination(merged_data, page, page_size)
     
-    # Prepare response
     response = {
         "data": paginated_data,
         "pagination": {

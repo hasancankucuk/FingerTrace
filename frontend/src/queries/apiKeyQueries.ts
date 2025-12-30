@@ -11,9 +11,3 @@ export const useGetApiKeysQuery = (workspaceId: string) => {
     enabled: !!workspaceId,
    });
 };
-
-
-//   const {
-//     data: currentUser,
-//     error: userError
-//   } = useUserQuery();

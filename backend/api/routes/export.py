@@ -1,6 +1,6 @@
 from flask import Blueprint, send_file, request, jsonify
 from helpers.jwt_token_helper import jwt_protected
-from helpers.firebase_utils import firestore_get_all
+from helpers.firebase_utils import firestore_query
 from helpers.pdf_generator import generate_fingerprints_pdf, generate_analytics_pdf
 import io
 
@@ -17,19 +17,15 @@ def export_fingerprints_pdf(current_user):
         if not workspace_id:
             return jsonify({'error': 'Workspace ID required'}), 400
         
-        # Get fingerprints
-        fingerprints = firestore_get_all('fingerprints')
+        fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
         
-        # Filter by workspace
         user_fingerprints = [
             fp for fp in fingerprints
             if isinstance(fp, dict) and fp.get('workspace') == workspace_id
         ]
         
-        # Generate PDF
         pdf_bytes = generate_fingerprints_pdf(user_fingerprints, workspace_id)
         
-        # Send file
         return send_file(
             io.BytesIO(pdf_bytes),
             mimetype='application/pdf',

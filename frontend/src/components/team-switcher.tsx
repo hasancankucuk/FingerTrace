@@ -36,6 +36,7 @@ export function TeamSwitcher({ workspaces: initialWorkspaces }: { workspaces: Wo
 
   React.useEffect(() => {
     if (!workspacesLoading && workspaces && workspaces.length > 0 && !selectedWorkspace) {
+      console.log("test")
       setWorkspace(workspaces[0]);
     }
   }, [workspaces, workspacesLoading, selectedWorkspace, setWorkspace]);

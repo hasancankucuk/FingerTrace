@@ -1,7 +1,7 @@
 from helpers.jwt_token_helper import jwt_protected
 from flask import Blueprint, request, jsonify
 from helpers.api_key_utils import generate_api_key
-from helpers.firebase_utils import firestore_delete, firestore_set, firestore_get_all, firestore_get, get_user
+from helpers.firebase_utils import firestore_delete, firestore_set, firestore_get, get_user, firestore_query, firestore_query_multi
 from helpers.api_rate_limiting import rate_limit
 
 api_keys_bp = Blueprint("api_keys", __name__)
@@ -19,57 +19,56 @@ def create_api_key(current_user):
     if not name:
         return jsonify({"error": "Missing name"}), 400
 
+    workspace_id = data.get("workspace_id") or data.get("ws_id")
+    workspace_name = data.get("workspace_name")
+    workspace_field = data.get("workspace")
+
+    if isinstance(workspace_field, dict):
+        workspace_id = workspace_id or workspace_field.get("id")
+        workspace_name = workspace_name or workspace_field.get("name") or workspace_field.get("title")
+    elif isinstance(workspace_field, str) and not workspace_name:
+        workspace_name = workspace_field
+
+    user = get_user(current_user)
+    if not user or "email" not in user:
+        return jsonify({"error": "User context not found"}), 401
+
+    existing_keys = firestore_query_multi(
+        "api_keys", 
+        "created_by", "==", user["email"],
+        "name", "==", name,
+        "workspace_id", "==", workspace_id
+    )
+
+    if existing_keys:
+        return jsonify({"error": f"An API key with the name '{name}' already exists in this workspace"}), 400
+
     key_data = generate_api_key(name, environment, status)
     if not isinstance(key_data, dict) or not key_data.get("key"):
         return jsonify({"error": "Failed to generate API key"}), 500
 
-    workspace_id = data.get("workspace_id") or data.get("ws_id")
-    workspace_name = None
-    workspace_field = data.get("workspace")
-    if isinstance(workspace_field, dict):
-        workspace_id = workspace_id or workspace_field.get("id")
-        workspace_name = workspace_field.get("name") or workspace_field.get("title")
-    elif isinstance(workspace_field, str):
-        workspace_name = workspace_field
-    workspace_name = workspace_name or data.get("workspace_name")
+    key_data.update({
+        "created_by": user["email"],
+        "workspace_id": workspace_id,
+        "workspace": workspace_name,
+        "created_at": datetime.utcnow().isoformat()
+    })
 
-    if workspace_id:
-        key_data["workspace_id"] = workspace_id
-    if workspace_name:
-        key_data["workspace"] = workspace_name
-
-    try:
-        keys = firestore_get_all("api_keys") or []
-    except Exception:
-        keys = []
-    
-    user = get_user(current_user)
-
-    for key in keys:
-        if not isinstance(key, dict):
-            continue
-        if key.get("created_by") == user["email"] and (key.get("name") == name or key.get("key") == key_data.get("key")):
-            return jsonify({"error": "API key with this name or key already exists"}), 400
-    
-    key_data["created_by"] = user["email"]
     firestore_set("api_keys", key_data["key"], key_data)
+    
     return jsonify(key_data), 201
 
 @api_keys_bp.route("/api-keys", methods=["GET"])
 @jwt_protected
 def list_api_keys(current_user):
-    keys = firestore_get_all("api_keys") or []
-    workspace_id = request.args.get("workspace_id")
     user = get_user(current_user)
-
-    keys = [
-        key for key in keys
-        if isinstance(key, dict)
-        and key.get("created_by") == user["email"]
-        and (workspace_id is None or key.get("workspace_id") == workspace_id)
-    ]
+    workspace_id = request.args.get("workspace_id")
+    keys = firestore_query("api_keys", "created_by", "==", user["email"])
+    if workspace_id:
+        keys = [key for key in keys if key.get("workspace_id") == workspace_id]
 
     return jsonify(keys), 200
+
 @api_keys_bp.route("/api-keys/<key_id>", methods=["DELETE"])
 @jwt_protected
 def delete_api_key(current_user, key_id):

@@ -1,4 +1,4 @@
-from helpers.firebase_utils import create_user, firebase_reset_password, firestore_get_all, get_user, firebase_update_user, firebase_delete_user, firestore_update, firestore_delete
+from helpers.firebase_utils import create_user, firebase_reset_password, get_user, firebase_update_user, firebase_delete_user, firestore_delete, firestore_query
 from flask import Blueprint, request, jsonify # type: ignore
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity # type: ignore
 from helpers.api_rate_limiting import rate_limit
@@ -63,13 +63,11 @@ def delete_user():
         user = get_user(uid)
         email = user["email"]
 
-        workspaces = firestore_get_all("workspaces")
-        user_workspaces = [ws for ws in workspaces if ws.get("created_by") == email]
 
+        user_workspaces = firestore_query('workspaces', 'created_by', '==', email)
         for ws in user_workspaces:
             firestore_delete("workspaces", ws["id"])
 
-        # Firebase kullanıcıyı sil
         firebase_delete_user(uid)
 
     except Exception as e:

@@ -31,7 +31,8 @@
         "password": "Şifre",
         "phone": "Telefon",
         "noWorkspace": "Çalışma alanı bulunamadı. Devam etmek için lütfen bir çalışma alanı oluşturun.",
-        "createWorkspace": "+ Çalışma Alanı Oluştur"
+        "createWorkspace": "+ Çalışma Alanı Oluştur",
+        "value": "Değer"
     },
     "nav": {
         "main_nav": "Ana Menü",
@@ -167,6 +168,7 @@
         "save_error": "Kurallar kaydedilemedi.",
         "risk": "Risk",
         "risk_level": {
+            "none": "Yok",
             "low": "Düşük",
             "medium": "Orta",
             "high": "Yüksek"

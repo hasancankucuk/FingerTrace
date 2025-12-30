@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from helpers.firebase_utils import firestore_get_all, firestore_set, get_user, db
+from helpers.firebase_utils import firestore_set, get_user, firestore_query
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
 from datetime import datetime
@@ -13,9 +13,7 @@ workspaces_bp = Blueprint("workspaces", __name__)
 def get_workspaces(current_user):
     try:
         user = get_user(current_user)
-        workspaces = db.collection("workspaces")\
-            .where("created_by", "==", user["email"])\
-            .get()
+        workspaces = firestore_query('workspaces', 'created_by', '==', user['email'])
         
         results = []
         for doc in workspaces:
@@ -32,7 +30,7 @@ def get_workspaces(current_user):
 @jwt_protected
 def get_workspace(current_user, workspace_id):
     try:
-        workspace = firestore_get_all("workspaces", workspace_id)
+        workspace = firestore_query('workspaces', 'id', '==', workspace_id)
         return jsonify(workspace), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -52,7 +50,7 @@ def create_workspace(current_user):
         if not workspace_name or workspace_name.strip() == "":
             return jsonify({"error": "Workspace name is required"}), 400
 
-        existing_names = [ws["name"] for ws in firestore_get_all("workspaces") if ws.get("created_by") == user["email"]]
+        existing_names = [ws["name"] for ws in firestore_query('workspaces', 'created_by', '==', user['email'])]
         if workspace_name in existing_names:
             return jsonify({"error": "Workspace name must be unique"}), 400
 

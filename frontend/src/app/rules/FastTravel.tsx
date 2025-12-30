@@ -11,21 +11,21 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { LOGIC_OPERATORS, OPERATORS, RiskLevel, type RuleCondition } from "@/models/RiskLevelModel";
-import { Globe, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Globe, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type FastTravelProps = {
     onConfigChange?: (config: { riskLevel: RiskLevel; conditions: RuleCondition[] }) => void;
+    fastTravelRules?: RuleCondition[];
+    riskLevel?: RiskLevel;
 };
 
-export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
+export const FastTravel = ({ onConfigChange, fastTravelRules, riskLevel }: FastTravelProps) => {
     const { t } = useTranslation();
-    const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.LOW);
+    const [currentRiskLevel, setCurrentRiskLevel] = useState<RiskLevel>(riskLevel || RiskLevel.NONE);
 
-    const [conditions, setConditions] = useState<RuleCondition[]>([
-        { id: "ft-1", logic: "IF", field: "estimated_speed", operator: "gt", value: "800" }
-    ]);
+    const [conditions, setConditions] = useState<RuleCondition[]>(fastTravelRules || []);
 
     const FAST_TRAVEL_FIELDS = useMemo(() => [
         { id: "estimated_speed", label: t("fields.estimated_speed") },
@@ -34,8 +34,8 @@ export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
     ], [t]);
 
     useEffect(() => {
-        onConfigChange?.({ riskLevel, conditions });
-    }, [riskLevel, conditions, onConfigChange]);
+        onConfigChange?.({ riskLevel: currentRiskLevel, conditions });
+    }, [currentRiskLevel, conditions, onConfigChange]);
 
     const addCondition = () => {
         const newId = Math.random().toString(36).substring(2, 9);
@@ -69,24 +69,12 @@ export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
                         </p>
                     </div>
                 </div>
-
-                <DropdownHelper
-                    dropdownItems={Object.values(RiskLevel)}
-                    onSelect={(value) => setRiskLevel(value as RiskLevel)}
-                >
-                    <Badge
-                        variant={riskLevel === RiskLevel.HIGH ? "destructive" : riskLevel === RiskLevel.MEDIUM ? "secondary" : "outline"}
-                        className="cursor-pointer capitalize px-4 py-1"
-                    >
-                        {t(`rules.risk_level.${riskLevel}`)}
-                    </Badge>
-                </DropdownHelper>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 <div className="space-y-3">
                     {conditions.map((condition, index) => (
-                        <div key={condition.id} className="group relative flex items-center gap-3 p-4 bg-muted/30 border rounded-xl transition-all hover:border-primary/50">
+                        <div key={condition.id} className="group relative flex flex-wrap items-center gap-3 p-4 bg-muted/30 border rounded-xl transition-all hover:border-primary/50">
 
                             {/* IF / AND / IF NOT Dropdown */}
                             <DropdownHelper
@@ -95,18 +83,18 @@ export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
                             >
                                 <Badge
                                     variant={condition.logic === "IF NOT" ? "destructive" : "outline"}
-                                    className="min-w-[65px] justify-center cursor-pointer shadow-sm"
+                                    className="min-w-[65px] justify-center cursor-pointer shadow-sm h-9"
                                 >
                                     {condition.logic}
                                 </Badge>
                             </DropdownHelper>
 
-                            {/* Hız, Mesafe vb. Seçimi */}
+
                             <Select
                                 value={condition.field}
                                 onValueChange={(v) => updateCondition(condition.id, { field: v })}
                             >
-                                <SelectTrigger className="w-[220px] bg-background">
+                                <SelectTrigger className="w-full sm:w-[220px] bg-background">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -116,12 +104,11 @@ export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
                                 </SelectContent>
                             </Select>
 
-                            {/* Operatör (>, <, ==) */}
                             <Select
                                 value={condition.operator}
                                 onValueChange={(v) => updateCondition(condition.id, { operator: v })}
                             >
-                                <SelectTrigger className="w-[110px] bg-background">
+                                <SelectTrigger className="w-full sm:w-[100px] bg-background">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -131,31 +118,59 @@ export const FastTravel = ({ onConfigChange }: FastTravelProps) => {
                                 </SelectContent>
                             </Select>
 
-                            {/* Değer Girişi (Örn: 800) */}
                             <Input
                                 value={condition.value}
                                 onChange={(e) => updateCondition(condition.id, { value: e.target.value })}
-                                className="w-[130px] bg-background"
+                                className="w-full sm:w-[150px] bg-background"
                                 placeholder={t("common.value") || "Value..."}
                             />
 
-                            {index === conditions.length - 1 && (
-                                <div className="flex-1 flex justify-end">
-                                    <Badge className="bg-orange-500 hover:bg-orange-600 text-white border-none px-3 py-1">
-                                        {t("rules.then_flag")}
-                                    </Badge>
-                                </div>
-                            )}
+                            <div className="flex-1" />
 
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeCondition(condition.id)}
                                 disabled={conditions.length === 1}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-destructive/10"
+                                className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-destructive/10 -ml-2 sm:ml-0"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
+
+                            {index === conditions.length - 1 && currentRiskLevel && (
+                                <div className="hidden sm:flex items-center gap-2 ml-auto pl-4 border-l animate-in fade-in slide-in-from-left-4">
+                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Then</span>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                                    <DropdownHelper
+                                        dropdownItems={Object.values(RiskLevel)}
+                                        onSelect={(value) => setCurrentRiskLevel(value as RiskLevel)}
+                                    >
+                                        <Badge
+                                            variant={currentRiskLevel === RiskLevel.HIGH ? "destructive" : currentRiskLevel === RiskLevel.MEDIUM ? "secondary" : "outline"}
+                                            className="cursor-pointer capitalize px-3 py-1 shadow-sm text-sm"
+                                        >
+                                            {t(`rules.risk_level.${currentRiskLevel}`)}
+                                        </Badge>
+                                    </DropdownHelper>
+                                </div>
+                            )}
+
+                            {index === conditions.length - 1 && currentRiskLevel && (
+                                <div className="flex sm:hidden w-full items-center justify-between mt-2 pt-2 border-t">
+                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Result</span>
+                                    <DropdownHelper
+                                        dropdownItems={Object.values(RiskLevel)}
+                                        onSelect={(value) => setCurrentRiskLevel(value as RiskLevel)}
+                                    >
+                                        <Badge
+                                            variant={currentRiskLevel === RiskLevel.HIGH ? "destructive" : currentRiskLevel === RiskLevel.MEDIUM ? "secondary" : "outline"}
+                                            className="cursor-pointer capitalize px-3 py-1 shadow-sm text-sm"
+                                        >
+                                            {t(`rules.risk_level.${currentRiskLevel}`)}
+                                        </Badge>
+                                    </DropdownHelper>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

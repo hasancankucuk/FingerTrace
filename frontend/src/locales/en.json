@@ -31,7 +31,8 @@
         "password": "Password",
         "phone": "Phone",
         "noWorkspace": "No workspace found. Please create a workspace to continue.",
-        "createWorkspace": "+ Create Workspace"
+        "createWorkspace": "+ Create Workspace",
+        "value": "Value"
     },
     "nav": {
         "main_nav": "Main Navigation",
@@ -167,6 +168,7 @@
         "save_error": "Failed to save rules.",
         "risk": "Risk",
         "risk_level": {
+            "none": "None",
             "low": "Low",
             "medium": "Medium",
             "high": "High"

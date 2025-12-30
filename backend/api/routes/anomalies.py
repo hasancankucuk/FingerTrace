@@ -29,7 +29,6 @@ def evaluate_condition(current_val, op_key, target_val):
 def save_rules():
     try:
         data = request.get_json(force=True)
-        
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
@@ -37,36 +36,56 @@ def save_rules():
             import json
             data = json.loads(data)
 
-        if isinstance(data, list):
-            for rule in data:
-                print(rule)
-                rule_type = rule.get('type')
-                if not rule_type:
-                    continue
+        if not isinstance(data, list):
+            data = [data]
 
-                rule_config = {
-                    "type": rule_type,
-                    "conditions": rule.get('conditions', []),
-                    "risk_level": rule.get('risk_level', 'low'),
-                    "updated_at": datetime.utcnow().isoformat()
-                }
-                firestore_set('settings', rule_type, rule_config)
-            
-            return jsonify({"status": "success", "message": "All rules saved"}), 200
+        for rule in data:
+            rule_type = rule.get('type')
+            workspace_id = rule.get('workspace_id')
 
-        # Tekil obje gelirse işle
-        else:
-            rule_type = data.get('type')
-            if not rule_type:
-                return jsonify({"error": "Rule type is required"}), 400
+            if not rule_type or not workspace_id or not rule.get('conditions')  or rule.get('risk_level') is None:
+                print(f"Skipping invalid rule: type={rule_type}, workspace_id={workspace_id}")
+                continue
+
+            rule_config = {
+                "type": rule_type,
+                "conditions": rule.get('conditions', []),
+                "risk_level": rule.get('risk_level', 'low'),
+                "updated_at": datetime.utcnow().isoformat(),
+                "workspace_id": workspace_id
+            }
+
+            doc_id = f"{workspace_id}_{rule_type}"
             
-            # ... tekil kaydetme mantığı ...
-            firestore_set('settings', rule_type, data)
-            return jsonify({"status": "success", "message": "Rule saved"}), 200
+            firestore_set('settings', doc_id, rule_config)
+        
+        return jsonify({"status": "success", "message": "All rules saved"}), 200
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"Error in save_rules: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@anomalies_bp.route("/get-anomaly-rules", methods=["GET"])
+def get_anomaly_rules():
+   data = request.args
+   workspace_id = data.get("workspace_id")
+   
+   if not workspace_id:
+      return jsonify({"error": "Workspace ID is required"}), 400
+
+   rules = firestore_query('settings', 'workspace_id', '==', workspace_id)
+   
+   formatted_rules = []
+   for rule in rules:
+       formatted_rules.append({
+           "type": rule.get("type"),
+           "conditions": rule.get("conditions", []),
+           "risk_level": rule.get("risk_level", "low"),
+           "workspace_id": rule.get("workspace_id")
+       })
+
+   return jsonify(formatted_rules), 200
+
 @anomalies_bp.route("/get-fast-travel", methods=["GET"])
 def get_fast_travel():
     workspace_id = request.args.get('workspace_id')
@@ -78,11 +97,13 @@ def get_fast_travel():
         anomalies = firestore_query('deviceinfo', 'is_fast_travel', '==', True)
 
     return jsonify(anomalies)
+
 @anomalies_bp.route("/get-rate-limiting", methods=["GET"])
 def get_rate_limiting():
     rate_limit_alerts = firestore_query('alerts', 'type', '==', 'Velocity Attack')
     rate_limit_alerts.sort(key=lambda x: x.get('created_at', ''), reverse=True)
     return jsonify(rate_limit_alerts), 200
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371 

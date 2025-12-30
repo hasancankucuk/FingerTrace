@@ -31,7 +31,9 @@
         "password": "Passwort",
         "phone": "Telefon",
         "noWorkspace": "Kein Arbeitsbereich gefunden. Bitte erstellen Sie einen Arbeitsbereich, um fortzufahren.",
-        "createWorkspace": "+ Arbeitsbereich erstellen"
+        "createWorkspace": "+ Arbeitsbereich erstellen",
+        "value": "Wert"
+    
     },
     "nav": {
         "main_nav": "Hauptnavigation",
@@ -165,6 +167,7 @@
         "then_flag_travel": "DANN: REISE MARKIEREN",
         "risk": "Risiko",
         "risk_level": {
+            "none": "Kein",
             "low": "Niedrig",
             "medium": "Mittel",
             "high": "Hoch"
