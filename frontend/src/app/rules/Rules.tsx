@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { AnomalyDetection } from "./AnomalyDetection";
 import { FastTravel } from "./FastTravel";
 import { RateLimiting } from "./RateLimiting";
+import { RulesSkeleton } from "./RulesSkeleton";
 import { VPNProxy } from "./VpnProxy";
 
 type RuleConfig = {
@@ -35,10 +36,8 @@ export const Rules = () => {
         isLoading: anomalyLoading,
     } = useAnomalyRulesQuery(String(workspace?.id || ""));
 
-    console.log(anomalyRules)
-
     if (anomalyLoading) {
-        return <Loader2 className="animate-spin" />;
+        return <RulesSkeleton />;
     }
 
     if (anomalyErrors) {

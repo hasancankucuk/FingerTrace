@@ -23,11 +23,10 @@ import {
 } from "@tabler/icons-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
 
