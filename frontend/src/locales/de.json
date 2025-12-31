@@ -525,6 +525,10 @@
                 "sat": "Samstag",
                 "sun": "Sonntag",
                 "closed": "Geschlossen"
+            },
+            "errors": {
+                "title": "Fehler",
+                "generic_error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
             }
         },
         "legal": {

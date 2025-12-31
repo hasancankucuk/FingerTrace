@@ -44,7 +44,8 @@ export const IdentificationDetailModal = ({ open, setOpen, table }: Identificati
                     <Accordion
                         type="single"
                         className="w-full px-4"
-                        defaultValue="location_info">
+                        defaultValue="location_info"
+                        collapsible>
                         <AccordionItem value={"location_info"}>
                             <AccordionTrigger>{t("identification.detail.location_info")}</AccordionTrigger>
                             <AccordionContent>

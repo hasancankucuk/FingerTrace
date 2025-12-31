@@ -6,7 +6,7 @@ import { BlogPost } from "./blog/BlogPost";
 import Dashboard from "./dashboard/Dashboard";
 import { Health } from "./health/Health";
 import { Identification } from "./identification/Identification";
-import { Contact } from "./landing/Contact";
+import { Contact } from "./contact/Contact";
 import { Documentation } from "./landing/Documentation";
 import { Features } from "./landing/Features";
 import { Landing } from "./landing/Landing";

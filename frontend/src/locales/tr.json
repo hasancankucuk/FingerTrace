@@ -527,6 +527,10 @@
                 "sat": "Cumartesi",
                 "sun": "Pazar",
                 "closed": "Kapalı"
+            },
+            "errors": {
+                "title": "Hata",
+                "generic_error": "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
             }
         },
         "legal": {
