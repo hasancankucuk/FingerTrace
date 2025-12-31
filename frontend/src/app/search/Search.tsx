@@ -1,161 +1,32 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useGlobalSearch } from "@/hooks/useGlobalSearch";
 import { cn } from "@/lib/utils";
-import { useGetApiKeysQuery } from "@/queries/apiKeyQueries";
-import { useFingerprintQuery } from "@/queries/fingerprintQueries";
-import { useWorkspacesQuery } from "@/queries/workspaceQueries";
-import { ChevronRight, FileText, Fingerprint, Info, Key, Layout, Library, Mail, Search as SearchIcon, Settings } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { ChevronRight, Search as SearchIcon } from "lucide-react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-
-interface SearchResult {
-    id: string;
-    title: string;
-    description: string;
-    category: "workspace" | "api_key" | "fingerprint" | "page";
-    link: string;
-    icon: React.ElementType;
-}
-
-const APP_PAGES = [
-    { title: "Dashboard", description: "Main overview and stats", link: "/dashboard", icon: Layout, keywords: ["home", "main", "start"] },
-    { title: "Account", description: "Profile, settings and security", link: "/account", icon: Settings, keywords: ["profile", "settings", "password", "user", "me"] },
-    { title: "API Keys", description: "Manage your integration keys", link: "/api-keys", icon: Key, keywords: ["tokens", "secrets", "api"] },
-    { title: "Analysis", description: "Detailed fingerprint analytics", link: "/analysis", icon: Info, keywords: ["stats", "charts", "data"] },
-    { title: "Identification", description: "Real-time fingerprint logs", link: "/identification", icon: Fingerprint, keywords: ["logs", "detection", "history"] },
-    { title: "Documentation", description: "Guides and API reference", link: "/docs", icon: Library, keywords: ["help", "guides", "api ref"] },
-    { title: "Features", description: "FingerTrace core capabilities", link: "/features", icon: Layout, keywords: ["what is", "about"] },
-    { title: "Contact", description: "Get in touch with support", link: "/contact", icon: Mail, keywords: ["support", "help", "email"] },
-    { title: "Terms of Service", description: "Legal terms and conditions", link: "/terms", icon: FileText, keywords: ["legal", "contract"] },
-    { title: "Privacy Policy", description: "How we handle your data", link: "/privacy", icon: FileText, keywords: ["legal", "data", "gdpr"] },
-];
 
 export function Search() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    // Get query from URL or local state
     const query = searchParams.get("q") || "";
+    const [inputValue, setInputValue] = useState(query);
 
-    const [loading, setLoading] = useState(false);
-    const [results, setResults] = useState<SearchResult[]>([]);
-    const [inputLocal, setInputLocal] = useState(query);
-
-    const {
-        data: workspaces = [],
-        error: workspacesError
-    } = useWorkspacesQuery();
-
-    if (workspacesError) {
-        toast.error(workspacesError instanceof Error ? workspacesError.message : "Error loading workspaces");
-    }
-
-
-    useEffect(() => {
-        if (!inputLocal.trim()) {
-            setResults([]);
-            if (query) navigate("/search", { replace: true });
-            return;
-        }
-    }, [inputLocal, query, navigate]);
-
-    useEffect(() => {
-        if (!query.trim()) {
-            setResults([]);
-            return;
-        }
-
-        const performSearch = async () => {
-            setLoading(true);
-            try {
-                const searchResults: SearchResult[] = [];
-                const lowQuery = query.toLowerCase();
-
-                APP_PAGES.forEach(page => {
-                    if (
-                        page.title.toLowerCase().includes(lowQuery) ||
-                        page.description.toLowerCase().includes(lowQuery) ||
-                        page.keywords.some(k => k.includes(lowQuery))
-                    ) {
-                        searchResults.push({
-                            id: `page-${page.link}`,
-                            title: page.title,
-                            description: page.description,
-                            category: "page",
-                            link: page.link,
-                            icon: page.icon
-                        });
-                    }
-                });
-
-                const detailPromises = workspaces.slice(0, 5).map(async (ws) => {
-                    if (!ws.id) return;
-                    try {
-                        const {
-                            data: keys = []
-                        } = useGetApiKeysQuery(ws.id);
-                        const {
-                            data: fingerprints
-                        } = useFingerprintQuery(ws.id, {
-                            page_size: 100,
-                            page: 0,
-                            sort_field: "",
-                            sort_direction: "asc",
-                            search: ""
-                        });
-
-
-                        keys?.forEach(key => {
-                            if (key.name?.toLowerCase().includes(lowQuery) ||
-                                key.environment?.toLowerCase().includes(lowQuery)) {
-                                searchResults.push({
-                                    id: key.key,
-                                    title: key.name || "Unnamed Key",
-                                    description: `API Key in ${ws.name} (${key.environment || "dev"})`,
-                                    category: "api_key",
-                                    link: "/api-keys",
-                                    icon: Key
-                                });
-                            }
-                        });
-
-                        fingerprints?.data?.forEach(fp => {
-                            if (fp.fingerprint.toLowerCase().includes(lowQuery) ||
-                                fp.platform?.toLowerCase().includes(lowQuery) ||
-                                fp.device_type?.toLowerCase().includes(lowQuery)) {
-                                searchResults.push({
-                                    id: fp.request_id || fp.fingerprint,
-                                    title: fp.fingerprint.substring(0, 16) + "...",
-                                    description: `Fingerprint in ${ws.name} (${fp.platform}, ${fp.device_type})`,
-                                    category: "fingerprint",
-                                    link: "/identification",
-                                    icon: Fingerprint
-                                });
-                            }
-                        });
-                    } catch (e) {
-                        console.error(`Error searching in workspace ${ws.id}:`, e);
-                    }
-                });
-
-                await Promise.all(detailPromises);
-                setResults(searchResults);
-            } catch (err) {
-                console.error("Search error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        performSearch();
-    }, [query]);
+    // Use our new hook!
+    const { results, isLoading } = useGlobalSearch(query);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        if (inputLocal.trim()) {
-            navigate(`/search?q=${encodeURIComponent(inputLocal.trim())}`);
+        if (inputValue.trim()) {
+            setSearchParams({ q: inputValue.trim() });
+        } else {
+            setSearchParams({});
         }
     };
 
@@ -173,14 +44,14 @@ export function Search() {
                 <Input
                     className="pl-10 h-12 text-lg shadow-sm focus-visible:ring-1 focus-visible:ring-primary transition-all"
                     placeholder={t("search.input_placeholder")}
-                    value={inputLocal}
-                    onChange={(e) => setInputLocal(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     autoFocus
                 />
                 <button type="submit" className="hidden" />
             </form>
 
-            {loading ? (
+            {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Spinner className="size-10 text-primary" />
                     <p className="text-muted-foreground animate-pulse">{t("search.searching")}</p>
