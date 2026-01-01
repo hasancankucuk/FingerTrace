@@ -112,6 +112,11 @@ export function Identification() {
       accessorKey: "created_at",
       header: t("common.created_at"),
       cell: ({ row }) => new Date(row.original.created_at).toLocaleString(),
+    },
+    {
+      accessorKey: "flag",
+      header: t("common.flag"),
+      cell: ({ row }) => row.original.flag,
     }
   ], [t]);
 

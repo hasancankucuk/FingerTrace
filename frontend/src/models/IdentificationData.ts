@@ -11,4 +11,5 @@ export interface MergedFingerprint {
   color_gamut: string;
   bar_visibility: string; // JSON string
   browser_feature_support: string; // JSON string
+  flag: string;
 }

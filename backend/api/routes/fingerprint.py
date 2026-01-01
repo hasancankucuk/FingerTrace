@@ -269,6 +269,15 @@ def list_merged_fingerprints(current_user):
         for device in deviceinfo_filtered:
             fp_id = device.get('fingerprint')
             fp_data = fingerprints_dict.get(fp_id, {})
+
+            flags = []
+            if device.get("is_vpn") or fp_data.get("is_vpn"):
+                 flags.append("VPN")
+            if device.get("is_fast_travel") or fp_data.get("is_fast_travel"):
+                 flags.append("Fast Travel")
+            
+            flag_str = ", ".join(flags) if flags else "Clean"
+
             merged_entry = {
                 "request_id": fp_data.get("id") or device.get("id") or "",
                 "fingerprint": fp_id or "",
@@ -288,6 +297,7 @@ def list_merged_fingerprints(current_user):
                 "vpn_details": device.get("vpn_details") or fp_data.get("vpn_details", {}),
                 "previous_location": device.get("previous_location") or fp_data.get("previous_location", {}),
                 "current_location": device.get("current_location") or fp_data.get("current_location", {}),
+                "flag": flag_str,
             }
             merged_data.append(merged_entry)
         
@@ -334,8 +344,6 @@ def list_merged_fingerprints(current_user):
             "total_items": original_count
         }
     
-    # Don't cache the filtered response here, as it depends on mutable args like search/page
-    # set_cached_data("fingerprints", workspace_id, days, response)
     return jsonify(response), 200
 
 
