@@ -14,5 +14,4 @@ echo 'Environment file created:' && ls -la .env && cat .env
 
 echo "Starting backend API with Gunicorn..."
 # Flask app'in main.py içindeki 'app' objesini çalıştırıyoruz
-# exec gunicorn --worker-class eventlet -w 1 -b 0.0.0.0:5000 main:app
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:5000 main:app
+exec gunicorn -w 1 --threads 50 -b 0.0.0.0:5000 main:app
