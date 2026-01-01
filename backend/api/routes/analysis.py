@@ -3,7 +3,6 @@ from helpers.redis_client import get_cached_data, set_cached_data
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
 from flask import Blueprint, jsonify, request
-import random
 import datetime
 
 from helpers.get_browser_from_au import get_browser_from_ua, top_n
@@ -18,32 +17,33 @@ def analysis(current_user):
     try:
         days = int(request.args.get("days", 7))
         days = max(1, min(days, 365))
-
-        user = get_user(current_user)
         workspace_id = request.args.get("workspace_id")
         
         if not workspace_id:
             return jsonify({"error": "Workspace ID is required"}), 400
 
+
         cached = get_cached_data("analysis", workspace_id, days)
         if cached:
             return jsonify(cached)
 
+        user = get_user(current_user)
+        user_email = user.get("email")
+
+
         today = datetime.date.today()
         start_date = today - datetime.timedelta(days=days)
         start_datetime = datetime.datetime.combine(start_date, datetime.time.min)
+       
+        api_keys_docs = firestore_query_multi(
+            "api_keys", 
+            "workspace_id", "==", workspace_id,
+            "created_by", "==", user_email
+        )
 
-        api_keys_docs = firestore_query("api_keys", "workspace_id", "==", workspace_id)
+        user_api_key_ids = [d.get("id") or d.get("key") for d in api_keys_docs if (d.get("id") or d.get("key"))]
         
-        user_api_key_ids = []
-        for data in api_keys_docs:
-             # data is already a dict
-             if data.get("created_by") == user.get("email"): 
-                  key_id = data.get("id") or data.get("key")
-                  if key_id:
-                      user_api_key_ids.append(key_id)
-        
-        print(f"DEBUG: Found {len(api_keys_docs)} api_keys, {len(user_api_key_ids)} match user {user.get('email')}")
+        print(f"DEBUG: Found {len(api_keys_docs)} api_keys for user {user_email}")
 
         if not user_api_key_ids:
              return jsonify({
@@ -62,28 +62,20 @@ def analysis(current_user):
             "created_at", ">=", start_datetime.isoformat()
         )            
         
-        user_fingerprints = []
-        for fp in fingerprints_docs:
-            if fp.get("api_key") in user_api_key_ids:
-                user_fingerprints.append(fp)
-        
-        print(f"DEBUG: Found {len(fingerprints_docs)} total fps, {len(user_fingerprints)} match user api keys")
+        user_fingerprints = [fp for fp in fingerprints_docs if fp.get("api_key") in user_api_key_ids]
 
         deviceinfo_docs = firestore_query_multi(
             "deviceinfo", 
             "workspace", "==", workspace_id, 
             "created_at", ">=", start_datetime.isoformat()
         )
-            
-        user_deviceinfo = []
-        for d in deviceinfo_docs:
-            if d.get("api_key") in user_api_key_ids:
-                user_deviceinfo.append(d)
+        
+        user_deviceinfo = [d for d in deviceinfo_docs if d.get("api_key") in user_api_key_ids]
 
         api_usage = []
         api_usage_labels = []
-        
         fingerprints_by_date = {}
+
         for fp in user_fingerprints:
             created_at = fp.get("created_at")
             if created_at:
@@ -91,45 +83,36 @@ def analysis(current_user):
                 fingerprints_by_date[date_str] = fingerprints_by_date.get(date_str, 0) + 1
 
         for i in range(days - 1, -1, -1):
-            day = today - datetime.timedelta(days=i)
-            day_str = str(day)
+            day_str = str(today - datetime.timedelta(days=i))
             api_usage_labels.append(day_str)
             api_usage.append(fingerprints_by_date.get(day_str, 0))
 
-        def count_unique_visitors_from_fps(fps):
-            ids = set()
+        def count_unique_visitors(fps):
+            visitor_set = set()
             for f in fps:
-                val = (
-                    f.get("device_id")
-                    or f.get("fingerprint")
-                    or f.get("fp_id")
-                    or f.get("id")
-                )
+                val = f.get("device_id") or f.get("fingerprint") or f.get("fp_id") or f.get("id")
                 if val:
-                    ids.add(str(val))
-                    continue
-                key_tuple = (f.get("ip"), f.get("user_agent"), f.get("origin"))
-                ids.add(str(key_tuple))
-            return len(ids)
+                    visitor_set.add(str(val))
+                else:
+                    key_tuple = (f.get("ip"), f.get("user_agent"), f.get("origin"))
+                    visitor_set.add(str(key_tuple))
+            return len(visitor_set)
 
-        unique_visitors = count_unique_visitors_from_fps(user_fingerprints)
-
-        events_per_visitor = (
-            round(len(user_fingerprints) / unique_visitors, 2) if unique_visitors else 0
-        )
+        unique_visitors = count_unique_visitors(user_fingerprints)
+        events_per_visitor = round(len(user_fingerprints) / unique_visitors, 2) if unique_visitors else 0
 
         browser_list = []
         for d in user_deviceinfo:
             browser = d.get('browser') or get_browser_from_ua(d.get('user_agent') or "")
-            if browser:
-                browser_list.append(browser)
+            if browser: browser_list.append(browser)
         top_browsers = top_n(browser_list)
 
         timezone_list = []
         for d in user_deviceinfo:
-            timezone = d.get('time_zone') or get_country_from_timezone(d.get('time_zone'))
-            if timezone:
-                timezone_list.append(timezone)
+            tz_val = d.get('time_zone')
+            if tz_val:
+                country = get_country_from_timezone(tz_val) if "/" in str(tz_val) else tz_val
+                timezone_list.append(country)
         top_timezones = top_n(timezone_list)
 
         result = {
@@ -143,8 +126,9 @@ def analysis(current_user):
         }
         
         set_cached_data("analysis", workspace_id, days, result)
-        
         return jsonify(result)
+
     except Exception as e:
-        print(f"Analysis error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
