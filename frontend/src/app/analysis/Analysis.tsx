@@ -6,6 +6,7 @@ import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { useSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useAnalysisQuery } from "@/queries/analysisQueries";
+import { downloadBlob, exportAnalyticsPDF } from "@/services/export";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -45,6 +46,23 @@ export const Analysis = () => {
       || analysisData.uniqueVisitors)) {
     toast.info(t("analysis.no_data"));
   }
+
+  const handlePDFExport = async () => {
+    if (!workspace?.id || !analysisData) {
+      toast.error('Workspace or data not found');
+      return;
+    }
+
+    try {
+      toast.info('PDF oluşturuluyor...');
+      const blob = await exportAnalyticsPDF(workspace.id, analysisData);
+      downloadBlob(blob, `analytics_${period}days_${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('PDF indirildi!');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('PDF export başarısız oldu');
+    }
+  };
 
 
   const chartConfig = {
@@ -102,6 +120,7 @@ export const Analysis = () => {
                     { key: 'topTimezones', label: 'Top Timezones' },
                   ]}
                   filename={`analytics_${period}days_${new Date().toISOString().split('T')[0]}`}
+                  onExportPDF={handlePDFExport}
                   disabled={isLoading}
                 />
               </div>

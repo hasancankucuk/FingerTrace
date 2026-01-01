@@ -125,22 +125,23 @@ def generate_fingerprints_pdf(fingerprints, workspace_name="Default"):
     
     if fingerprints:
         # Prepare table data
-        headers = ["Fingerprint", "Device Type", "Platform", "Browser", "Created At"]
+        headers = ["Date", "Device", "Platform", "IP Address", "Fingerprint (Partial)"]
         rows = [headers]
         
-        for fp in fingerprints[:100]:  # Limit to 100 for PDF
+        for fp in fingerprints[:200]:  # Limit to 200 for PDF
             rows.append([
-                fp.get('fingerprint', '')[:20] + '...' if len(fp.get('fingerprint', '')) > 20 else fp.get('fingerprint', ''),
-                fp.get('device_type', ''),
-                fp.get('platform', ''),
-                fp.get('browser', ''),
-                fp.get('created_at', '')[:10] if fp.get('created_at') else ''
+                fp.get('created_at', '')[:16].replace('T', ' '),
+                fp.get('device_type', 'Unknown'),
+                fp.get('platform', 'Unknown'),
+                fp.get('ip', 'N/A'),
+                (fp.get('fingerprint', '')[:16] + '...') if len(fp.get('fingerprint', '')) > 16 else fp.get('fingerprint', '')
             ])
         
-        pdf.add_table(rows, col_widths=[2*inch, 1*inch, 1*inch, 1*inch, 1.5*inch])
+        # Adjust column widths for A4
+        pdf.add_table(rows, col_widths=[1.2*inch, 1.0*inch, 1.0*inch, 1.2*inch, 2.5*inch])
         
-        if len(fingerprints) > 100:
-            pdf.add_paragraph(f"Note: Showing first 100 of {len(fingerprints)} records")
+        if len(fingerprints) > 200:
+            pdf.add_paragraph(f"Note: Showing first 200 of {len(fingerprints)} records")
     else:
         pdf.add_paragraph("No fingerprint data available")
     
@@ -163,27 +164,42 @@ def generate_analytics_pdf(analytics_data, workspace_name="Default"):
     
     metrics_data = [
         ["Metric", "Value"],
-        ["Total Usage", str(analytics_data.get('usage', 0))],
-        ["Unique Visitors", str(analytics_data.get('uniqueVisitors', 0))],
+        ["Total Usage", f"{analytics_data.get('usage', 0):,}"],
+        ["Unique Visitors", f"{analytics_data.get('uniqueVisitors', 0):,}"],
         ["Events per Visitor", str(analytics_data.get('eventsPerVisitor', 0))],
     ]
     
     pdf.add_table(metrics_data, col_widths=[3*inch, 2*inch])
     
+    # Usage by day
+    if analytics_data.get('apiUsage'):
+        pdf.add_section("Daily Usage (Recent)")
+        usage_headers = ["Date", "Requests"]
+        usage_rows = [usage_headers]
+        
+        labels = analytics_data.get('apiUsageLabels', [])
+        values = analytics_data.get('apiUsage', [])
+        
+        # Take last 14 days if exists
+        for i in range(max(0, len(labels)-14), len(labels)):
+            usage_rows.append([labels[i], str(values[i])])
+            
+        pdf.add_table(usage_rows, col_widths=[3*inch, 2*inch])
+
     # Top browsers
     if analytics_data.get('topBrowsers'):
         pdf.add_section("Top Browsers")
-        browser_data = [["Browser", "Count"]]
+        browser_data = [["Browser", "Status"]] # Status placeholder or just the list
         for browser in analytics_data['topBrowsers'][:10]:
-            browser_data.append([str(browser), "-"])
+            browser_data.append([str(browser), "Tracked"])
         pdf.add_table(browser_data, col_widths=[3*inch, 2*inch])
     
     # Top timezones
     if analytics_data.get('timezones'):
-        pdf.add_section("Top Timezones")
-        tz_data = [["Timezone", "Count"]]
+        pdf.add_section("Top Countries/Locations")
+        tz_data = [["Location", "Status"]]
         for tz in analytics_data['timezones'][:10]:
-            tz_data.append([str(tz), "-"])
+            tz_data.append([str(tz), "Active"])
         pdf.add_table(tz_data, col_widths=[3*inch, 2*inch])
     
     return pdf.generate()
