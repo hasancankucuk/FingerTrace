@@ -5,7 +5,11 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-export const useSocket = (workspaceId?: string) => {
+export const useSocket = (
+    workspaceId: string | undefined,
+    eventName: string,
+    queryKeyToInvalidate?: any[]
+) => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -29,17 +33,19 @@ export const useSocket = (workspaceId?: string) => {
 
         const handleUpdate = (data: { workspace_id: string }) => {
             if (data.workspace_id === workspaceId) {
-                console.log("Analysis update received via socket");
-                queryClient.invalidateQueries({ queryKey: ['analysis', workspaceId] });
+                console.log(`${eventName} received via socket`);
+                if (queryKeyToInvalidate) {
+                    queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
+                }
             }
         };
 
-        socket.on('analysis_update', handleUpdate);
+        socket.on(eventName, handleUpdate);
 
         return () => {
-            socket?.off('analysis_update', handleUpdate);
+            socket?.off(eventName, handleUpdate);
         };
-    }, [workspaceId, queryClient]);
+    }, [workspaceId, queryClient, eventName, JSON.stringify(queryKeyToInvalidate)]);
 
     return socket;
 };

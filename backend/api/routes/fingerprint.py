@@ -116,10 +116,10 @@ def create_fingerprint(current_user):
 
     firestore_set('fingerprints', doc_id, data)
 
-    # Emit Socket Event
     if workspace_id:
         try:
             socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+            socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
         except Exception as e:
             print(f"Socket emit error: {e}")
 
@@ -140,7 +140,6 @@ def update_fingerprint(current_user, doc_id):
     data['updated_by'] = current_user
     firestore_update('fingerprints', doc_id, data)
     
-    # Emit Socket Event
     workspace_id = data.get('workspace_id') or data.get('workspace')
     if isinstance(workspace_id, dict):
         workspace_id = workspace_id.get('id')
@@ -148,6 +147,7 @@ def update_fingerprint(current_user, doc_id):
     if workspace_id:
         try:
             socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+            socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
         except Exception as e:
             print(f"Socket emit error: {e}")
     return jsonify({'message': 'Fingerprint updated'}), 200
@@ -309,6 +309,12 @@ def list_merged_fingerprints(current_user):
     merged_data = _apply_sorting(merged_data, sort_field, sort_direction)
 
     paginated_data, total_items, total_pages = _apply_pagination(merged_data, page, page_size)
+
+    if workspace_id:
+        try:
+            socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+        except Exception as e:
+            print(f"Socket emit error: {e}")
     
     response = {
         "data": paginated_data,

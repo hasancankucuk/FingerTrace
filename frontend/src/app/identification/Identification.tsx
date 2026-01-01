@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { MergedFingerprint } from "@/models/IdentificationData";
 import { useFingerprintQuery } from "@/queries/fingerprintQueries";
@@ -65,13 +66,13 @@ export function Identification() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [open, setOpen] = useState(false);
 
-  // Debounce logic for search
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+  
+  useSocket(workspace?.id, 'fingerprint_update', ['fingerprint', workspace?.id]);
 
-  // Data Fetching
   const {
     data: fingerprintData,
     isLoading,
@@ -90,7 +91,6 @@ export function Identification() {
     }
   }, [fingerprintError, t]);
 
-  // Column Definitions
   const columns = useMemo<ColumnDef<MergedFingerprint>[]>(() => [
     {
       accessorKey: "fingerprint",
@@ -116,7 +116,6 @@ export function Identification() {
     }
   ], [t]);
 
-  // Export columns definition
   const exportColumns: ExportColumn[] = useMemo(() => [
     { key: 'fingerprint', label: 'Fingerprint' },
     { key: 'device_type', label: 'Device Type' },

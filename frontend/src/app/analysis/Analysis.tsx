@@ -25,7 +25,7 @@ export const Analysis = () => {
   const { workspace } = useWorkspace();
   const { t } = useTranslation();
 
-  useSocket(workspace?.id);
+  useSocket(workspace?.id, 'analysis_update', ['analysis', workspace?.id]);
 
   const {
     data: analysisData,

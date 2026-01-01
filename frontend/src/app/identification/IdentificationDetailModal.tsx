@@ -29,7 +29,7 @@ export const IdentificationDetailModal = ({ open, setOpen, table }: Identificati
 
     return (
         <Drawer open={open} onOpenChange={setOpen} direction="right">
-            <DrawerTrigger>
+            <DrawerTrigger asChild>
                 <Button variant="outline" size="icon">
                     <Info className="h-4 w-4" />
                 </Button>
