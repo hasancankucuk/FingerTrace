@@ -12,6 +12,7 @@ from helpers.firebase_utils import (
     firestore_query
 )
 from helpers.api_rate_limiting import rate_limit
+from socket_extensions import socketio
 
 from datetime import datetime
 import re
@@ -114,6 +115,13 @@ def create_fingerprint(current_user):
 
     firestore_set('fingerprints', doc_id, data)
 
+    # Emit Socket Event
+    if workspace_id:
+        try:
+            socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+        except Exception as e:
+            print(f"Socket emit error: {e}")
+
     return jsonify({
         'message': 'Fingerprint created',
         'id': doc_id,
@@ -130,6 +138,17 @@ def update_fingerprint(current_user, doc_id):
     data['updated_at'] = datetime.utcnow().isoformat()
     data['updated_by'] = current_user
     firestore_update('fingerprints', doc_id, data)
+    
+    # Emit Socket Event
+    workspace_id = data.get('workspace_id') or data.get('workspace')
+    if isinstance(workspace_id, dict):
+        workspace_id = workspace_id.get('id')
+        
+    if workspace_id:
+        try:
+            socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+        except Exception as e:
+            print(f"Socket emit error: {e}")
     return jsonify({'message': 'Fingerprint updated'}), 200
 
 @rate_limit('fingerprint')

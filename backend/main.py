@@ -5,6 +5,10 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+from socket_extensions import socketio
+import eventlet
+eventlet.monkey_patch()
+from flask_socketio import SocketIO, emit
 
 from api.routes import (
     auth_bp, login_bp, fingerprint_bp, health_bp, analysis_bp,
@@ -18,7 +22,7 @@ ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 
-# Fix for handling X-Forwarded-For headers behind a proxy (Cloudflare -> Caddy -> Flask)
+
 from werkzeug.middleware.proxy_fix import ProxyFix
 # x_for=1: Trust the first X-Forwarded-For header (from Caddy)
 # x_proto=1: Trust the X-Forwarded-Proto header (https)
@@ -27,8 +31,12 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # x_prefix=1: Trust the X-Forwarded-Prefix header
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
-allowed_origins = os.getenv("ALLOWED_ORIGINS",   "*").split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=True)
+
+redis_url = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', 6379)}/0"
+socketio.init_app(app, cors_allowed_origins="*", message_queue=redis_url, async_mode='eventlet')
+import helpers.socket_events
 
 # JWT
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
@@ -59,4 +67,4 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True, use_reloader=False)

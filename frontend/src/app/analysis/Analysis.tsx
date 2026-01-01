@@ -3,6 +3,7 @@ import { HttpErrorHandler } from "@/components/helpers/HttpErrorHandler";
 import { CardSkeleton } from "@/components/landing/CardSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
+import { useSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useAnalysisQuery } from "@/queries/analysisQueries";
 import { useState } from "react";
@@ -23,6 +24,8 @@ export const Analysis = () => {
   const [period, setPeriod] = useState<number>(7);
   const { workspace } = useWorkspace();
   const { t } = useTranslation();
+
+  useSocket(workspace?.id);
 
   const {
     data: analysisData,
