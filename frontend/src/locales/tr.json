@@ -33,7 +33,8 @@
         "noWorkspace": "Çalışma alanı bulunamadı. Devam etmek için lütfen bir çalışma alanı oluşturun.",
         "createWorkspace": "+ Çalışma Alanı Oluştur",
         "value": "Değer",
-        "flag": "Bayrak"
+        "flag": "Bayrak",
+        "go_to_app": "Uygulamaya Git"
     },
     "nav": {
         "main_nav": "Ana Menü",

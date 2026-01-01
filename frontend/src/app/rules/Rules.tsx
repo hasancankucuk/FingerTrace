@@ -95,46 +95,56 @@ export const Rules = () => {
     };
 
     return (
-        <Card className="w-full max-w-4xl shadow-lg border-t-4 border-t-destructive">
-            <div className="p-6 space-y-8">
-                <AnomalyDetection
-                    onConfigChange={setAnomalyDetectionConfig}
-                    anomalyRules={getRuleConditions("anomaly_detection")}
-                    riskLevel={getRuleRiskLevel("anomaly_detection")}
-                />
-                <Separator className="h-px bg-border" />
+        <div className="max-w-4xl mx-auto space-y-6 p-6">
+            <Card>
+                <div className="space-y-0">
+                    <div className="pt-6">
+                        <AnomalyDetection
+                            onConfigChange={setAnomalyDetectionConfig}
+                            anomalyRules={getRuleConditions("anomaly_detection")}
+                            riskLevel={getRuleRiskLevel("anomaly_detection")}
+                        />
+                    </div>
+                    <Separator className="h-px bg-border" />
 
-                <RateLimiting
-                    onConfigChange={setRateLimitingConfig}
-                    rateLimitingRules={getRuleConditions("rate_limiting")}
-                    riskLevel={getRuleRiskLevel("rate_limiting")}
-                />
-                <Separator className="h-px bg-border" />
+                    <div className="pt-6">
+                        <RateLimiting
+                            onConfigChange={setRateLimitingConfig}
+                            rateLimitingRules={getRuleConditions("rate_limiting")}
+                            riskLevel={getRuleRiskLevel("rate_limiting")}
+                        />
+                    </div>
+                    <Separator className="h-px bg-border" />
 
-                <FastTravel
-                    onConfigChange={setFastTravelConfig}
-                    fastTravelRules={getRuleConditions("fast_travel")}
-                    riskLevel={getRuleRiskLevel("fast_travel")}
-                />
-                <Separator className="h-px bg-border" />
+                    <div className="pt-6">
+                        <FastTravel
+                            onConfigChange={setFastTravelConfig}
+                            fastTravelRules={getRuleConditions("fast_travel")}
+                            riskLevel={getRuleRiskLevel("fast_travel")}
+                        />
+                    </div>
+                    <Separator className="h-px bg-border" />
 
-                <VPNProxy
-                    onConfigChange={setVpnProxyConfig}
-                    vpnProxyRules={getRuleConditions("vpn_proxy")}
-                    riskLevel={getRuleRiskLevel("vpn_proxy")}
-                />
-            </div>
+                    <div className="pt-6">
+                        <VPNProxy
+                            onConfigChange={setVpnProxyConfig}
+                            vpnProxyRules={getRuleConditions("vpn_proxy")}
+                            riskLevel={getRuleRiskLevel("vpn_proxy")}
+                        />
+                    </div>
+                </div>
 
-            <CardFooter className="border-t p-6 bg-muted/20">
-                <Button
-                    className="w-full shadow-md font-bold uppercase tracking-wide"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                >
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {t("rules.save_all")}
-                </Button>
-            </CardFooter>
-        </Card>
+                <CardFooter className="border-t p-6 bg-muted/20">
+                    <Button
+                        className="w-full shadow-md font-bold uppercase tracking-wide"
+                        onClick={handleSave}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        {t("rules.save_all")}
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
     );
 };

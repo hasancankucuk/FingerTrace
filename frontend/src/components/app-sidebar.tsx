@@ -75,7 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link
-                to="/dashboard"
+                to={workspaces.length > 0 ? "/identification" : "/dashboard"}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <div className="h-8 w-8 rounded-lg flex items-center justify-center">

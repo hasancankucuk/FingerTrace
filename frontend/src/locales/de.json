@@ -33,7 +33,8 @@
         "noWorkspace": "Kein Arbeitsbereich gefunden. Bitte erstellen Sie einen Arbeitsbereich, um fortzufahren.",
         "createWorkspace": "+ Arbeitsbereich erstellen",
         "value": "Wert",
-        "flag": "Flag"
+        "flag": "Flag",
+        "go_to_app": "Zur App"
     },
     "nav": {
         "main_nav": "Hauptnavigation",

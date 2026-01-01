@@ -1,12 +1,13 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Copy, Check } from "lucide-react"
+import { useWorkspacesQuery } from "@/queries/workspaceQueries"
+import { Check, Copy } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"
-import { useTranslation } from "react-i18next"
 
 const npmInstall = `npm install trace-sdk`
 const yarnInstall = `yarn add trace-sdk`
@@ -72,6 +73,8 @@ export default function Dashboard() {
     code: false,
   })
 
+  const { data: workspaces = [], isLoading: isWorkspacesLoading } = useWorkspacesQuery()
+
   const handleCopy = async (text: string, type: "npm" | "yarn" | "code") => {
     try {
       await navigator.clipboard.writeText(text)
@@ -97,6 +100,12 @@ export default function Dashboard() {
       </Button>
     </div>
   )
+
+  useEffect(() => {
+    if (platform === "web" && !isWorkspacesLoading && workspaces.length > 0) {
+      navigate("/identification", { replace: true });
+    }
+  }, [workspaces, isWorkspacesLoading, platform, navigate]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-6">

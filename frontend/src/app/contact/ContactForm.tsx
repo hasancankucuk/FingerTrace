@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle, Loader2, Mail, Send } from "lucide-react"
-import React, { useState } from "react"
+import React from "react"
 import { useTranslation } from "react-i18next"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -10,61 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
-import { ContactFormData, InquiryTypes, type ContactFormDataInterface } from "@/models/ContactForm"
-import { submitContactForm } from "@/services/contact"
+import { useContactForm } from "@/hooks/useContactForm"
+import { InquiryTypes } from "@/models/ContactForm"
 
 
 export const ContactForm = () => {
     const { t } = useTranslation("landing")
-    const [formData, setFormData] = useState<ContactFormDataInterface>(ContactFormData)
-    const [status, setStatus] = useState<{
-        isSubmitting: boolean;
-        isSubmitted: boolean;
-        error: string | null;
-        referenceId: string | null;
-    }>({
-        isSubmitting: false,
-        isSubmitted: false,
-        error: null,
-        referenceId: null,
-    })
-
-    const isFormValid = formData.name && formData.email && formData.subject && formData.message && formData.inquiry_type
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { id, value } = e.target
-        setFormData(prev => ({ ...prev, [id]: value }))
-    }
-
-    const handleSelectChange = (value: string) => {
-        setFormData(prev => ({ ...prev, inquiry_type: value }))
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setStatus(prev => ({ ...prev, isSubmitting: true, error: null }))
-
-        try {
-            const response = await submitContactForm(formData)
-            setStatus({
-                isSubmitting: false,
-                isSubmitted: true,
-                referenceId: response.reference_id,
-                error: null
-            })
-        } catch (err) {
-            setStatus(prev => ({
-                ...prev,
-                isSubmitting: false,
-                error: t("contact.errors.generic_error")
-            }))
-        }
-    }
-
-    const resetForm = () => {
-        setFormData(ContactFormData)
-        setStatus({ isSubmitting: false, isSubmitted: false, error: null, referenceId: null })
-    }
+    const {
+        formData,
+        status,
+        isFormValid,
+        handleChange,
+        handleSelectChange,
+        handleSubmit,
+        resetForm
+    } = useContactForm()
 
     return (
         <Card className="w-full max-w-2xl mx-auto overflow-hidden transition-all duration-300">

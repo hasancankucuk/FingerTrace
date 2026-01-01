@@ -24,12 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { MergedFingerprint } from "@/models/IdentificationData";
@@ -51,13 +45,13 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ChevronUp,
-  Flag,
-  Search,
-  ShieldCheck,
+  Search
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+import { FlagCell } from "@/components/identification/FlagCell";
 import { IdentificationDetailModal } from "./IdentificationDetailModal";
 
 export function Identification() {
@@ -124,37 +118,7 @@ export function Identification() {
     {
       accessorKey: "flag",
       header: t("common.flag"),
-      cell: ({ row }) => {
-        const flag = row.original.flag;
-
-        if (!flag || flag === "Clean") {
-          return (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ShieldCheck className="h-4 w-4 text-green-500" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Clean</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          );
-        }
-
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Flag className="h-4 w-4 text-destructive" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{flag}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
+      cell: ({ row }) => <FlagCell flag={row.original.flag} />,
     }
   ], [t]);
 
