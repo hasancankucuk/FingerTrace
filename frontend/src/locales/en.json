@@ -32,7 +32,8 @@
         "phone": "Phone",
         "noWorkspace": "No workspace found. Please create a workspace to continue.",
         "createWorkspace": "+ Create Workspace",
-        "value": "Value"
+        "value": "Value",
+        "flag": "Flag"
     },
     "nav": {
         "main_nav": "Main Navigation",

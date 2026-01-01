@@ -32,7 +32,8 @@
         "phone": "Telefon",
         "noWorkspace": "Çalışma alanı bulunamadı. Devam etmek için lütfen bir çalışma alanı oluşturun.",
         "createWorkspace": "+ Çalışma Alanı Oluştur",
-        "value": "Değer"
+        "value": "Değer",
+        "flag": "Bayrak"
     },
     "nav": {
         "main_nav": "Ana Menü",

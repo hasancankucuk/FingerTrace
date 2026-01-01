@@ -24,6 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { MergedFingerprint } from "@/models/IdentificationData";
@@ -45,7 +51,9 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ChevronUp,
+  Flag,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -69,7 +77,7 @@ export function Identification() {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
-  
+
   useSocket(workspace?.id, 'fingerprint_update', ['fingerprint', workspace?.id]);
 
   const {
@@ -116,7 +124,37 @@ export function Identification() {
     {
       accessorKey: "flag",
       header: t("common.flag"),
-      cell: ({ row }) => row.original.flag,
+      cell: ({ row }) => {
+        const flag = row.original.flag;
+
+        if (!flag || flag === "Clean") {
+          return (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ShieldCheck className="h-4 w-4 text-green-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clean</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        }
+
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Flag className="h-4 w-4 text-destructive" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{flag}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
     }
   ], [t]);
 

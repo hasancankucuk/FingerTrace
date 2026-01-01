@@ -32,7 +32,8 @@
         "phone": "Telefon",
         "noWorkspace": "Kein Arbeitsbereich gefunden. Bitte erstellen Sie einen Arbeitsbereich, um fortzufahren.",
         "createWorkspace": "+ Arbeitsbereich erstellen",
-        "value": "Wert"
+        "value": "Wert",
+        "flag": "Flag"
     },
     "nav": {
         "main_nav": "Hauptnavigation",
