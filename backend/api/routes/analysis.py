@@ -42,7 +42,7 @@ def analysis(current_user):
         )
 
         user_api_key_ids = [d.get("id") or d.get("key") for d in api_keys_docs if (d.get("id") or d.get("key"))]
-
+        print("user_api_key_ids", user_api_key_ids)
         if not user_api_key_ids:
              return jsonify({
                 "usage": 0,
