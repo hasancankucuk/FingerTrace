@@ -42,6 +42,8 @@ def analysis(current_user):
                   key_id = data.get("id") or data.get("key")
                   if key_id:
                       user_api_key_ids.append(key_id)
+        
+        print(f"DEBUG: Found {len(api_keys_docs)} api_keys, {len(user_api_key_ids)} match user {user.get('email')}")
 
         if not user_api_key_ids:
              return jsonify({
@@ -64,6 +66,8 @@ def analysis(current_user):
         for fp in fingerprints_docs:
             if fp.get("api_key") in user_api_key_ids:
                 user_fingerprints.append(fp)
+        
+        print(f"DEBUG: Found {len(fingerprints_docs)} total fps, {len(user_fingerprints)} match user api keys")
 
         deviceinfo_docs = firestore_query_multi(
             "deviceinfo", 
