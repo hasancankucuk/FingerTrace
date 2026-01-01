@@ -1,6 +1,6 @@
 import { getToken } from '@/services/auth';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
@@ -11,6 +11,7 @@ export const useSocket = (
     queryKeyToInvalidate?: any[]
 ) => {
     const queryClient = useQueryClient();
+    const invalidateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (!workspaceId) return;
@@ -35,7 +36,14 @@ export const useSocket = (
             if (data.workspace_id === workspaceId) {
                 console.log(`${eventName} received via socket`);
                 if (queryKeyToInvalidate) {
-                    queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
+                    // Debounce invalidation to prevent rapid re-fetches
+                    if (invalidateTimeoutRef.current) {
+                        clearTimeout(invalidateTimeoutRef.current);
+                    }
+                    invalidateTimeoutRef.current = setTimeout(() => {
+                        queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
+                        invalidateTimeoutRef.current = null;
+                    }, 2000); // 2 second debounce
                 }
             }
         };
@@ -44,6 +52,9 @@ export const useSocket = (
 
         return () => {
             socket?.off(eventName, handleUpdate);
+            if (invalidateTimeoutRef.current) {
+                clearTimeout(invalidateTimeoutRef.current);
+            }
         };
     }, [workspaceId, queryClient, eventName, JSON.stringify(queryKeyToInvalidate)]);
 

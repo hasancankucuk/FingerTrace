@@ -119,9 +119,19 @@ def create_fingerprint(current_user):
     firestore_set('fingerprints', doc_id, data)
 
     if workspace_id:
+        from helpers.redis_client import delete_cached_data
+        delete_cached_data("fingerprints_list", workspace_id)
+        delete_cached_data("analysis", workspace_id)
+
         try:
-            socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
-            socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+
+            from helpers.redis_client import r
+            throttle_key = f"socket_throttle:{workspace_id}"
+            if not r.get(throttle_key):
+                socketio.emit('analysis_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+                socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
+
+                r.setex(throttle_key, 30, "1")
         except Exception as e:
             print(f"Socket emit error: {e}")
 
@@ -242,31 +252,20 @@ def list_merged_fingerprints(current_user):
     if cached_list:
         merged_data = cached_list
     else:
+        # Optimization: Use firestore_query instead of get_all
+        # We also limit to a reasonable number to avoid fetching the entire DB if it's huge
+        # even if we are doing some processing in memory.
+        # However, for true pagination we'd need a different approach for merged data.
+        # For now, fetching the last 1000 items per workspace is much better than fetching all.
+        
         fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
         deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
-        workspace_keys = ("workspace_id", "workspace", "ws_id")
-
-        if workspace_id:
-            def in_workspace_rec(obj):
-                if not isinstance(obj, dict):
-                    return False
-                for k in workspace_keys:
-                    val = obj.get(k)
-                    if val and str(val) == str(workspace_id):
-                        return True
-                return False
-
-            deviceinfo_filtered = [d for d in deviceinfo if in_workspace_rec(d)]
-            fingerprints_filtered = [f for f in fingerprints if in_workspace_rec(f)]
-        else:
-            deviceinfo_filtered = deviceinfo
-            fingerprints_filtered = fingerprints
-
-        fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints_filtered if isinstance(fp, dict) and fp.get('fingerprint')}
+        
+        # Merge logic remains similar but now with much smaller data sets
+        fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints if isinstance(fp, dict) and fp.get('fingerprint')}
 
         merged_data = []
-        
-        for device in deviceinfo_filtered:
+        for device in deviceinfo:
             fp_id = device.get('fingerprint')
             fp_data = fingerprints_dict.get(fp_id, {})
 

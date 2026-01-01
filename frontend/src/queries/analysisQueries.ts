@@ -6,8 +6,7 @@ export const useAnalysisQuery = (workspaceId: string, period: number) => {
     return useQuery<AnalysisStats, Error>({
         queryKey: ['analysis', workspaceId, period],
         queryFn: () => getAnalysis(period, workspaceId),
-        staleTime: 20000,
-        refetchInterval: 30000,
+        staleTime: 60000,
         retry: false,
         enabled: !!workspaceId,
     })

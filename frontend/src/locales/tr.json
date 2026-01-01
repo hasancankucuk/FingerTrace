@@ -34,7 +34,8 @@
         "createWorkspace": "+ Çalışma Alanı Oluştur",
         "value": "Değer",
         "flag": "Bayrak",
-        "go_to_app": "Uygulamaya Git"
+        "go_to_app": "Uygulamaya Git",
+        "safe": "Güvenli"
     },
     "nav": {
         "main_nav": "Ana Menü",

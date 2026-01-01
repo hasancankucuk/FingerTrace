@@ -6,8 +6,7 @@ export const useFingerprintQuery = (workspaceId: string, params: FingerPaginatio
     return useQuery({
         queryKey: ["fingerprint", workspaceId, params],
         queryFn: () => getMergedFingerprints(workspaceId, params),
-        staleTime: 20000,
-        refetchInterval: 30000,
+        staleTime: 60000,
         retry: false,
     })
 }

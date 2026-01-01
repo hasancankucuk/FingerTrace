@@ -17,7 +17,7 @@ export const FlagCell = ({ flag }: FlagCellProps) => {
                         <ShieldCheck className="h-4 w-4 text-green-500" />
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>{t("common.clean") || "Clean"}</p>
+                        <p>{t("common.safe")}</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>

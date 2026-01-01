@@ -24,3 +24,13 @@ def get_cached_data(key, workspace_id, days):
     except Exception as e:
         print(f"Redis get error: {e}")
         return None
+
+def delete_cached_data(key_prefix, workspace_id):
+    """Delete all cached data for a workspace starting with prefix"""
+    try:
+        pattern = f"{key_prefix}:{workspace_id}:*"
+        keys = r.keys(pattern)
+        if keys:
+            r.delete(*keys)
+    except Exception as e:
+        print(f"Redis delete error: {e}")

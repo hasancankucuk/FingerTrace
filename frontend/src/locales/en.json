@@ -34,7 +34,8 @@
         "createWorkspace": "+ Create Workspace",
         "value": "Value",
         "flag": "Flag",
-        "go_to_app": "Go to App"
+        "go_to_app": "Go to App",
+        "Safe": "Safe"
     },
     "nav": {
         "main_nav": "Main Navigation",

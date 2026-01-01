@@ -34,7 +34,8 @@
         "createWorkspace": "+ Arbeitsbereich erstellen",
         "value": "Wert",
         "flag": "Flag",
-        "go_to_app": "Zur App"
+        "go_to_app": "Zur App",
+        "safe": "Sicher"
     },
     "nav": {
         "main_nav": "Hauptnavigation",
