@@ -1,4 +1,5 @@
-from helpers.firebase_utils import get_user, db
+from helpers.firebase_utils import get_user, firestore_query, firestore_query_multi
+from helpers.redis_client import get_cached_analysis, set_cached_analysis
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
 from flask import Blueprint, jsonify, request
@@ -14,8 +15,6 @@ analysis_bp = Blueprint("analysis", __name__)
 @analysis_bp.route("/analysis", methods=["GET"])
 @jwt_protected
 def analysis(current_user):
-    from helpers.firebase_utils import firestore_get_all
-
     try:
         days = int(request.args.get("days", 7))
         days = max(1, min(days, 365))
@@ -26,70 +25,82 @@ def analysis(current_user):
         if not workspace_id:
             return jsonify({"error": "Workspace ID is required"}), 400
 
-        api_keys = firestore_get_all("api_keys")
-        
-        user_api_keys = []
-        for key in api_keys:
-            if isinstance(key, dict):
-                if (key.get("created_by") == user.get("email") and 
-                    key.get("workspace_id") == workspace_id):
-                    user_api_keys.append(key)
-
-        user_api_key_ids = []
-        for key in user_api_keys:
-            key_id = key.get("id") or key.get("key")
-            if key_id:
-                user_api_key_ids.append(key_id)
-
-        fingerprints = firestore_get_all("fingerprints")
-        if not fingerprints:
-            return jsonify(
-                {
-                    "usage": 0,
-                    "uniqueVisitors": 0,
-                    "eventsPerVisitor": 0,
-                    "apiUsage": [],
-                    "apiUsageLabels": [],
-                    "topBrowsers": [],
-                    "timezones": [],
-                }
-            )
-        deviceinfo = firestore_get_all("deviceinfo")
-
-        user_fingerprints = []
-        for fp in fingerprints:
-            if (isinstance(fp, dict) and 
-                fp.get("api_key") in user_api_key_ids and
-                fp.get("workspace") == workspace_id):
-                user_fingerprints.append(fp)
-
-        user_deviceinfo = []
-        for d in deviceinfo:
-            if (isinstance(d, dict) and 
-                d.get("api_key") in user_api_key_ids and
-                d.get("workspace") == workspace_id):
-                user_deviceinfo.append(d)
+        cached = get_cached_analysis(workspace_id, days)
+        if cached:
+            return jsonify(cached)
 
         today = datetime.date.today()
+        start_date = today - datetime.timedelta(days=days)
+        start_datetime = datetime.datetime.combine(start_date, datetime.time.min)
+
+        api_keys_ref = firestore_query("api_keys", "workspace_id" "==" workspace_id)
+        api_keys_docs = api_keys_ref.stream()
+        
+        user_api_key_ids = []
+        for doc in api_keys_docs:
+            data = doc.to_dict()
+            if data.get("created_by") == user.get("email"): 
+                 key_id = data.get("id") or data.get("key")
+                 if key_id:
+                     user_api_key_ids.append(key_id)
+
+        if not user_api_key_ids:
+             return jsonify({
+                "usage": 0,
+                "uniqueVisitors": 0,
+                "eventsPerVisitor": 0,
+                "apiUsage": [0] * days,
+                "apiUsageLabels": [str(today - datetime.timedelta(days=i)) for i in range(days - 1, -1, -1)],
+                "topBrowsers": [],
+                "timezones": [],
+            })
+
+        fingerprints_ref = firestore_query_multi(
+            "fingerprints", 
+            "workspace", "==", workspace_id, 
+            "created_at", ">=", start_datetime.isoformat()
+        )            
+        fingerprints_docs = fingerprints_ref.stream()
+        
+        user_fingerprints = []
+        for doc in fingerprints_docs:
+            fp = doc.to_dict()
+            if fp.get("api_key") in user_api_key_ids:
+                user_fingerprints.append(fp)
+
+        deviceinfo_ref = firestore_query_multi(
+            "deviceinfo", 
+            "workspace", "==", workspace_id, 
+            "created_at", ">=", start_datetime.isoformat()
+        )
+            
+        deviceinfo_docs = deviceinfo_ref.stream()
+        
+        user_deviceinfo = []
+        for doc in deviceinfo_docs:
+            d = doc.to_dict()
+            if d.get("api_key") in user_api_key_ids:
+                user_deviceinfo.append(d)
+
         api_usage = []
         api_usage_labels = []
+        
+        fingerprints_by_date = {}
+        for fp in user_fingerprints:
+            created_at = fp.get("created_at")
+            if created_at:
+                date_str = str(created_at)[:10]
+                fingerprints_by_date[date_str] = fingerprints_by_date.get(date_str, 0) + 1
+
         for i in range(days - 1, -1, -1):
             day = today - datetime.timedelta(days=i)
-            api_usage_labels.append(str(day))
-            count = sum(
-                1
-                for fp in user_fingerprints
-                if isinstance(fp, dict)
-                and "created_at" in fp
-                and str(fp["created_at"])[:10] == str(day)
-            )
-            api_usage.append(count)
+            day_str = str(day)
+            api_usage_labels.append(day_str)
+            api_usage.append(fingerprints_by_date.get(day_str, 0))
 
         def count_unique_visitors_from_fps(fps):
             ids = set()
             for f in fps:
-                if not isinstance(f, dict):
-                    continue
                 val = (
                     f.get("device_id")
                     or f.get("fingerprint")
@@ -109,34 +120,34 @@ def analysis(current_user):
             round(len(user_fingerprints) / unique_visitors, 2) if unique_visitors else 0
         )
 
-        # Safe browser analysis
         browser_list = []
         for d in user_deviceinfo:
-            if isinstance(d, dict):
-                browser = d.get('browser') or get_browser_from_ua(d.get('user_agent') or "")
-                if browser:
-                    browser_list.append(browser)
+            browser = d.get('browser') or get_browser_from_ua(d.get('user_agent') or "")
+            if browser:
+                browser_list.append(browser)
         top_browsers = top_n(browser_list)
 
-        # Safe timezone analysis
         timezone_list = []
         for d in user_deviceinfo:
-            if isinstance(d, dict):
-                timezone = d.get('time_zone') or get_country_from_timezone(d.get('time_zone'))
-                if timezone:
-                    timezone_list.append(timezone)
+            timezone = d.get('time_zone') or get_country_from_timezone(d.get('time_zone'))
+            if timezone:
+                timezone_list.append(timezone)
         top_timezones = top_n(timezone_list)
 
-        return jsonify(
-            {
-                "usage": sum(api_usage),
-                "uniqueVisitors": unique_visitors,
-                "eventsPerVisitor": events_per_visitor,
-                "apiUsage": api_usage,
-                "apiUsageLabels": api_usage_labels,
-                "topBrowsers": top_browsers,
-                "timezones": top_timezones,
-            }
-        )
+        result = {
+            "usage": sum(api_usage),
+            "uniqueVisitors": unique_visitors,
+            "eventsPerVisitor": events_per_visitor,
+            "apiUsage": api_usage,
+            "apiUsageLabels": api_usage_labels,
+            "topBrowsers": top_browsers,
+            "timezones": top_timezones,
+        }
+        
+        # Save to Redis Cache (TTL 60s)
+        set_cached_analysis(workspace_id, days, result)
+        
+        return jsonify(result)
     except Exception as e:
+        print(f"Analysis error: {e}") # Log the error for debugging
         return jsonify({"error": str(e)}), 500

@@ -42,6 +42,15 @@ services:
       - fingertrace-shared
     restart: always
 
+  redis:
+    image: "redis:alpine"
+    container_name: fingertrace-redis
+    expose:
+      - "6379"
+    networks:
+      - fingertrace-shared
+    restart: always
+
 networks:
   fingertrace-shared:
     external: false
