@@ -89,6 +89,8 @@ def create_fingerprint(current_user):
     doc_id = hashlib.sha256(combined_string.encode()).hexdigest()
 
     workspace_id = data.get('workspace_id') or data.get('ws_id')
+    if workspace_id and isinstance(workspace_id, str):
+        workspace_id = workspace_id.strip()
     workspace_name = None
 
     workspace_field = data.get('workspace')
@@ -143,6 +145,9 @@ def update_fingerprint(current_user, doc_id):
     workspace_id = data.get('workspace_id') or data.get('workspace')
     if isinstance(workspace_id, dict):
         workspace_id = workspace_id.get('id')
+    
+    if workspace_id and isinstance(workspace_id, str):
+        workspace_id = workspace_id.strip()
         
     if workspace_id:
         try:
@@ -233,60 +238,60 @@ def list_merged_fingerprints(current_user):
     if page_size < 1 or page_size > 100:
         page_size = 10
     
-    cached = get_cached_data("fingerprints", workspace_id, days)
-    if cached:
-        return jsonify(cached)
-    
-    fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
-    deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
-    workspace_keys = ("workspace_id", "workspace", "ws_id")
-
-    if workspace_id:
-        def in_workspace_rec(obj):
-            if not isinstance(obj, dict):
-                return False
-            for k in workspace_keys:
-                val = obj.get(k)
-                if val and str(val) == str(workspace_id):
-                    return True
-            return False
-
-        deviceinfo_filtered = [d for d in deviceinfo if in_workspace_rec(d)]
-        fingerprints_filtered = [f for f in fingerprints if in_workspace_rec(f)]
+    cached_list = get_cached_data("fingerprints_list", workspace_id, days)
+    if cached_list:
+        merged_data = cached_list
     else:
-        deviceinfo_filtered = deviceinfo
-        fingerprints_filtered = fingerprints
+        fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
+        deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
+        workspace_keys = ("workspace_id", "workspace", "ws_id")
 
-    fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints_filtered if isinstance(fp, dict) and fp.get('fingerprint')}
+        if workspace_id:
+            def in_workspace_rec(obj):
+                if not isinstance(obj, dict):
+                    return False
+                for k in workspace_keys:
+                    val = obj.get(k)
+                    if val and str(val) == str(workspace_id):
+                        return True
+                return False
 
-    merged_data = []
-    matched_count = 0
-    unmatched_count = 0
-    
-    for device in deviceinfo_filtered:
-        fp_id = device.get('fingerprint')
-        fp_data = fingerprints_dict.get(fp_id, {})
-        merged_entry = {
-            "request_id": fp_data.get("id") or device.get("id") or "",
-            "fingerprint": fp_id or "",
-            "created_at": device.get("created_at") or fp_data.get("created_at", ""),
-            "updated_at": device.get("updated_at") or fp_data.get("updated_at", ""),
-            "device_type": map_device_type(device.get("device_type")),
-            "platform": device.get("platform") or fp_data.get("platform", ""),
-            "time_zone": device.get("time_zone") or fp_data.get("time_zone", ""),
-            "user_agent": device.get("user_agent") or fp_data.get("user_agent", ""),
-            "color_depth": device.get("color_depth") or fp_data.get("color_depth", ""),
-            "color_gamut": device.get("color_gamut") or fp_data.get("color_gamut", ""),
-            "bar_visibility": device.get("bar_visibility") or fp_data.get("bar_visibility", ""),
-            "browser_feature_support": device.get("browser_feature_support") or fp_data.get("browser_feature_support", ""),
-            "ip": device.get("ip") or fp_data.get("ip", ""),
-            "is_fast_travel": device.get("is_fast_travel") or fp_data.get("is_fast_travel", False),
-            "is_vpn": device.get("is_vpn") or fp_data.get("is_vpn", False),
-            "vpn_details": device.get("vpn_details") or fp_data.get("vpn_details", {}),
-            "previous_location": device.get("previous_location") or fp_data.get("previous_location", {}),
-            "current_location": device.get("current_location") or fp_data.get("current_location", {}),
-        }
-        merged_data.append(merged_entry)
+            deviceinfo_filtered = [d for d in deviceinfo if in_workspace_rec(d)]
+            fingerprints_filtered = [f for f in fingerprints if in_workspace_rec(f)]
+        else:
+            deviceinfo_filtered = deviceinfo
+            fingerprints_filtered = fingerprints
+
+        fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints_filtered if isinstance(fp, dict) and fp.get('fingerprint')}
+
+        merged_data = []
+        
+        for device in deviceinfo_filtered:
+            fp_id = device.get('fingerprint')
+            fp_data = fingerprints_dict.get(fp_id, {})
+            merged_entry = {
+                "request_id": fp_data.get("id") or device.get("id") or "",
+                "fingerprint": fp_id or "",
+                "created_at": device.get("created_at") or fp_data.get("created_at", ""),
+                "updated_at": device.get("updated_at") or fp_data.get("updated_at", ""),
+                "device_type": map_device_type(device.get("device_type")),
+                "platform": device.get("platform") or fp_data.get("platform", ""),
+                "time_zone": device.get("time_zone") or fp_data.get("time_zone", ""),
+                "user_agent": device.get("user_agent") or fp_data.get("user_agent", ""),
+                "color_depth": device.get("color_depth") or fp_data.get("color_depth", ""),
+                "color_gamut": device.get("color_gamut") or fp_data.get("color_gamut", ""),
+                "bar_visibility": device.get("bar_visibility") or fp_data.get("bar_visibility", ""),
+                "browser_feature_support": device.get("browser_feature_support") or fp_data.get("browser_feature_support", ""),
+                "ip": device.get("ip") or fp_data.get("ip", ""),
+                "is_fast_travel": device.get("is_fast_travel") or fp_data.get("is_fast_travel", False),
+                "is_vpn": device.get("is_vpn") or fp_data.get("is_vpn", False),
+                "vpn_details": device.get("vpn_details") or fp_data.get("vpn_details", {}),
+                "previous_location": device.get("previous_location") or fp_data.get("previous_location", {}),
+                "current_location": device.get("current_location") or fp_data.get("current_location", {}),
+            }
+            merged_data.append(merged_entry)
+        
+        set_cached_data("fingerprints_list", workspace_id, days, merged_data)
 
     if not merged_data:
         return jsonify({
@@ -309,12 +314,6 @@ def list_merged_fingerprints(current_user):
     merged_data = _apply_sorting(merged_data, sort_field, sort_direction)
 
     paginated_data, total_items, total_pages = _apply_pagination(merged_data, page, page_size)
-
-    if workspace_id:
-        try:
-            socketio.emit('fingerprint_update', {'workspace_id': workspace_id}, room=f"workspace_{workspace_id}")
-        except Exception as e:
-            print(f"Socket emit error: {e}")
     
     response = {
         "data": paginated_data,
@@ -335,7 +334,8 @@ def list_merged_fingerprints(current_user):
             "total_items": original_count
         }
     
-    set_cached_data("fingerprints", workspace_id, days, response)
+    # Don't cache the filtered response here, as it depends on mutable args like search/page
+    # set_cached_data("fingerprints", workspace_id, days, response)
     return jsonify(response), 200
 
 

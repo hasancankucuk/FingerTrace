@@ -56,7 +56,6 @@ export function Identification() {
   const { t } = useTranslation();
   const { workspace } = useWorkspace();
 
-  // Table States
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
