@@ -105,7 +105,7 @@ export const Rules = () => {
                             riskLevel={getRuleRiskLevel("anomaly_detection")}
                         />
                     </div>
-                    <Separator className="h-px bg-border" />
+                    <Separator className="h-px bg-border my-6" />
 
                     <div className="pt-6">
                         <RateLimiting
@@ -114,7 +114,7 @@ export const Rules = () => {
                             riskLevel={getRuleRiskLevel("rate_limiting")}
                         />
                     </div>
-                    <Separator className="h-px bg-border" />
+                    <Separator className="h-px bg-border my-6" />
 
                     <div className="pt-6">
                         <FastTravel
@@ -123,7 +123,7 @@ export const Rules = () => {
                             riskLevel={getRuleRiskLevel("fast_travel")}
                         />
                     </div>
-                    <Separator className="h-px bg-border" />
+                    <Separator className="h-px bg-border my-6" />
 
                     <div className="pt-6">
                         <VPNProxy
