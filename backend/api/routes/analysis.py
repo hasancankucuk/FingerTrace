@@ -33,16 +33,15 @@ def analysis(current_user):
         start_date = today - datetime.timedelta(days=days)
         start_datetime = datetime.datetime.combine(start_date, datetime.time.min)
 
-        api_keys_ref = firestore_query("api_keys", "workspace_id", "==", workspace_id)
-        api_keys_docs = api_keys_ref.stream()
+        api_keys_docs = firestore_query("api_keys", "workspace_id", "==", workspace_id)
         
         user_api_key_ids = []
-        for doc in api_keys_docs:
-            data = doc.to_dict()
-            if data.get("created_by") == user.get("email"): 
-                 key_id = data.get("id") or data.get("key")
-                 if key_id:
-                     user_api_key_ids.append(key_id)
+        for data in api_keys_docs:
+             # data is already a dict
+             if data.get("created_by") == user.get("email"): 
+                  key_id = data.get("id") or data.get("key")
+                  if key_id:
+                      user_api_key_ids.append(key_id)
 
         if not user_api_key_ids:
              return jsonify({
@@ -55,30 +54,25 @@ def analysis(current_user):
                 "timezones": [],
             })
 
-        fingerprints_ref = firestore_query_multi(
+        fingerprints_docs = firestore_query_multi(
             "fingerprints", 
             "workspace", "==", workspace_id, 
             "created_at", ">=", start_datetime.isoformat()
         )            
-        fingerprints_docs = fingerprints_ref.stream()
         
         user_fingerprints = []
-        for doc in fingerprints_docs:
-            fp = doc.to_dict()
+        for fp in fingerprints_docs:
             if fp.get("api_key") in user_api_key_ids:
                 user_fingerprints.append(fp)
 
-        deviceinfo_ref = firestore_query_multi(
+        deviceinfo_docs = firestore_query_multi(
             "deviceinfo", 
             "workspace", "==", workspace_id, 
             "created_at", ">=", start_datetime.isoformat()
         )
             
-        deviceinfo_docs = deviceinfo_ref.stream()
-        
         user_deviceinfo = []
-        for doc in deviceinfo_docs:
-            d = doc.to_dict()
+        for d in deviceinfo_docs:
             if d.get("api_key") in user_api_key_ids:
                 user_deviceinfo.append(d)
 
