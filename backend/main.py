@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from datetime import timedelta
 import os
 from threading import Thread
@@ -6,8 +8,6 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 from socket_extensions import socketio
-import eventlet
-eventlet.monkey_patch()
 from flask_socketio import SocketIO, emit
 
 from api.routes import (
