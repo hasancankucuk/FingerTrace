@@ -1,5 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
 from datetime import timedelta
 import os
 from threading import Thread
@@ -35,7 +33,7 @@ allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=True)
 
 redis_url = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', 6379)}/0"
-socketio.init_app(app, cors_allowed_origins="*", message_queue=redis_url, async_mode='eventlet')
+socketio.init_app(app, cors_allowed_origins="*", message_queue=redis_url, async_mode='threading')
 import helpers.socket_events
 
 # JWT
