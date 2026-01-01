@@ -6,7 +6,7 @@ export const exportFingerprintsPDF = async (
     const token = getToken();
 
     const response = await fetch(
-        `${import.meta.env.VITE_APP_URL}/api/export/fingerprints/pdf`,
+        `${import.meta.env.VITE_APP_URL}/export/fingerprints/pdf`,
         {
             method: 'POST',
             headers: {
@@ -31,7 +31,7 @@ export const exportAnalyticsPDF = async (
     const token = getToken();
 
     const response = await fetch(
-        `${import.meta.env.VITE_APP_URL}/api/export/analytics/pdf`,
+        `${import.meta.env.VITE_APP_URL}/export/analytics/pdf`,
         {
             method: 'POST',
             headers: {

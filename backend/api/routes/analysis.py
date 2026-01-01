@@ -113,6 +113,14 @@ def analysis(current_user):
                 timezone_list.append(country)
         top_timezones = top_n(timezone_list)
 
+        platform_counts = {"Web": 0, "iOS": 0, "Android": 0, "Other": 0}
+        for d in user_deviceinfo:
+            p = d.get("platform", "").lower()
+            if "ios" in p: platform_counts["iOS"] += 1
+            elif "android" in p: platform_counts["Android"] += 1
+            elif "web" in p or "win" in p or "mac" in p or "linux" in p: platform_counts["Web"] += 1
+            else: platform_counts["Other"] += 1
+
         result = {
             "usage": sum(api_usage),
             "uniqueVisitors": unique_visitors,
@@ -121,6 +129,7 @@ def analysis(current_user):
             "apiUsageLabels": api_usage_labels,
             "topBrowsers": top_browsers,
             "timezones": top_timezones,
+            "platforms": platform_counts,
         }
         
         set_cached_data("analysis", workspace_id, days, result)

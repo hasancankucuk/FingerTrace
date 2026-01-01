@@ -11,6 +11,7 @@ export const FooterSection = () => {
 		{
 			title: t("landing.footer.sections.product"),
 			links: [
+				{ name: t("landing.footer.links.pricing"), href: "/pricing" },
 				{ name: t("landing.footer.links.features"), href: "/features" },
 				{ name: t("landing.footer.links.documentation"), href: "/docs" }
 			]

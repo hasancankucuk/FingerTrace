@@ -16,6 +16,7 @@ import {
   Account,
   Analysis,
   ApiKeys,
+  Billing,
   BlogList,
   BlogPost,
   Contact,
@@ -34,6 +35,7 @@ import {
   SignupPage,
   Terms
 } from "./app/index";
+import { Pricing } from "./app/landing/Pricing";
 import { AppSidebar } from "./components/app-sidebar";
 import { LanguageToggle } from "./components/language-toggle";
 import { ModeToggle } from "./components/mode-toggle";
@@ -138,6 +140,7 @@ function App() {
               {/* Public landing pages */}
               <Route path="/" element={<Landing />} />
               <Route path="/features" element={<Features />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/docs" element={<Documentation />} />
               <Route path="/contact" element={<Contact />} />
 
@@ -169,6 +172,7 @@ function App() {
                   <Route path="/identification" element={<Identification />} />
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/account" element={<Account />} />
+                  <Route path="/billing" element={<Billing />} />
                   <Route path="/search" element={<Search />} />
                 </Route>
               </Route>

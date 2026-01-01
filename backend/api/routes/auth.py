@@ -21,9 +21,19 @@ def register():
         return jsonify({"error": "Missing fields"}), 400
 
     user = create_user(email, password, name)
-
     if user is None:
         return jsonify({"error": "Email already exists"}), 400
+
+    # Initialize Firestore user profile with trial status
+    from helpers.firebase_utils import firestore_set
+    from datetime import datetime
+    firestore_set("users", user["uid"], {
+        "email": email,
+        "name": name,
+        "subscription_status": "trialing",
+        "trial_start_date": datetime.utcnow().isoformat(),
+        "created_at": datetime.utcnow().isoformat()
+    })
 
     access_token = create_access_token(identity=user["uid"])
     return jsonify({"uid": user["uid"], "access_token": access_token}), 201
@@ -33,12 +43,17 @@ def register():
 @jwt_required()
 def user():
     uid = get_jwt_identity()
-    user = get_user(uid)
+    user_auth = get_user(uid)
+    
+    from helpers.firebase_utils import firestore_get
+    user_doc = firestore_get("users", uid) or {}
 
     return jsonify({
-        "email": user["email"],
-        "name": user["display_name"],
-        "phone": user["phone_number"],
+        "email": user_auth["email"],
+        "name": user_auth["display_name"],
+        "phone": user_auth["phone_number"],
+        "subscription_status": user_doc.get("subscription_status", "trialing"),
+        "trial_start_date": user_doc.get("trial_start_date"),
     }), 200
 
 @rate_limit('user')

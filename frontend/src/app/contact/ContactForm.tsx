@@ -15,7 +15,7 @@ import { InquiryTypes } from "@/models/ContactForm"
 
 
 export const ContactForm = () => {
-    const { t } = useTranslation("landing")
+    const { t } = useTranslation()
     const {
         formData,
         status,

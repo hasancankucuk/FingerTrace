@@ -57,7 +57,7 @@ const ContactItem = ({
 )
 
 export const ContactMethods = () => {
-    const { t } = useTranslation("landing")
+    const { t } = useTranslation()
     const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
 
     const methods: ContactMethod[] = useMemo(() => [

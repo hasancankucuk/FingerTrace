@@ -35,7 +35,20 @@
         "value": "Wert",
         "flag": "Flag",
         "go_to_app": "Zur App",
-        "safe": "Sicher"
+        "safe": "Sicher",
+        "usage": {
+            "title": "Nutzung",
+            "monthly_events": "Monatliche Ereignisse",
+            "days_remaining": "Tage verbleibend",
+            "upgrade": "Plan upgraden",
+            "usage_details": "Nutzungsdetails",
+            "account_status": "Kontostatus",
+            "distribution": "Ereignisverteilung nach Plattform",
+            "trial_remaining": "Testversion verbleibend",
+            "monthly_quota": "Monatliches Kontingent",
+            "status": "Status",
+            "current_plan": "Aktueller Plan"
+        }
     },
     "nav": {
         "main_nav": "Hauptnavigation",
@@ -47,6 +60,7 @@
         "rules": "Regeln",
         "get_started": "Erste Schritte",
         "documentation": "Dokumentation",
+        "billing": "Abrechnung",
         "features": "Funktionen",
         "contact": "Kontakt",
         "account": "Konto",
@@ -312,6 +326,51 @@
             },
             "view_dashboard": "Dashboard anzeigen"
         },
+        "pricing": {
+            "title": "Einfache, transparente Preise",
+            "subtitle": "Wählen Sie den Plan, der am besten zu Ihrem Unternehmen passt. Alle Pläne enthalten unsere Kern-Fingerprinting-Technologie.",
+            "free": {
+                "name": "Kostenlos",
+                "price": "0 €",
+                "description": "Perfekt zum Testen und für kleine persönliche Projekte.",
+                "features": [
+                    "1.000 monatliche Events",
+                    "1 Arbeitsbereich",
+                    "7 Tage Datenspeicherung",
+                    "Community-Support"
+                ],
+                "cta": "Loslegen"
+            },
+            "pro": {
+                "name": "Pro",
+                "price": "49 €",
+                "period": "/Monat",
+                "description": "Ideal für wachsende Startups und professionelle Entwickler.",
+                "features": [
+                    "50.000 monatliche Events",
+                    "Unbegrenzte Arbeitsbereiche",
+                    "30 Tage Datenspeicherung",
+                    "Priorisierter E-Mail-Support",
+                    "Eigene Webhooks"
+                ],
+                "cta": "Kostenlose Testversion",
+                "cta_upgrade": "Jetzt upgraden",
+                "popular": "Beliebtest"
+            },
+            "enterprise": {
+                "name": "Enterprise",
+                "price": "Individuell",
+                "description": "Für große Anwendungen, die maximale Sicherheit und Support erfordern.",
+                "features": [
+                    "Unbegrenzte monatliche Events",
+                    "Eigene Infrastruktur",
+                    "Unbegrenzte Datenspeicherung",
+                    "24/7 Telefon-Support",
+                    "Eigene SLA"
+                ],
+                "cta": "Upgrade auf Enterprise"
+            }
+        },
         "footer": {
             "brand_desc": "Fortschrittliche Benutzeranalysen und Interaktionsverfolgung for moderne Anwendungen.",
             "sections": {
@@ -320,6 +379,7 @@
                 "legal": "Rechtliches"
             },
             "links": {
+                "pricing": "Preisgestaltung",
                 "features": "Funktionen",
                 "documentation": "Dokumentation",
                 "about": "Über uns",
@@ -331,328 +391,328 @@
                 "status": "Status"
             },
             "rights": "© 2025 FingerTrace. Alle Rechte vorbehalten."
+        }
+    },
+    "documentation": {
+        "hero": {
+            "badge": "Dokumentation",
+            "title_1": "Erste Schritte mit ",
+            "title_2": "FingerTrace",
+            "description": "Umfassender Leitfaden zum Browser-Fingerprinting und zur Geräteidentifikation. Integrieren Sie bessere Sicherheit und Analysen in Ihre Anwendungen.",
+            "quick_start": "Schnellstart"
         },
-        "documentation": {
-            "hero": {
-                "badge": "Dokumentation",
-                "title_1": "Erste Schritte mit ",
-                "title_2": "FingerTrace",
-                "description": "Umfassender Leitfaden zum Browser-Fingerprinting und zur Geräteidentifikation. Integrieren Sie bessere Sicherheit und Analysen in Ihre Anwendungen.",
-                "quick_start": "Schnellstart"
-            },
-            "quick_links": {
-                "title": "Direkt zum gewünschten Bereich",
-                "items": {
-                    "quick_start": {
-                        "title": "Schnellstart",
-                        "description": "In 5 Minuten einsatzbereit"
-                    },
-                    "sdk_integration": {
-                        "title": "SDK-Integration",
-                        "description": "In Ihre Anwendung integrieren"
-                    },
-                    "api_reference": {
-                        "title": "API-Referenz",
-                        "description": "Vollständige API-Dokumentation"
-                    },
-                    "workspaces": {
-                        "title": "Arbeitsbereiche",
-                        "description": "Organisieren Sie Ihre Projekte"
-                    },
-                    "examples": {
-                        "title": "Beispiele",
-                        "description": "Realitätsnahe Code-Beispiele"
-                    },
-                    "security": {
-                        "title": "Sicherheit",
-                        "description": "Datenschutz und Compliance"
-                    }
-                }
-            },
-            "quick_start": {
-                "badge": "Schnellstart",
-                "title": "In wenigen Minuten einsatzbereit",
-                "description": "Befolgen Sie diese einfachen Schritte, um FingerTrace in Ihre Anwendung zu integrieren",
-                "steps": {
-                    "install": {
-                        "title": "SDK installieren",
-                        "description": "Fügen Sie unser leichtgewichtiges SDK mit npm oder yarn zu Ihrem Projekt hinzu"
-                    },
-                    "initialize": {
-                        "title": "Initialisieren",
-                        "description": "Importieren und initialisieren Sie das SDK in Ihrer Anwendung"
-                    },
-                    "send_data": {
-                        "title": "Daten senden",
-                        "description": "Senden Sie Fingerprinting-Daten an Ihren FingerTrace-Arbeitsbereich"
-                    }
-                }
-            },
-            "sdk_integration": {
-                "badge": "SDK-Integration",
-                "title": "Mehrere Integrationsoptionen",
-                "tabs": {
-                    "react": "React",
-                    "vanilla": "Vanilla JS",
-                    "vue": "Vue.js",
-                    "angular": "Angular"
+        "quick_links": {
+            "title": "Direkt zum gewünschten Bereich",
+            "items": {
+                "quick_start": {
+                    "title": "Schnellstart",
+                    "description": "In 5 Minuten einsatzbereit"
+                },
+                "sdk_integration": {
+                    "title": "SDK-Integration",
+                    "description": "In Ihre Anwendung integrieren"
+                },
+                "api_reference": {
+                    "title": "API-Referenz",
+                    "description": "Vollständige API-Dokumentation"
+                },
+                "workspaces": {
+                    "title": "Arbeitsbereiche",
+                    "description": "Organisieren Sie Ihre Projekte"
                 },
                 "examples": {
-                    "react": {
-                        "title": "React Hook Implementierung",
-                        "description": "Verwenden Sie diesen benutzerdefinierten Hook, um das Fingerprinting in Ihre React-Komponenten zu integrieren"
-                    },
-                    "vanilla": {
-                        "title": "Vanilla JavaScript Implementierung",
-                        "description": "Einfache Implementierung ohne Framework-Abhängigkeiten"
-                    },
-                    "vue": {
-                        "title": "Vue.js Composable",
-                        "description": "Vue 3 Composable für das Fingerprint-Management"
-                    },
-                    "angular": {
-                        "title": "Angular Service",
-                        "description": "Injectable Service für Angular-Anwendungen"
-                    }
-                }
-            },
-            "api_reference": {
-                "badge": "API-Referenz",
-                "title": "Vollständige API-Dokumentation",
-                "auth": {
-                    "title": "Authentifizierung",
-                    "description": "Alle API-Anfragen erfordern eine ordnungsgemäße Authentifizierung",
-                    "jwt": "JWT-Token (Dashboard)",
-                    "api_key": "API-Schlüssel (SDK)"
+                    "title": "Beispiele",
+                    "description": "Realitätsnahe Code-Beispiele"
                 },
-                "endpoints": {
-                    "title": "API-Endpunkte",
-                    "create_record": "Einen neuen Fingerprint-Datensatz erstellen",
-                    "list_all": "Alle Fingerprints im Arbeitsbereich auflisten",
-                    "submit_info": "Geräteinformationen übermitteln",
-                    "create_workspace": "Einen neuen Arbeitsbereich erstellen"
+                "security": {
+                    "title": "Sicherheit",
+                    "description": "Datenschutz und Compliance"
                 }
+            }
+        },
+        "quick_start": {
+            "badge": "Schnellstart",
+            "title": "In wenigen Minuten einsatzbereit",
+            "description": "Befolgen Sie diese einfachen Schritte, um FingerTrace in Ihre Anwendung zu integrieren",
+            "steps": {
+                "install": {
+                    "title": "SDK installieren",
+                    "description": "Fügen Sie unser leichtgewichtiges SDK mit npm oder yarn zu Ihrem Projekt hinzu"
+                },
+                "initialize": {
+                    "title": "Initialisieren",
+                    "description": "Importieren und initialisieren Sie das SDK in Ihrer Anwendung"
+                },
+                "send_data": {
+                    "title": "Daten senden",
+                    "description": "Senden Sie Fingerprinting-Daten an Ihren FingerTrace-Arbeitsbereich"
+                }
+            }
+        },
+        "sdk_integration": {
+            "badge": "SDK-Integration",
+            "title": "Mehrere Integrationsoptionen",
+            "tabs": {
+                "react": "React",
+                "vanilla": "Vanilla JS",
+                "vue": "Vue.js",
+                "angular": "Angular"
             },
             "examples": {
-                "badge": "Beispiele",
-                "title": "Praxisbeispiele",
-                "description": "Lernen Sie aus praktischen Implementierungen und Best Practices",
-                "items": {
-                    "fraud": {
-                        "title": "E-Commerce-Betrugserkennung",
-                        "description": "Verdächtige Aktivitäten während des Bezahlvorgangs erkennen"
-                    },
-                    "behavior": {
-                        "title": "Nutzeranalyse & Personalisierung",
-                        "description": "Nutzerverhalten über Sitzungen hinweg verfolgen"
-                    }
+                "react": {
+                    "title": "React Hook Implementierung",
+                    "description": "Verwenden Sie diesen benutzerdefinierten Hook, um das Fingerprinting in Ihre React-Komponenten zu integrieren"
+                },
+                "vanilla": {
+                    "title": "Vanilla JavaScript Implementierung",
+                    "description": "Einfache Implementierung ohne Framework-Abhängigkeiten"
+                },
+                "vue": {
+                    "title": "Vue.js Composable",
+                    "description": "Vue 3 Composable für das Fingerprint-Management"
+                },
+                "angular": {
+                    "title": "Angular Service",
+                    "description": "Injectable Service für Angular-Anwendungen"
                 }
-            },
-            "support": {
-                "title": "Brauchen Sie Hilfe?",
-                "description": "Unser Team ist hier, um Ihnen zum Erfolg mit FingerTrace zu verhelfen. Kontaktieren Sie uns für Support, Fragen oder Feature-Wünsche.",
-                "contact": "Support kontaktieren"
             }
         },
-        "contact": {
-            "badge": "💬 Kontaktieren Sie uns",
-            "title_1": "Kontaktieren Sie ",
-            "title_2": "unser Team",
-            "description": "Haben Sie Fragen zu FingerTrace? Wir sind hier, um zu helfen. Wenden Sie sich an unser Team, und wir werden uns so schnell wie möglich bei Ihnen melden.",
-            "form": {
-                "title": "Senden Sie uns eine Nachricht",
-                "description": "Füllen Sie das untenstehende Formular aus und wir werden uns innerhalb von 24 Stunden bei Ihnen melden.",
-                "name": "Name *",
-                "email": "E-Mail *",
-                "company": "Unternehmen",
-                "inquiry_type": "Anfragetyp *",
-                "subject": "Betreff *",
-                "message": "Nachricht *",
-                "placeholders": {
-                    "name": "Ihr vollständiger Name",
-                    "email": "ihre@email.de",
-                    "company": "Ihr Unternehmensname",
-                    "inquiry_type": "Anfragetyp auswählen",
-                    "subject": "Kurze Beschreibung Ihrer Anfrage",
-                    "message": "Bitte geben Sie Details zu Ihrer Anfrage an..."
-                },
-                "options": {
-                    "general": "Allgemeine Frage",
-                    "technical": "Technischer Support",
-                    "enterprise": "Enterprise-Lösungen",
-                    "partnership": "Partnerschaft",
-                    "security": "Sicherheitsproblem",
-                    "other": "Sonstiges"
-                },
-                "submit": "Nachricht senden",
-                "sending": "Wird gesendet..."
+        "api_reference": {
+            "badge": "API-Referenz",
+            "title": "Vollständige API-Dokumentation",
+            "auth": {
+                "title": "Authentifizierung",
+                "description": "Alle API-Anfragen erfordern eine ordnungsgemäße Authentifizierung",
+                "jwt": "JWT-Token (Dashboard)",
+                "api_key": "API-Schlüssel (SDK)"
             },
-            "success": {
-                "title": "Nachricht erfolgreich gesendet!",
-                "description": "Vielen Dank für Ihre Kontaktaufnahme. Wir werden uns innerhalb von 24 Stunden bei Ihnen melden.",
-                "reference_id": "Referenz-ID:",
-                "email_confirm": "Sie sollten in Kürze eine Bestätigungs-E-Mail an {{email}} erhalten.",
-                "send_another": "Weitere Nachricht senden"
-            },
-            "info": {
-                "title": "Kontaktinformationen",
-                "description": "Nutzen Sie das Formular auf der linken Seite oder kopieren Sie diese E-Mail-Adressen.",
-                "methods": {
-                    "email": {
-                        "title": "E-Mail-Support",
-                        "description": "Hilfe per E-Mail erhalten"
-                    },
-                    "security": {
-                        "title": "Sicherheitsprobleme",
-                        "description": "Sicherheitslücken melden"
-                    },
-                    "tech": {
-                        "title": "Technischer Support",
-                        "description": "Integrations- und technische Hilfe"
-                    }
+            "endpoints": {
+                "title": "API-Endpunkte",
+                "create_record": "Einen neuen Fingerprint-Datensatz erstellen",
+                "list_all": "Alle Fingerprints im Arbeitsbereich auflisten",
+                "submit_info": "Geräteinformationen übermitteln",
+                "create_workspace": "Einen neuen Arbeitsbereich erstellen"
+            }
+        },
+        "examples": {
+            "badge": "Beispiele",
+            "title": "Praxisbeispiele",
+            "description": "Lernen Sie aus praktischen Implementierungen und Best Practices",
+            "items": {
+                "fraud": {
+                    "title": "E-Commerce-Betrugserkennung",
+                    "description": "Verdächtige Aktivitäten während des Bezahlvorgangs erkennen"
                 },
-                "copied": "Kopiert!"
+                "behavior": {
+                    "title": "Nutzeranalyse & Personalisierung",
+                    "description": "Nutzerverhalten über Sitzungen hinweg verfolgen"
+                }
+            }
+        },
+        "support": {
+            "title": "Brauchen Sie Hilfe?",
+            "description": "Unser Team ist hier, um Ihnen zum Erfolg mit FingerTrace zu verhelfen. Kontaktieren Sie uns für Support, Fragen oder Feature-Wünsche.",
+            "contact": "Support kontaktieren"
+        }
+    },
+    "contact": {
+        "badge": "💬 Kontaktieren Sie uns",
+        "title_1": "Kontaktieren Sie ",
+        "title_2": "unser Team",
+        "description": "Haben Sie Fragen zu FingerTrace? Wir sind hier, um zu helfen. Wenden Sie sich an unser Team, und wir werden uns so schnell wie möglich bei Ihnen melden.",
+        "form": {
+            "title": "Senden Sie uns eine Nachricht",
+            "description": "Füllen Sie das untenstehende Formular aus und wir werden uns innerhalb von 24 Stunden bei Ihnen melden.",
+            "name": "Name *",
+            "email": "E-Mail *",
+            "company": "Unternehmen",
+            "inquiry_type": "Anfragetyp *",
+            "subject": "Betreff *",
+            "message": "Nachricht *",
+            "placeholders": {
+                "name": "Ihr vollständiger Name",
+                "email": "ihre@email.de",
+                "company": "Ihr Unternehmensname",
+                "inquiry_type": "Anfragetyp auswählen",
+                "subject": "Kurze Beschreibung Ihrer Anfrage",
+                "message": "Bitte geben Sie Details zu Ihrer Anfrage an..."
             },
-            "response_time": {
-                "title": "Reaktionszeit",
-                "general": "Allgemeine Anfragen",
+            "options": {
+                "general": "Allgemeine Frage",
                 "technical": "Technischer Support",
-                "security": "Sicherheitsprobleme",
-                "hours_24": "24 Stunden",
-                "hours_12": "12 Stunden",
-                "hours_2": "2 Stunden"
+                "enterprise": "Enterprise-Lösungen",
+                "partnership": "Partnerschaft",
+                "security": "Sicherheitsproblem",
+                "other": "Sonstiges"
             },
-            "office_hours": {
-                "title": "Geschäftszeiten",
-                "mon_fri": "Montag - Freitag",
-                "sat": "Samstag",
-                "sun": "Sonntag",
-                "closed": "Geschlossen"
-            },
-            "errors": {
-                "title": "Fehler",
-                "generic_error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
-            }
+            "submit": "Nachricht senden",
+            "sending": "Wird gesendet..."
         },
-        "legal": {
-            "back_to_home": "Zurück zur Startseite",
-            "last_updated": "Zuletzt aktualisiert: Januar 2025",
-            "privacy": {
-                "title": "Datenschutzerklärung",
-                "description": "Ihre Privatsphäre ist uns wichtig. Diese Datenschutzerklärung erläutert, wie wir Ihre Informationen sammeln, verwenden und schützen.",
-                "principles": {
-                    "transparency": {
-                        "title": "Transparenz",
-                        "description": "Wir sind klar darüber, welche Daten wir sammeln und wie wir sie verwenden"
-                    },
-                    "security": {
-                        "title": "Sicherheit",
-                        "description": "Ihre Daten werden verschlüsselt und nach Industriestandards geschützt"
-                    },
-                    "control": {
-                        "title": "Kontrolle",
-                        "description": "Sie haben die volle Kontrolle über Ihre Daten und Privatsphäre-Einstellungen"
-                    }
+        "success": {
+            "title": "Nachricht erfolgreich gesendet!",
+            "description": "Vielen Dank für Ihre Kontaktaufnahme. Wir werden uns innerhalb von 24 Stunden bei Ihnen melden.",
+            "reference_id": "Referenz-ID:",
+            "email_confirm": "Sie sollten in Kürze eine Bestätigungs-E-Mail an {{email}} erhalten.",
+            "send_another": "Weitere Nachricht senden"
+        },
+        "info": {
+            "title": "Kontaktinformationen",
+            "description": "Nutzen Sie das Formular auf der linken Seite oder kopieren Sie diese E-Mail-Adressen.",
+            "methods": {
+                "email": {
+                    "title": "E-Mail-Support",
+                    "description": "Hilfe per E-Mail erhalten"
                 },
-                "sections": {
-                    "collect": {
-                        "title": "1. Informationen, die wir sammeln",
-                        "account": {
-                            "title": "Kontoinformationen",
-                            "description": "Wenn Sie ein Konto erstellen, erfassen wir Ihre E-Mail-Adresse, Ihren Namen und Ihr verschlüsseltes Passwort."
-                        },
-                        "fingerprint": {
-                            "title": "Fingerprinting-Daten",
-                            "description": "Wir erfassen Geräte-Fingerprints, einschließlich Canvas-Fingerprints, WebGL-Renderer-Informationen, Schrifterkennungsdaten, Bildschirmauflösung, Browser-Informationen und TLS/JA3-Fingerprints."
-                        }
-                    },
-                    "contact": {
-                        "title": "Kontaktieren Sie uns",
-                        "description": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns bitte:",
-                        "email": "E-Mail:",
-                        "dpo": "Datenschutzbeauftragter:"
-                    }
+                "security": {
+                    "title": "Sicherheitsprobleme",
+                    "description": "Sicherheitslücken melden"
+                },
+                "tech": {
+                    "title": "Technischer Support",
+                    "description": "Integrations- und technische Hilfe"
                 }
             },
-            "security": {
-                "title": "Sicherheit & Compliance",
-                "description": "Erfahren Sie, wie wir Ihre Daten schützen und die höchsten Sicherheitsstandards einhalten.",
-                "features": {
-                    "encryption": {
-                        "title": "End-to-End-Verschlüsselung",
-                        "description": "Alle Daten werden während der Übertragung mit TLS 1.3 und im Ruhezustand mit AES-256 verschlüsselt"
-                    },
-                    "soc2": {
-                        "title": "SOC 2 Type II konform",
-                        "description": "Unsere Infrastruktur erfüllt die höchsten Sicherheits- und Verfügbarkeitsstandards"
-                    },
-                    "audits": {
-                        "title": "Regelmäßige Sicherheitsaudits",
-                        "description": "Unabhängige Sicherheitsbewertungen durch Dritte und Penetrationstests"
-                    },
-                    "monitoring": {
-                        "title": "24/7 Überwachung",
-                        "description": "Kontinuierliche Überwachung auf Bedrohungen und anomale Aktivitäten"
-                    }
+            "copied": "Kopiert!"
+        },
+        "response_time": {
+            "title": "Reaktionszeit",
+            "general": "Allgemeine Anfragen",
+            "technical": "Technischer Support",
+            "security": "Sicherheitsprobleme",
+            "hours_24": "24 Stunden",
+            "hours_12": "12 Stunden",
+            "hours_2": "2 Stunden"
+        },
+        "office_hours": {
+            "title": "Geschäftszeiten",
+            "mon_fri": "Montag - Freitag",
+            "sat": "Samstag",
+            "sun": "Sonntag",
+            "closed": "Geschlossen"
+        },
+        "errors": {
+            "title": "Fehler",
+            "generic_error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+        }
+    },
+    "legal": {
+        "back_to_home": "Zurück zur Startseite",
+        "last_updated": "Zuletzt aktualisiert: Januar 2025",
+        "privacy": {
+            "title": "Datenschutzerklärung",
+            "description": "Ihre Privatsphäre ist uns wichtig. Diese Datenschutzerklärung erläutert, wie wir Ihre Informationen sammeln, verwenden und schützen.",
+            "principles": {
+                "transparency": {
+                    "title": "Transparenz",
+                    "description": "Wir sind klar darüber, welche Daten wir sammeln und wie wir sie verwenden"
                 },
-                "infrastructure": {
-                    "title": "Infrastruktursicherheit",
-                    "cloud": {
-                        "title": "Cloud-Infrastruktur",
-                        "description": "FingerTrace basiert auf einer Cloud-Infrastruktur der Enterprise-Klasse mit mehreren Sicherheitsebene."
+                "security": {
+                    "title": "Sicherheit",
+                    "description": "Ihre Daten werden verschlüsselt und nach Industriestandards geschützt"
+                },
+                "control": {
+                    "title": "Kontrolle",
+                    "description": "Sie haben die volle Kontrolle über Ihre Daten und Privatsphäre-Einstellungen"
+                }
+            },
+            "sections": {
+                "collect": {
+                    "title": "1. Informationen, die wir sammeln",
+                    "account": {
+                        "title": "Kontoinformationen",
+                        "description": "Wenn Sie ein Konto erstellen, erfassen wir Ihre E-Mail-Adresse, Ihren Namen und Ihr verschlüsseltes Passwort."
+                    },
+                    "fingerprint": {
+                        "title": "Fingerprinting-Daten",
+                        "description": "Wir erfassen Geräte-Fingerprints, einschließlich Canvas-Fingerprints, WebGL-Renderer-Informationen, Schrifterkennungsdaten, Bildschirmauflösung, Browser-Informationen und TLS/JA3-Fingerprints."
                     }
                 },
                 "contact": {
-                    "title": "Sicherheitskontakt",
-                    "description": "Für sicherheitsbezogene Fragen oder zum Melden von Schwachstellen:",
-                    "team": "Sicherheitsteam:",
-                    "response_time": "Reaktionszeit:",
-                    "response_desc": "Innerhalb von 24 Stunden bei kritischen Problemen"
+                    "title": "Kontaktieren Sie uns",
+                    "description": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns bitte:",
+                    "email": "E-Mail:",
+                    "dpo": "Datenschutzbeauftragter:"
+                }
+            }
+        },
+        "security": {
+            "title": "Sicherheit & Compliance",
+            "description": "Erfahren Sie, wie wir Ihre Daten schützen und die höchsten Sicherheitsstandards einhalten.",
+            "features": {
+                "encryption": {
+                    "title": "End-to-End-Verschlüsselung",
+                    "description": "Alle Daten werden während der Übertragung mit TLS 1.3 und im Ruhezustand mit AES-256 verschlüsselt"
+                },
+                "soc2": {
+                    "title": "SOC 2 Type II konform",
+                    "description": "Unsere Infrastruktur erfüllt die höchsten Sicherheits- und Verfügbarkeitsstandards"
+                },
+                "audits": {
+                    "title": "Regelmäßige Sicherheitsaudits",
+                    "description": "Unabhängige Sicherheitsbewertungen durch Dritte und Penetrationstests"
+                },
+                "monitoring": {
+                    "title": "24/7 Überwachung",
+                    "description": "Kontinuierliche Überwachung auf Bedrohungen und anomale Aktivitäten"
                 }
             },
-            "terms": {
-                "title": "Nutzungsbedingungen",
-                "description": "Bitte lesen Sie diese Nutzungsbedingungen sorgfältig durch, bevor Sie FingerTrace verwenden.",
-                "sections": {
-                    "agreement": {
-                        "title": "1. Zustimmung zu den Bedingungen",
-                        "desc_1": "Durch den Zugriff auf und die Nutzung von FingerTrace (\"Dienst\") akzeptieren Sie die Bedingungen dieser Vereinbarung und erklären sich damit einverstanden, an sie gebunden zu sein. Wenn Sie mit den oben genannten Bedingungen nicht einverstanden sind, nutzen Sie diesen Dienst bitte nicht.",
-                        "desc_2": "Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihre Nutzung unserer Website unter fingertrace.app (der \"Dienst\"), die von FingerTrace (\"uns\", \"wir\" oder \"unser\") betrieben wird."
-                    },
-                    "license": {
-                        "title": "2. Nutzungslizenz",
-                        "description": "Es wird die Erlaubnis erteilt, vorübergehend eine Kopie des FingerTrace SDK pro Lizenz für den persönlichen oder kommerziellen Gebrauch herunterzuladen. Dies ist die Erteilung einer Lizenz, keine Übertragung des Eigentums, und unter dieser Lizenz dürfen Sie nicht:",
-                        "items": [
-                            "Die Materialien ändern oder kopieren",
-                            "Die Materialien für kommerzielle Zwecke oder für öffentliche Zurschaustellungen verwenden",
-                            "Versuchen, die auf der Website von FingerTrace enthaltene Software zurückzuentwickeln",
-                            "Urheberrechts- oder andere geschützte Vermerke von den Materialien entfernen"
-                        ]
-                    },
-                    "account": {
-                        "title": "3. Kontobedingungen",
-                        "description": "Sie sind für den Schutz des Passworts und der API-Schlüssel verantwortlich, die Sie für den Zugriff auf den Dienst verwenden, sowie für alle Aktivitäten, die unter Ihrem Konto stattfinden.",
-                        "items": [
-                            "Sie müssen bei der Erstellung eines Kontos genaue und vollständige Informationen angeben",
-                            "Sie sind für die Aufrechterhaltung der Sicherheit Ihres Kontos verantwortlich",
-                            "Sie müssen uns unverzüglich über jede unbefugte Nutzung Ihres Kontos informieren",
-                            "Wir behalten uns das Recht vor, Konten zu sperren oder zu kündigen, die gegen diese Bedingungen verstoßen"
-                        ]
-                    },
-                    "payment": {
-                        "title": "4. Zahlungsbedingungen",
-                        "description": "Einige Funktionen des Dienstes können zahlungspflichtig sein. Durch Angabe von Zahlungsinformationen sichern Sie zu und garantieren, dass:",
-                        "items": [
-                            "Sie das gesetzliche Recht haben, die angegebene Zahlungsmethode zu verwenden",
-                            "Alle Zahlungsinformationen korrekt und aktuell sind",
-                            "Sie alle von Ihrem Konto verursachten Gebühren bezahlen werden",
-                            "Gebühren sind nicht erstattungsfähig, außer wie gesetzlich vorgeschrieben"
-                        ]
-                    },
-                    "contact": {
-                        "title": "Kontaktinformationen",
-                        "description": "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns bitte unter legal@fingertrace.app"
-                    }
+            "infrastructure": {
+                "title": "Infrastruktursicherheit",
+                "cloud": {
+                    "title": "Cloud-Infrastruktur",
+                    "description": "FingerTrace basiert auf einer Cloud-Infrastruktur der Enterprise-Klasse mit mehreren Sicherheitsebene."
+                }
+            },
+            "contact": {
+                "title": "Sicherheitskontakt",
+                "description": "Für sicherheitsbezogene Fragen oder zum Melden von Schwachstellen:",
+                "team": "Sicherheitsteam:",
+                "response_time": "Reaktionszeit:",
+                "response_desc": "Innerhalb von 24 Stunden bei kritischen Problemen"
+            }
+        },
+        "terms": {
+            "title": "Nutzungsbedingungen",
+            "description": "Bitte lesen Sie diese Nutzungsbedingungen sorgfältig durch, bevor Sie FingerTrace verwenden.",
+            "sections": {
+                "agreement": {
+                    "title": "1. Zustimmung zu den Bedingungen",
+                    "desc_1": "Durch den Zugriff auf und die Nutzung von FingerTrace (\"Dienst\") akzeptieren Sie die Bedingungen dieser Vereinbarung und erklären sich damit einverstanden, an sie gebunden zu sein. Wenn Sie mit den oben genannten Bedingungen nicht einverstanden sind, nutzen Sie diesen Dienst bitte nicht.",
+                    "desc_2": "Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihre Nutzung unserer Website unter fingertrace.app (der \"Dienst\"), die von FingerTrace (\"uns\", \"wir\" oder \"unser\") betrieben wird."
+                },
+                "license": {
+                    "title": "2. Nutzungslizenz",
+                    "description": "Es wird die Erlaubnis erteilt, vorübergehend eine Kopie des FingerTrace SDK pro Lizenz für den persönlichen oder kommerziellen Gebrauch herunterzuladen. Dies ist die Erteilung einer Lizenz, keine Übertragung des Eigentums, und unter dieser Lizenz dürfen Sie nicht:",
+                    "items": [
+                        "Die Materialien ändern oder kopieren",
+                        "Die Materialien für kommerzielle Zwecke oder für öffentliche Zurschaustellungen verwenden",
+                        "Versuchen, die auf der Website von FingerTrace enthaltene Software zurückzuentwickeln",
+                        "Urheberrechts- oder andere geschützte Vermerke von den Materialien entfernen"
+                    ]
+                },
+                "account": {
+                    "title": "3. Kontobedingungen",
+                    "description": "Sie sind für den Schutz des Passworts und der API-Schlüssel verantwortlich, die Sie für den Zugriff auf den Dienst verwenden, sowie für alle Aktivitäten, die unter Ihrem Konto stattfinden.",
+                    "items": [
+                        "Sie müssen bei der Erstellung eines Kontos genaue und vollständige Informationen angeben",
+                        "Sie sind für die Aufrechterhaltung der Sicherheit Ihres Kontos verantwortlich",
+                        "Sie müssen uns unverzüglich über jede unbefugte Nutzung Ihres Kontos informieren",
+                        "Wir behalten uns das Recht vor, Konten zu sperren oder zu kündigen, die gegen diese Bedingungen verstoßen"
+                    ]
+                },
+                "payment": {
+                    "title": "4. Zahlungsbedingungen",
+                    "description": "Einige Funktionen des Dienstes können zahlungspflichtig sein. Durch Angabe von Zahlungsinformationen sichern Sie zu und garantieren, dass:",
+                    "items": [
+                        "Sie das gesetzliche Recht haben, die angegebene Zahlungsmethode zu verwenden",
+                        "Alle Zahlungsinformationen korrekt und aktuell sind",
+                        "Sie alle von Ihrem Konto verursachten Gebühren bezahlen werden",
+                        "Gebühren sind nicht erstattungsfähig, außer wie gesetzlich vorgeschrieben"
+                    ]
+                },
+                "contact": {
+                    "title": "Kontaktinformationen",
+                    "description": "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns bitte unter legal@fingertrace.app"
                 }
             }
         }

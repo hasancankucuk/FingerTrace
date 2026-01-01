@@ -1,15 +1,17 @@
 import Account from "./account/Account";
 import { Analysis } from "./analysis/Analysis";
 import { ApiKeys } from "./api_keys/ApiKeys";
+import { Billing } from "./billing/Billing";
 import { BlogList } from "./blog/BlogList";
 import { BlogPost } from "./blog/BlogPost";
+import { Contact } from "./contact/Contact";
 import Dashboard from "./dashboard/Dashboard";
 import { Health } from "./health/Health";
 import { Identification } from "./identification/Identification";
-import { Contact } from "./contact/Contact";
 import { Documentation } from "./landing/Documentation";
 import { Features } from "./landing/Features";
 import { Landing } from "./landing/Landing";
+import { Pricing } from "./landing/Pricing";
 import { Privacy } from "./legal/Privacy";
 import { Security } from "./legal/Security";
 import { Terms } from "./legal/Terms";
@@ -22,10 +24,9 @@ import SignupPage from "./signup/Signup";
 export {
     Account,
     Analysis,
-    ApiKeys,
-    BlogList,
+    ApiKeys, Billing, BlogList,
     BlogPost, Contact, Dashboard, Documentation,
     Features, ForgotPassword, Health,
-    Identification, Landing, LoginPage, Privacy, Rules, Search, Security, SignupPage, Terms
+    Identification, Landing, LoginPage, Pricing, Privacy, Rules, Search, Security, SignupPage, Terms
 };
 

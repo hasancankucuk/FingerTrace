@@ -35,7 +35,20 @@
         "value": "Değer",
         "flag": "Bayrak",
         "go_to_app": "Uygulamaya Git",
-        "safe": "Güvenli"
+        "safe": "Güvenli",
+        "usage": {
+            "title": "Kullanım",
+            "monthly_events": "Aylık Olaylar",
+            "days_remaining": "gün kaldı",
+            "upgrade": "Planı Yükselt",
+            "usage_details": "Kullanım Detayları",
+            "account_status": "Hesap Durumu",
+            "distribution": "Platform bazlı olay dağılımı",
+            "trial_remaining": "Deneme Süresi",
+            "monthly_quota": "Aylık Kota",
+            "status": "Durum",
+            "current_plan": "Mevcut Plan"
+        }
     },
     "nav": {
         "main_nav": "Ana Menü",
@@ -47,6 +60,7 @@
         "rules": "Kurallar",
         "get_started": "Başlayın",
         "documentation": "Dokümantasyon",
+        "billing": "Faturalandırma",
         "features": "Özellikler",
         "contact": "İletişim",
         "account": "Hesap",
@@ -314,6 +328,51 @@
             },
             "view_dashboard": "Paneli Görüntüle"
         },
+        "pricing": {
+            "title": "Basit ve Şeffaf Fiyatlandırma",
+            "subtitle": "İşletmeniz için en uygun planı seçin. Tüm planlar temel parmak izi teknolojimizi içerir.",
+            "free": {
+                "name": "Ücretsiz",
+                "price": "$0",
+                "description": "Testler ve küçük kişisel projeler için mükemmel.",
+                "features": [
+                    "Aylık 1.000 olay",
+                    "1 çalışma alanı",
+                    "7 gün veri tutma",
+                    "Topluluk desteği"
+                ],
+                "cta": "Hemen Başla"
+            },
+            "pro": {
+                "name": "Pro",
+                "price": "$49",
+                "period": "/ay",
+                "description": "Büyüyen girişimler ve profesyonel geliştiriciler için en iyisi.",
+                "features": [
+                    "Aylık 50.000 olay",
+                    "Sınırsız çalışma alanı",
+                    "30 gün veri tutma",
+                    "Öncelikli e-posta desteği",
+                    "Özel webhooklar"
+                ],
+                "cta": "Ücretsiz Denemeyi Başlat",
+                "cta_upgrade": "Şimdi Yükselt",
+                "popular": "En Popüler"
+            },
+            "enterprise": {
+                "name": "Kurumsal",
+                "price": "Özel",
+                "description": "Maksimum güvenlik ve destek gerektiren büyük ölçekli uygulamalar için.",
+                "features": [
+                    "Sınırsız aylık olay",
+                    "Özel altyapı",
+                    "Sınırsız veri tutma",
+                    "7/24 Telefon desteği",
+                    "Özel SLA"
+                ],
+                "cta": "Kurumsala Yükselt"
+            }
+        },
         "footer": {
             "brand_desc": "Modern uygulamalar için gelişmiş kullanıcı analitiği ve etkileşim takibi.",
             "sections": {
@@ -322,6 +381,7 @@
                 "legal": "Yasal"
             },
             "links": {
+                "pricing": "Ücretlendirme",
                 "features": "Özellikler",
                 "documentation": "Dokümantasyon",
                 "about": "Hakkımızda",
@@ -333,328 +393,328 @@
                 "status": "Durum"
             },
             "rights": "© 2025 FingerTrace. Tüm hakları saklıdır."
+        }
+    },
+    "documentation": {
+        "hero": {
+            "badge": "Dokümantasyon",
+            "title_1": "FingerTrace ile ",
+            "title_2": "Başlayın",
+            "description": "Tarayıcı parmak izi alma ve cihaz tanımlama için tam rehber. Uygulamalarınıza daha iyi güvenlik ve analitik ekleyin.",
+            "quick_start": "Hızlı Başlangıç"
         },
-        "documentation": {
-            "hero": {
-                "badge": "Dokümantasyon",
-                "title_1": "FingerTrace ile ",
-                "title_2": "Başlayın",
-                "description": "Tarayıcı parmak izi alma ve cihaz tanımlama için tam rehber. Uygulamalarınıza daha iyi güvenlik ve analitik ekleyin.",
-                "quick_start": "Hızlı Başlangıç"
-            },
-            "quick_links": {
-                "title": "İhtiyacınız olana gidin",
-                "items": {
-                    "quick_start": {
-                        "title": "Hızlı Başlangıç",
-                        "description": "5 dakikada kurun ve çalıştırın"
-                    },
-                    "sdk_integration": {
-                        "title": "SDK Entegrasyonu",
-                        "description": "Uygulamanıza entegre edin"
-                    },
-                    "api_reference": {
-                        "title": "API Referansı",
-                        "description": "Tam API dokümantasyonu"
-                    },
-                    "workspaces": {
-                        "title": "Çalışma Alanları",
-                        "description": "Projelerinizi düzenleyin"
-                    },
-                    "examples": {
-                        "title": "Örnekler",
-                        "description": "Gerçek dünya kod örnekleri"
-                    },
-                    "security": {
-                        "title": "Güvenlik",
-                        "description": "Gizlilik ve uyumluluk"
-                    }
-                }
-            },
-            "quick_start": {
-                "badge": "Hızlı Başlangıç",
-                "title": "Dakikalar İçinde Başlayın",
-                "description": "FingerTrace'i uygulamanıza entegre etmek için bu basit adımları izleyin",
-                "steps": {
-                    "install": {
-                        "title": "SDK'yı Yükleyin",
-                        "description": "Hafif SDK'mızı npm veya yarn ile projenize ekleyin"
-                    },
-                    "initialize": {
-                        "title": "Başlatın",
-                        "description": "SDK'yı uygulamanıza dahil edin ve başlatın"
-                    },
-                    "send_data": {
-                        "title": "Veri Gönderin",
-                        "description": "Parmak izi verilerini FingerTrace çalışma alanınıza gönderin"
-                    }
-                }
-            },
-            "sdk_integration": {
-                "badge": "SDK Entegrasyonu",
-                "title": "Çoklu Entegrasyon Seçenekleri",
-                "tabs": {
-                    "react": "React",
-                    "vanilla": "Vanilla JS",
-                    "vue": "Vue.js",
-                    "angular": "Angular"
+        "quick_links": {
+            "title": "İhtiyacınız olana gidin",
+            "items": {
+                "quick_start": {
+                    "title": "Hızlı Başlangıç",
+                    "description": "5 dakikada kurun ve çalıştırın"
+                },
+                "sdk_integration": {
+                    "title": "SDK Entegrasyonu",
+                    "description": "Uygulamanıza entegre edin"
+                },
+                "api_reference": {
+                    "title": "API Referansı",
+                    "description": "Tam API dokümantasyonu"
+                },
+                "workspaces": {
+                    "title": "Çalışma Alanları",
+                    "description": "Projelerinizi düzenleyin"
                 },
                 "examples": {
-                    "react": {
-                        "title": "React Hook Uygulaması",
-                        "description": "Parmak izi alımını React bileşenlerinize entegre etmek için bu özel hook'u kullanın"
-                    },
-                    "vanilla": {
-                        "title": "Vanilla JavaScript Uygulaması",
-                        "description": "Herhangi bir framework bağımlılığı olmadan temel uygulama"
-                    },
-                    "vue": {
-                        "title": "Vue.js Composable",
-                        "description": "Parmak izi yönetimi için Vue 3 composable"
-                    },
-                    "angular": {
-                        "title": "Angular Servisi",
-                        "description": "Angular uygulamaları için enjekte edilebilir servis"
-                    }
-                }
-            },
-            "api_reference": {
-                "badge": "API Referansı",
-                "title": "Tam API Dokümantasyonu",
-                "auth": {
-                    "title": "Kimlik Doğrulama",
-                    "description": "Tüm API istekleri uygun kimlik doğrulaması gerektirir",
-                    "jwt": "JWT Anahtarı (Panel)",
-                    "api_key": "API Anahtarı (SDK)"
+                    "title": "Örnekler",
+                    "description": "Gerçek dünya kod örnekleri"
                 },
-                "endpoints": {
-                    "title": "API Uç Noktaları",
-                    "create_record": "Yeni bir parmak izi kaydı oluştur",
-                    "list_all": "Çalışma alanındaki tüm parmak izlerini listele",
-                    "submit_info": "Cihaz bilgilerini gönder",
-                    "create_workspace": "Yeni bir çalışma alanı oluştur"
+                "security": {
+                    "title": "Güvenlik",
+                    "description": "Gizlilik ve uyumluluk"
                 }
+            }
+        },
+        "quick_start": {
+            "badge": "Hızlı Başlangıç",
+            "title": "Dakikalar İçinde Başlayın",
+            "description": "FingerTrace'i uygulamanıza entegre etmek için bu basit adımları izleyin",
+            "steps": {
+                "install": {
+                    "title": "SDK'yı Yükleyin",
+                    "description": "Hafif SDK'mızı npm veya yarn ile projenize ekleyin"
+                },
+                "initialize": {
+                    "title": "Başlatın",
+                    "description": "SDK'yı uygulamanıza dahil edin ve başlatın"
+                },
+                "send_data": {
+                    "title": "Veri Gönderin",
+                    "description": "Parmak izi verilerini FingerTrace çalışma alanınıza gönderin"
+                }
+            }
+        },
+        "sdk_integration": {
+            "badge": "SDK Entegrasyonu",
+            "title": "Çoklu Entegrasyon Seçenekleri",
+            "tabs": {
+                "react": "React",
+                "vanilla": "Vanilla JS",
+                "vue": "Vue.js",
+                "angular": "Angular"
             },
             "examples": {
-                "badge": "Örnekler",
-                "title": "Gerçek Dünya Örnekleri",
-                "description": "Pratik uygulamalar ve en iyi yöntemlerden öğrenin",
-                "items": {
-                    "fraud": {
-                        "title": "E-ticaret Sahtekarlık Tespiti",
-                        "description": "Ödeme işlemi sırasında şüpheli etkinliği tespit edin"
-                    },
-                    "behavior": {
-                        "title": "Kullanıcı Analitiği ve Kişiselleştirme",
-                        "description": "Oturumlar genelinde kullanıcı davranışını izleyin"
-                    }
+                "react": {
+                    "title": "React Hook Uygulaması",
+                    "description": "Parmak izi alımını React bileşenlerinize entegre etmek için bu özel hook'u kullanın"
+                },
+                "vanilla": {
+                    "title": "Vanilla JavaScript Uygulaması",
+                    "description": "Herhangi bir framework bağımlılığı olmadan temel uygulama"
+                },
+                "vue": {
+                    "title": "Vue.js Composable",
+                    "description": "Parmak izi yönetimi için Vue 3 composable"
+                },
+                "angular": {
+                    "title": "Angular Servisi",
+                    "description": "Angular uygulamaları için enjekte edilebilir servis"
                 }
-            },
-            "support": {
-                "title": "Yardıma mı ihtiyacınız var?",
-                "description": "Ekibimiz FingerTrace ile başarılı olmanıza yardımcı olmak için burada. Destek, sorular veya özellik istekleri için bize ulaşın.",
-                "contact": "Destekle İletişime Geçin"
             }
         },
-        "contact": {
-            "badge": "💬 İletişime Geçin",
-            "title_1": "Ekibimizle ",
-            "title_2": "İletişime Geçin",
-            "description": "FingerTrace hakkında sorularınız mı var? Yardımcı olmak için buradayız. Ekibimize ulaşın, en kısa sürede size geri dönelim.",
-            "form": {
-                "title": "Bize mesaj gönderin",
-                "description": "Aşağıdaki formu doldurun, 24 saat içinde size geri dönelim.",
-                "name": "İsim *",
-                "email": "E-posta *",
-                "company": "Şirket",
-                "inquiry_type": "Sorgu Türü *",
-                "subject": "Konu *",
-                "message": "Mesaj *",
-                "placeholders": {
-                    "name": "Tam isminiz",
-                    "email": "e-posta@adresiniz.com",
-                    "company": "Şirket adınız",
-                    "inquiry_type": "Sorgu türünü seçin",
-                    "subject": "Sorgunuzun kısa açıklaması",
-                    "message": "Lütfen sorgunuzla ilgili detayları sağlayın..."
-                },
-                "options": {
-                    "general": "Genel Soru",
-                    "technical": "Teknik Destek",
-                    "enterprise": "Kurumsal Çözümler",
-                    "partnership": "İş Ortaklığı",
-                    "security": "Güvenlik Sorunu",
-                    "other": "Diğer"
-                },
-                "submit": "Mesaj Gönder",
-                "sending": "Gönderiliyor..."
+        "api_reference": {
+            "badge": "API Referansı",
+            "title": "Tam API Dokümantasyonu",
+            "auth": {
+                "title": "Kimlik Doğrulama",
+                "description": "Tüm API istekleri uygun kimlik doğrulaması gerektirir",
+                "jwt": "JWT Anahtarı (Panel)",
+                "api_key": "API Anahtarı (SDK)"
             },
-            "success": {
-                "title": "Mesaj Başarıyla Gönderildi!",
-                "description": "Bizimle iletişime geçtiğiniz için teşekkürler. 24 saat içinde size geri döneceğiz.",
-                "reference_id": "Referans No:",
-                "email_confirm": "Kısa süre içinde {{email}} adresine bir onay e-postası almalısınız.",
-                "send_another": "Yeni Mesaj Gönder"
-            },
-            "info": {
-                "title": "İletişim Bilgileri",
-                "description": "Soldaki formu kullanın veya bu e-posta adreslerini kopyalayın.",
-                "methods": {
-                    "email": {
-                        "title": "E-posta Desteği",
-                        "description": "E-posta yoluyla yardım alın"
-                    },
-                    "security": {
-                        "title": "Güvenlik Sorunları",
-                        "description": "Güvenlik açıklarını bildirin"
-                    },
-                    "tech": {
-                        "title": "Teknik Destek",
-                        "description": "Entegrasyon ve teknik yardım"
-                    }
+            "endpoints": {
+                "title": "API Uç Noktaları",
+                "create_record": "Yeni bir parmak izi kaydı oluştur",
+                "list_all": "Çalışma alanındaki tüm parmak izlerini listele",
+                "submit_info": "Cihaz bilgilerini gönder",
+                "create_workspace": "Yeni bir çalışma alanı oluştur"
+            }
+        },
+        "examples": {
+            "badge": "Örnekler",
+            "title": "Gerçek Dünya Örnekleri",
+            "description": "Pratik uygulamalar ve en iyi yöntemlerden öğrenin",
+            "items": {
+                "fraud": {
+                    "title": "E-ticaret Sahtekarlık Tespiti",
+                    "description": "Ödeme işlemi sırasında şüpheli etkinliği tespit edin"
                 },
-                "copied": "Kopyalandı!"
+                "behavior": {
+                    "title": "Kullanıcı Analitiği ve Kişiselleştirme",
+                    "description": "Oturumlar genelinde kullanıcı davranışını izleyin"
+                }
+            }
+        },
+        "support": {
+            "title": "Yardıma mı ihtiyacınız var?",
+            "description": "Ekibimiz FingerTrace ile başarılı olmanıza yardımcı olmak için burada. Destek, sorular veya özellik istekleri için bize ulaşın.",
+            "contact": "Destekle İletişime Geçin"
+        }
+    },
+    "contact": {
+        "badge": "💬 İletişime Geçin",
+        "title_1": "Ekibimizle ",
+        "title_2": "İletişime Geçin",
+        "description": "FingerTrace hakkında sorularınız mı var? Yardımcı olmak için buradayız. Ekibimize ulaşın, en kısa sürede size geri dönelim.",
+        "form": {
+            "title": "Bize mesaj gönderin",
+            "description": "Aşağıdaki formu doldurun, 24 saat içinde size geri dönelim.",
+            "name": "İsim *",
+            "email": "E-posta *",
+            "company": "Şirket",
+            "inquiry_type": "Sorgu Türü *",
+            "subject": "Konu *",
+            "message": "Mesaj *",
+            "placeholders": {
+                "name": "Tam isminiz",
+                "email": "e-posta@adresiniz.com",
+                "company": "Şirket adınız",
+                "inquiry_type": "Sorgu türünü seçin",
+                "subject": "Sorgunuzun kısa açıklaması",
+                "message": "Lütfen sorgunuzla ilgili detayları sağlayın..."
             },
-            "response_time": {
-                "title": "Yanıt Süresi",
-                "general": "Genel Sorgular",
+            "options": {
+                "general": "Genel Soru",
                 "technical": "Teknik Destek",
-                "security": "Güvenlik Sorunları",
-                "hours_24": "24 saat",
-                "hours_12": "12 saat",
-                "hours_2": "2 saat"
+                "enterprise": "Kurumsal Çözümler",
+                "partnership": "İş Ortaklığı",
+                "security": "Güvenlik Sorunu",
+                "other": "Diğer"
             },
-            "office_hours": {
-                "title": "Çalışma Saatleri",
-                "mon_fri": "Pazartesi - Cuma",
-                "sat": "Cumartesi",
-                "sun": "Pazar",
-                "closed": "Kapalı"
-            },
-            "errors": {
-                "title": "Hata",
-                "generic_error": "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
-            }
+            "submit": "Mesaj Gönder",
+            "sending": "Gönderiliyor..."
         },
-        "legal": {
-            "back_to_home": "Anasayfaya Dön",
-            "last_updated": "Son güncelleme: Ocak 2025",
-            "privacy": {
-                "title": "Gizlilik Politikası",
-                "description": "Gizliliğiniz bizim için önemlidir. Bu Gizlilik Politikası, bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklar.",
-                "principles": {
-                    "transparency": {
-                        "title": "Şeffaflık",
-                        "description": "Hangi verileri topladığımız ve nasıl kullandığımız konusunda açığız"
-                    },
-                    "security": {
-                        "title": "Güvenlik",
-                        "description": "Verileriniz şifrelenir ve endüstri standartlarıyla korunur"
-                    },
-                    "control": {
-                        "title": "Kontrol",
-                        "description": "Verileriniz ve gizlilik ayarlarınız üzerinde tam kontrole sahipsiniz"
-                    }
+        "success": {
+            "title": "Mesaj Başarıyla Gönderildi!",
+            "description": "Bizimle iletişime geçtiğiniz için teşekkürler. 24 saat içinde size geri döneceğiz.",
+            "reference_id": "Referans No:",
+            "email_confirm": "Kısa süre içinde {{email}} adresine bir onay e-postası almalısınız.",
+            "send_another": "Yeni Mesaj Gönder"
+        },
+        "info": {
+            "title": "İletişim Bilgileri",
+            "description": "Soldaki formu kullanın veya bu e-posta adreslerini kopyalayın.",
+            "methods": {
+                "email": {
+                    "title": "E-posta Desteği",
+                    "description": "E-posta yoluyla yardım alın"
                 },
-                "sections": {
-                    "collect": {
-                        "title": "1. Topladığımız Bilgiler",
-                        "account": {
-                            "title": "Hesap Bilgileri",
-                            "description": "Hesap oluşturduğunuzda e-posta adresinizi, isminizi ve şifrelenmiş şifrenizi toplarız."
-                        },
-                        "fingerprint": {
-                            "title": "Parmak İzi Verileri",
-                            "description": "Tuval parmak izleri, WebGL oluşturucu bilgileri, yazı tipi algılama verileri, ekran çözünürlüğü, tarayıcı bilgileri ve TLS/JA3 parmak izleri dahil olmak üzere cihaz parmak izlerini toplarız."
-                        }
-                    },
-                    "contact": {
-                        "title": "Bize Ulaşın",
-                        "description": "Bu Gizlilik Politikası hakkında sorularınız varsa lütfen bizimle iletişime geçin:",
-                        "email": "E-posta:",
-                        "dpo": "Veri Koruma Görevlisi:"
-                    }
+                "security": {
+                    "title": "Güvenlik Sorunları",
+                    "description": "Güvenlik açıklarını bildirin"
+                },
+                "tech": {
+                    "title": "Teknik Destek",
+                    "description": "Entegrasyon ve teknik yardım"
                 }
             },
-            "security": {
-                "title": "Güvenlik ve Uyumluluk",
-                "description": "Verilerinizi nasıl koruduğumuzu ve en yüksek güvenlik standartlarını nasıl koruduğumuzu öğrenin.",
-                "features": {
-                    "encryption": {
-                        "title": "Uçtan Uca Şifreleme",
-                        "description": "Tüm veriler iletim sırasında TLS 1.3 ve depolanırken AES-256 kullanılarak şifrelenir"
-                    },
-                    "soc2": {
-                        "title": "SOC 2 Type II Uyumlu",
-                        "description": "Altyapımız en yüksek güvenlik ve kullanılabilirlik standartlarını karşılar"
-                    },
-                    "audits": {
-                        "title": "Düzenli Güvenlik Denetimleri",
-                        "description": "Bağımsız üçüncü taraf güvenlik değerlendirmeleri ve sızma testleri"
-                    },
-                    "monitoring": {
-                        "title": "7/24 İzleme",
-                        "description": "Tehditler ve anormal etkinlikler için sürekli izleme"
-                    }
+            "copied": "Kopyalandı!"
+        },
+        "response_time": {
+            "title": "Yanıt Süresi",
+            "general": "Genel Sorgular",
+            "technical": "Teknik Destek",
+            "security": "Güvenlik Sorunları",
+            "hours_24": "24 saat",
+            "hours_12": "12 saat",
+            "hours_2": "2 saat"
+        },
+        "office_hours": {
+            "title": "Çalışma Saatleri",
+            "mon_fri": "Pazartesi - Cuma",
+            "sat": "Cumartesi",
+            "sun": "Pazar",
+            "closed": "Kapalı"
+        },
+        "errors": {
+            "title": "Hata",
+            "generic_error": "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+        }
+    },
+    "legal": {
+        "back_to_home": "Anasayfaya Dön",
+        "last_updated": "Son güncelleme: Ocak 2025",
+        "privacy": {
+            "title": "Gizlilik Politikası",
+            "description": "Gizliliğiniz bizim için önemlidir. Bu Gizlilik Politikası, bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklar.",
+            "principles": {
+                "transparency": {
+                    "title": "Şeffaflık",
+                    "description": "Hangi verileri topladığımız ve nasıl kullandığımız konusunda açığız"
                 },
-                "infrastructure": {
-                    "title": "Altyapı Güvenliği",
-                    "cloud": {
-                        "title": "Bulut Altyapısı",
-                        "description": "FingerTrace, çok katmanlı güvenliğe sahip kurumsal sınıf bulut altyapısı üzerine inşa edilmiştir."
+                "security": {
+                    "title": "Güvenlik",
+                    "description": "Verileriniz şifrelenir ve endüstri standartlarıyla korunur"
+                },
+                "control": {
+                    "title": "Kontrol",
+                    "description": "Verileriniz ve gizlilik ayarlarınız üzerinde tam kontrole sahipsiniz"
+                }
+            },
+            "sections": {
+                "collect": {
+                    "title": "1. Topladığımız Bilgiler",
+                    "account": {
+                        "title": "Hesap Bilgileri",
+                        "description": "Hesap oluşturduğunuzda e-posta adresinizi, isminizi ve şifrelenmiş şifrenizi toplarız."
+                    },
+                    "fingerprint": {
+                        "title": "Parmak İzi Verileri",
+                        "description": "Tuval parmak izleri, WebGL oluşturucu bilgileri, yazı tipi algılama verileri, ekran çözünürlüğü, tarayıcı bilgileri ve TLS/JA3 parmak izleri dahil olmak üzere cihaz parmak izlerini toplarız."
                     }
                 },
                 "contact": {
-                    "title": "Güvenlik İletişim",
-                    "description": "Güvenlikle ilgili sorularınız veya güvenlik açıklarını bildirmek için:",
-                    "team": "Güvenlik Ekibi:",
-                    "response_time": "Yanıt Süresi:",
-                    "response_desc": "Kritik sorunlar için 24 saat içinde"
+                    "title": "Bize Ulaşın",
+                    "description": "Bu Gizlilik Politikası hakkında sorularınız varsa lütfen bizimle iletişime geçin:",
+                    "email": "E-posta:",
+                    "dpo": "Veri Koruma Görevlisi:"
+                }
+            }
+        },
+        "security": {
+            "title": "Güvenlik ve Uyumluluk",
+            "description": "Verilerinizi nasıl koruduğumuzu ve en yüksek güvenlik standartlarını nasıl koruduğumuzu öğrenin.",
+            "features": {
+                "encryption": {
+                    "title": "Uçtan Uca Şifreleme",
+                    "description": "Tüm veriler iletim sırasında TLS 1.3 ve depolanırken AES-256 kullanılarak şifrelenir"
+                },
+                "soc2": {
+                    "title": "SOC 2 Type II Uyumlu",
+                    "description": "Altyapımız en yüksek güvenlik ve kullanılabilirlik standartlarını karşılar"
+                },
+                "audits": {
+                    "title": "Düzenli Güvenlik Denetimleri",
+                    "description": "Bağımsız üçüncü taraf güvenlik değerlendirmeleri ve sızma testleri"
+                },
+                "monitoring": {
+                    "title": "7/24 İzleme",
+                    "description": "Tehditler ve anormal etkinlikler için sürekli izleme"
                 }
             },
-            "terms": {
-                "title": "Kullanım Koşulları",
-                "description": "FingerTrace'i kullanmadan önce lütfen bu Kullanım Koşullarını dikkatlice okuyun.",
-                "sections": {
-                    "agreement": {
-                        "title": "1. Koşulların Kabulü",
-                        "desc_1": "FingerTrace'e (\"Hizmet\") erişerek ve kullanarak, bu sözleşmenin şartlarını ve hükümlerini kabul etmiş ve bunlara bağlı kalmayı onaylamış olursunuz. Yukarıdakilere uymayı kabul etmiyorsanız, lütfen bu hizmeti kullanmayın.",
-                        "desc_2": "Bu Kullanım Koşulları (\"Koşullar\"), FingerTrace (\"biz\", \"bize\" veya \"bizim\") tarafından işletilen fingertrace.app adresinde bulunan web sitemizi (\"Hizmet\") kullanımınızı düzenler."
-                    },
-                    "license": {
-                        "title": "2. Kullanım Lisansı",
-                        "description": "Kişisel veya ticari kullanım için lisans başına bir kopya FingerTrace SDK'sını geçici olarak indirme izni verilir. Bu bir lisans verilmesidir, mülkiyet devri değildir ve bu lisans altında şunları yapamazsınız:",
-                        "items": [
-                            "Materyalleri değiştirmek veya kopyalamak",
-                            "Materyalleri herhangi bir ticari amaçla veya herhangi bir kamuya açık sergileme için kullanmak",
-                            "FingerTrace'in web sitesinde bulunan herhangi bir yazılımı tersine mühendislik yapmaya çalışmak",
-                            "Materyallerden her türlü telif hakkı veya diğer mülkiyet notlarını kaldırmak"
-                        ]
-                    },
-                    "account": {
-                        "title": "3. Hesap Koşulları",
-                        "description": "Hizmet'e erişmek için kullandığınız şifre ve API anahtarlarını korumaktan ve hesabınız altında gerçekleşen tüm etkinliklerden siz sorumlusunuz.",
-                        "items": [
-                            "Hesap oluştururken doğru ve eksiksiz bilgi vermelisiniz",
-                            "Hesabınızın güvenliğini korumaktan siz sorumlusunuz",
-                            "Hesabınızın her türlü yetkisiz kullanımını derhal bize bildirmelisiniz",
-                            "Bu koşulları ihlal eden hesapları askıya alma veya sonlandırma hakkımızı saklı tutarız"
-                        ]
-                    },
-                    "payment": {
-                        "title": "4. Ödeme Koşulları",
-                        "description": "Hizmet'e bazı özellikleri ödeme gerektirebilir. Ödeme bilgisi sağlayarak şunları beyan ve garanti edersiniz:",
-                        "items": [
-                            "Sağlanan ödeme yöntemini kullanmak için yasal hakkınız var",
-                            "Tüm ödeme bilgileri doğru ve günceldir",
-                            "Hesabınız tarafından yapılan tüm masrafları ödeyeceksiniz",
-                            "Ücretler yasaların gerektirdiği durumlar dışında iade edilemez"
-                        ]
-                    },
-                    "contact": {
-                        "title": "İletişim Bilgileri",
-                        "description": "Bu Kullanım Koşulları hakkında bir sorunuz varsa, lütfen legal@fingertrace.app adresinden bizimle iletişime geçin."
-                    }
+            "infrastructure": {
+                "title": "Altyapı Güvenliği",
+                "cloud": {
+                    "title": "Bulut Altyapısı",
+                    "description": "FingerTrace, çok katmanlı güvenliğe sahip kurumsal sınıf bulut altyapısı üzerine inşa edilmiştir."
+                }
+            },
+            "contact": {
+                "title": "Güvenlik İletişim",
+                "description": "Güvenlikle ilgili sorularınız veya güvenlik açıklarını bildirmek için:",
+                "team": "Güvenlik Ekibi:",
+                "response_time": "Yanıt Süresi:",
+                "response_desc": "Kritik sorunlar için 24 saat içinde"
+            }
+        },
+        "terms": {
+            "title": "Kullanım Koşulları",
+            "description": "FingerTrace'i kullanmadan önce lütfen bu Kullanım Koşullarını dikkatlice okuyun.",
+            "sections": {
+                "agreement": {
+                    "title": "1. Koşulların Kabulü",
+                    "desc_1": "FingerTrace'e (\"Hizmet\") erişerek ve kullanarak, bu sözleşmenin şartlarını ve hükümlerini kabul etmiş ve bunlara bağlı kalmayı onaylamış olursunuz. Yukarıdakilere uymayı kabul etmiyorsanız, lütfen bu hizmeti kullanmayın.",
+                    "desc_2": "Bu Kullanım Koşulları (\"Koşullar\"), FingerTrace (\"biz\", \"bize\" veya \"bizim\") tarafından işletilen fingertrace.app adresinde bulunan web sitemizi (\"Hizmet\") kullanımınızı düzenler."
+                },
+                "license": {
+                    "title": "2. Kullanım Lisansı",
+                    "description": "Kişisel veya ticari kullanım için lisans başına bir kopya FingerTrace SDK'sını geçici olarak indirme izni verilir. Bu bir lisans verilmesidir, mülkiyet devri değildir ve bu lisans altında şunları yapamazsınız:",
+                    "items": [
+                        "Materyalleri değiştirmek veya kopyalamak",
+                        "Materyalleri herhangi bir ticari amaçla veya herhangi bir kamuya açık sergileme için kullanmak",
+                        "FingerTrace'in web sitesinde bulunan herhangi bir yazılımı tersine mühendislik yapmaya çalışmak",
+                        "Materyallerden her türlü telif hakkı veya diğer mülkiyet notlarını kaldırmak"
+                    ]
+                },
+                "account": {
+                    "title": "3. Hesap Koşulları",
+                    "description": "Hizmet'e erişmek için kullandığınız şifre ve API anahtarlarını korumaktan ve hesabınız altında gerçekleşen tüm etkinliklerden siz sorumlusunuz.",
+                    "items": [
+                        "Hesap oluştururken doğru ve eksiksiz bilgi vermelisiniz",
+                        "Hesabınızın güvenliğini korumaktan siz sorumlusunuz",
+                        "Hesabınızın her türlü yetkisiz kullanımını derhal bize bildirmelisiniz",
+                        "Bu koşulları ihlal eden hesapları askıya alma veya sonlandırma hakkımızı saklı tutarız"
+                    ]
+                },
+                "payment": {
+                    "title": "4. Ödeme Koşulları",
+                    "description": "Hizmet'e bazı özellikleri ödeme gerektirebilir. Ödeme bilgisi sağlayarak şunları beyan ve garanti edersiniz:",
+                    "items": [
+                        "Sağlanan ödeme yöntemini kullanmak için yasal hakkınız var",
+                        "Tüm ödeme bilgileri doğru ve günceldir",
+                        "Hesabınız tarafından yapılan tüm masrafları ödeyeceksiniz",
+                        "Ücretler yasaların gerektirdiği durumlar dışında iade edilemez"
+                    ]
+                },
+                "contact": {
+                    "title": "İletişim Bilgileri",
+                    "description": "Bu Kullanım Koşulları hakkında bir sorunuz varsa, lütfen legal@fingertrace.app adresinden bizimle iletişime geçin."
                 }
             }
         }

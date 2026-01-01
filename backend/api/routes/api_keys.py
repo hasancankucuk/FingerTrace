@@ -49,6 +49,7 @@ def create_api_key(current_user):
 
     key_data.update({
         "created_by": user["email"],
+        "owner_uid": user["uid"],
         "workspace_id": workspace_id,
         "workspace": workspace_name,
         "created_at": datetime.utcnow().isoformat()

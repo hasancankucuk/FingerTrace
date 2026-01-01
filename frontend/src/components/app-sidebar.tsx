@@ -10,10 +10,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { UsageSidebar } from "@/components/usage/UsageSidebar";
 import { useUserQuery } from "@/queries/userQueries";
 import { useWorkspacesQuery } from "@/queries/workspaceQueries";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
+  IconCreditCard,
   IconEye,
   IconFingerprint,
   IconFlagPin,
@@ -52,6 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: t("nav.api_keys"), url: "/api-keys", icon: IconKey },
     { title: t("nav.analysis"), url: "/analysis", icon: IconEye },
     { title: t("nav.rules"), url: "/rules", icon: IconFlagPin },
+    { title: t("nav.billing"), url: "/billing", icon: IconCreditCard },
   ];
 
   const datas = {
@@ -101,6 +104,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 : "hover:bg-accent hover:text-accent-foreground text-muted-foreground transition-colors",
           }))}
         />
+        <div className="mt-auto">
+          <UsageSidebar />
+        </div>
       </SidebarContent>
 
       <SidebarFooter>

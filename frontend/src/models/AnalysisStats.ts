@@ -1,9 +1,15 @@
-export type AnalysisStats = {
-  usage: number
-  uniqueVisitors: number
-  eventsPerVisitor: number
-  apiUsage: number[]
-  apiUsageLabels: string[]
-  topBrowsers: string[]
-  timezones: string[]
+export interface AnalysisStats {
+  usage: number;
+  uniqueVisitors: number;
+  eventsPerVisitor: number;
+  apiUsage: number[];
+  apiUsageLabels: string[];
+  topBrowsers: Array<{ name: string; count: number }>;
+  timezones: Array<{ name: string; count: number }>;
+  platforms?: {
+    Web: number;
+    iOS: number;
+    Android: number;
+    Other: number;
+  };
 }
