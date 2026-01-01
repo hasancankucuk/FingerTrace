@@ -41,10 +41,10 @@ def analysis(current_user):
             "created_by", "==", user_email
         )
 
-        print(firestore_query("api_keys", "workspace_id", "==", workspace_id))
-        print(firestore_query("api_keys", "created_by", "==", user_email))
+        print("workspace_id",firestore_query("api_keys", "workspace_id", "==", workspace_id))
+        print("created_by",firestore_query("api_keys", "created_by", "==", user_email))
         print(api_keys_docs)
-        
+
         user_api_key_ids = [d.get("id") or d.get("key") for d in api_keys_docs if (d.get("id") or d.get("key"))]
         
         print(f"DEBUG: Found {len(api_keys_docs)} api_keys for user {user_email}")
