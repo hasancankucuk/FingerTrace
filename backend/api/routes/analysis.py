@@ -1,5 +1,5 @@
 from helpers.firebase_utils import get_user, firestore_query, firestore_query_multi
-from helpers.redis_client import get_cached_analysis, set_cached_analysis
+from helpers.redis_client import get_cached_data, set_cached_data
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
 from flask import Blueprint, jsonify, request
@@ -25,7 +25,7 @@ def analysis(current_user):
         if not workspace_id:
             return jsonify({"error": "Workspace ID is required"}), 400
 
-        cached = get_cached_analysis(workspace_id, days)
+        cached = get_cached_data("analysis", workspace_id, days)
         if cached:
             return jsonify(cached)
 
@@ -33,7 +33,7 @@ def analysis(current_user):
         start_date = today - datetime.timedelta(days=days)
         start_datetime = datetime.datetime.combine(start_date, datetime.time.min)
 
-        api_keys_ref = firestore_query("api_keys", "workspace_id" "==" workspace_id)
+        api_keys_ref = firestore_query("api_keys", "workspace_id", "==", workspace_id)
         api_keys_docs = api_keys_ref.stream()
         
         user_api_key_ids = []
@@ -144,10 +144,9 @@ def analysis(current_user):
             "timezones": top_timezones,
         }
         
-        # Save to Redis Cache (TTL 60s)
-        set_cached_analysis(workspace_id, days, result)
+        set_cached_data("analysis", workspace_id, days, result)
         
         return jsonify(result)
     except Exception as e:
-        print(f"Analysis error: {e}") # Log the error for debugging
+        print(f"Analysis error: {e}")
         return jsonify({"error": str(e)}), 500

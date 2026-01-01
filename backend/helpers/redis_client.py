@@ -24,3 +24,22 @@ def set_cached_analysis(workspace_id, days, data, ttl=60):
         r.setex(key, ttl, json.dumps(data))
     except Exception as e:
         print(f"Redis set error: {e}")
+
+
+def set_cached_data(key, workspace_id, data, ttl=60):
+    try:
+        key = f"{key}:{workspace_id}:{days}"
+        r.setex(key, ttl, json.dumps(data))
+    except Exception as e:
+        print(f"Redis set error: {e}")
+
+def get_cached_data(key, workspace_id, days):
+    try:
+        key = f"{key}:{workspace_id}:{days}"
+        data = r.get(key)
+        if data:
+            return json.loads(data)
+        return None
+    except Exception as e:
+        print(f"Redis get error: {e}")
+        return None

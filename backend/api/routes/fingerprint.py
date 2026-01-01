@@ -217,6 +217,9 @@ def _apply_pagination(data, page, page_size):
 @fingerprint_bp.route('/fingerprints/merged', methods=['GET'])
 @jwt_protected
 def list_merged_fingerprints(current_user):
+    days = int(request.args.get("days", 7))
+    days = max(1, min(days, 365))
+
     workspace_id = request.args.get("workspace_id")
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("page_size", 10))
@@ -228,6 +231,10 @@ def list_merged_fingerprints(current_user):
         page = 1
     if page_size < 1 or page_size > 100:
         page_size = 10
+    
+    cached = get_cached_data("fingerprints", workspace_id, days)
+    if cached:
+        return jsonify(cached)
     
     fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
     deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
@@ -321,6 +328,7 @@ def list_merged_fingerprints(current_user):
             "total_items": original_count
         }
     
+    set_cached_data("fingerprints", workspace_id, days, response)
     return jsonify(response), 200
 
 
