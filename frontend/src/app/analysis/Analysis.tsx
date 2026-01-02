@@ -99,7 +99,7 @@ export const Analysis = () => {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle>API Usage</CardTitle>
+                <CardTitle>{t("analysis.title")}</CardTitle>
                 <ExportButtons
                   data={[
                     {
@@ -129,23 +129,23 @@ export const Analysis = () => {
               <CardContent className="space-y-6">
                 <div className="flex flex-col gap-6 px-4 py-6">
                   <div className="flex items-center gap-4 mb-2">
-                    <label className="text-sm font-medium">API Usage Period:</label>
+                    <label className="text-sm font-medium">{t("analysis.period")}</label>
                     <select
                       value={period}
                       onChange={(e) => setPeriod(Number(e.target.value))}
                       className="p-2 border rounded"
                     >
-                      <option value={7}>Last 7 days</option>
-                      <option value={30}>Last 30 days</option>
-                      <option value={90}>Last 90 days</option>
-                      <option value={365}>Last 1 year</option>
+                      <option value={7}>{t("analysis.last_7_days")}</option>
+                      <option value={30}>{t("analysis.last_30_days")}</option>
+                      <option value={90}>{t("analysis.last_90_days")}</option>
+                      <option value={365}>{t("analysis.last_1_year")}</option>
                     </select>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Usage</CardTitle>
+                        <CardTitle>{t("analysis.usage")}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <span className="text-2xl font-bold">{analysisData?.usage ?? "-"}</span>
@@ -154,7 +154,7 @@ export const Analysis = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Unique Visitors</CardTitle>
+                        <CardTitle>{t("analysis.unique_visitors")}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <span className="text-2xl font-bold">
@@ -165,7 +165,7 @@ export const Analysis = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Events / Visitor</CardTitle>
+                        <CardTitle>{t("analysis.events_per_visitor")}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <span className="text-2xl font-bold">
@@ -177,13 +177,13 @@ export const Analysis = () => {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>API Usage ({period} days)</CardTitle>
+                      <CardTitle>{t("analysis.api_usage_title", { period })}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
                         {chartData.length === 0 ? (
                           <div className="flex items-center justify-center min-h-[200px]">
-                            <span className="text-muted-foreground">No data</span>
+                            <span className="text-muted-foreground">{t("analysis.no_data")}</span>
                           </div>
                         ) : (
                           <ResponsiveContainer width="100%" height={260}>
@@ -215,34 +215,40 @@ export const Analysis = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Top Browsers</CardTitle>
+                        <CardTitle>{t("analysis.top_browsers")}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         {analysisData?.topBrowsers?.length ? (
-                          <ul>
+                          <ul className="space-y-2">
                             {analysisData.topBrowsers.map((b) => (
-                              <li key={b}>{b}</li>
+                              <li key={b.name} className="flex justify-between items-center text-sm">
+                                <span>{b.name}</span>
+                                <span className="font-medium">{b.count}</span>
+                              </li>
                             ))}
                           </ul>
                         ) : (
-                          <span className="text-muted-foreground">No data</span>
+                          <span className="text-muted-foreground">{t("analysis.no_data")}</span>
                         )}
                       </CardContent>
                     </Card>
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Top Timezones</CardTitle>
+                        <CardTitle>{t("analysis.top_timezones")}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         {analysisData?.timezones?.length ? (
-                          <ul>
+                          <ul className="space-y-2">
                             {analysisData.timezones.map((c) => (
-                              <li key={c}>{c}</li>
+                              <li key={c.name} className="flex justify-between items-center text-sm">
+                                <span>{c.name}</span>
+                                <span className="font-medium">{c.count}</span>
+                              </li>
                             ))}
                           </ul>
                         ) : (
-                          <span className="text-muted-foreground">No data</span>
+                          <span className="text-muted-foreground">{t("analysis.no_data")}</span>
                         )}
                       </CardContent>
                     </Card>
