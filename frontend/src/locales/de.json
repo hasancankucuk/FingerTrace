@@ -47,7 +47,10 @@
             "trial_remaining": "Testversion verbleibend",
             "monthly_quota": "Monatliches Kontingent",
             "status": "Status",
-            "current_plan": "Aktueller Plan"
+            "current_plan": "Aktueller Plan",
+            "remaining_requests": "verbleibende Anfragen",
+            "limit_reached": "Nutzungslimite erreicht",
+            "increase_limit": "Limit erhöhen"
         }
     },
     "nav": {

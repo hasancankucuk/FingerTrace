@@ -47,7 +47,10 @@
             "trial_remaining": "Trial Remaining",
             "monthly_quota": "Monthly Quota",
             "status": "Status",
-            "current_plan": "Current Plan"
+            "current_plan": "Current Plan",
+            "remaining_requests": "remaining requests",
+            "limit_reached": "Usage limit reached",
+            "increase_limit": "Increase Limit"
         }
     },
     "nav": {
