@@ -13,3 +13,11 @@ export interface AnalysisStats {
     Other: number;
   };
 }
+
+export interface UsageDetails {
+  usage: number;
+  limit: number;
+  remaining: number;
+  is_trial: boolean;
+  status: string
+}

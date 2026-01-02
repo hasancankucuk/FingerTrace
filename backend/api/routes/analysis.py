@@ -1,4 +1,4 @@
-from helpers.firebase_utils import get_user, firestore_query, firestore_query_multi
+from helpers.firebase_utils import get_user, firestore_query, firestore_query_multi, db
 from helpers.redis_client import get_cached_data, set_cached_data
 from helpers.jwt_token_helper import jwt_protected
 from helpers.api_rate_limiting import rate_limit
@@ -42,7 +42,6 @@ def analysis(current_user):
         )
 
         user_api_key_ids = [d.get("id") or d.get("key") for d in api_keys_docs if (d.get("id") or d.get("key"))]
-        print("user_api_key_ids", user_api_key_ids)
         if not user_api_key_ids:
              return jsonify({
                 "usage": 0,
@@ -138,4 +137,40 @@ def analysis(current_user):
     except Exception as e:
         import traceback
         traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@rate_limit("analysis")
+@analysis_bp.route("/analysis/usage", methods=["GET"])
+@jwt_protected
+def analysis_usage(current_user):
+    try:
+        user = get_user(current_user)
+        user_email = user.get("email")
+        is_trial = user.get("plan") == "trial"
+        limit = 1000 if is_trial else float('inf')
+
+        api_keys_docs = firestore_query_multi("api_keys", "created_by", "==", user_email)
+        user_api_key_ids = [d.get("key") for d in api_keys_docs if d.get("key")]
+
+        if not user_api_key_ids:
+            return jsonify({"usage": 0, "limit": limit, "remaining": limit}), 200
+
+        total_usage = 0
+        for i in range(0, len(user_api_key_ids), 30):
+            chunk = user_api_key_ids[i:i + 30]
+            
+            count_query = db.collection("fingerprints").where("api_key", "in", chunk).count()
+            total_usage += count_query.get()[0][0].value
+
+        remaining = max(0, limit - total_usage)
+        
+        return jsonify({
+            "usage": total_usage,
+            "limit": limit,
+            "remaining": remaining,
+            "is_trial": is_trial,
+            "status": "active" if remaining > 0 else "limit_exceeded"
+        }), 200
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500

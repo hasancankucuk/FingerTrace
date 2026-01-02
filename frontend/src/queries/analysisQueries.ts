@@ -1,5 +1,5 @@
-import type { AnalysisStats } from "@/models/AnalysisStats"
-import { getAnalysis } from "@/services/analysis"
+import type { AnalysisStats, UsageDetails } from "@/models/AnalysisStats"
+import { getAnalysis, getUsageDetails } from "@/services/analysis"
 import { useQuery } from "@tanstack/react-query"
 
 export const useAnalysisQuery = (workspaceId: string, period: number) => {
@@ -9,5 +9,14 @@ export const useAnalysisQuery = (workspaceId: string, period: number) => {
         staleTime: 60000,
         retry: false,
         enabled: !!workspaceId,
+    })
+}
+
+export const usageQuery = () => {
+    return useQuery<UsageDetails, Error>({
+        queryKey: ['usage'],
+        queryFn: () => getUsageDetails(),
+        staleTime: 60000,
+        retry: false,
     })
 }

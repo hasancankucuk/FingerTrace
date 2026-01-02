@@ -24,7 +24,6 @@ def register():
     if user is None:
         return jsonify({"error": "Email already exists"}), 400
 
-    # Initialize Firestore user profile with trial status
     from helpers.firebase_utils import firestore_set
     from datetime import datetime
     firestore_set("users", user["uid"], {

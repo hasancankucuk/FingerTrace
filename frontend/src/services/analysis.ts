@@ -1,5 +1,6 @@
+import type { AnalysisStats, UsageDetails } from "@/models/AnalysisStats";
 import { getToken } from "./auth";
-import type { AnalysisStats } from "@/models/AnalysisStats";
+import { httpRequest } from "./http";
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
@@ -38,4 +39,14 @@ export const getAnalysis = async (days: number, workspaceId?: string): Promise<A
     }
     throw e;
   }
+}
+
+export const getUsageDetails = async (): Promise<UsageDetails> => {
+  const token = getToken();
+  if (!token) throw new Error("No token found");
+
+  return httpRequest<UsageDetails>(`${API_BASE_URL}/analysis/usage`, {
+    method: 'GET',
+    token,
+  });
 }

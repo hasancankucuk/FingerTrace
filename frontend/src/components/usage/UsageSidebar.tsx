@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useAnalysisQuery } from "@/queries/analysisQueries";
+import { usageQuery } from "@/queries/analysisQueries";
 import { useUserQuery } from "@/queries/userQueries";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import { Clock, TrendingUp } from "lucide-react";
@@ -10,17 +10,16 @@ import { useNavigate } from "react-router-dom";
 export const UsageSidebar = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { workspace } = useWorkspaceStore();
 
-    // Calculate days since start of month
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const daysSinceStart = Math.ceil((now.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24)) || 1;
 
-    const { data: analysisData } = useAnalysisQuery(workspace?.id || "", daysSinceStart);
+    const { data: analysisData } = usageQuery();
+    console.log(analysisData);
 
     const usage = analysisData?.usage || 0;
-    const limit = 1000; // Hardcoded for free plan for now
+    const limit = 1000;
     const percentage = Math.min(Math.round((usage / limit) * 100), 100);
 
     const { data: userData } = useUserQuery();
