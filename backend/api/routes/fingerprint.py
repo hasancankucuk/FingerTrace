@@ -261,6 +261,8 @@ def list_merged_fingerprints(current_user):
         fingerprints = firestore_query('fingerprints', 'workspace', '==', workspace_id)
         deviceinfo = firestore_query('deviceinfo', 'workspace', '==', workspace_id)
         
+        print("fingerprints", fingerprints)
+        print("deviceinfo", deviceinfo)
         # Merge logic remains similar but now with much smaller data sets
         fingerprints_dict = {fp.get('fingerprint'): fp for fp in fingerprints if isinstance(fp, dict) and fp.get('fingerprint')}
 

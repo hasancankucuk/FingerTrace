@@ -7,6 +7,7 @@ import datetime
 
 from helpers.get_browser_from_au import get_browser_from_ua, top_n
 from helpers.get_country_from_timezone import get_country_from_timezone
+from helpers.redis_client import set_cached_data_no_workspace, get_cached_data_no_workspace
 
 analysis_bp = Blueprint("analysis", __name__)
 
@@ -147,7 +148,7 @@ def analysis_usage(current_user):
         user = get_user(current_user)
         user_email = user.get("email")
         is_trial = user.get("plan") == "trial"
-        limit = 1000 if is_trial else float('inf')
+        limit = 1000 if is_trial else 999999999
 
         api_keys_docs = firestore_query_multi("api_keys", "created_by", "==", user_email)
         user_api_key_ids = [d.get("key") for d in api_keys_docs if d.get("key")]
@@ -156,6 +157,10 @@ def analysis_usage(current_user):
             return jsonify({"usage": 0, "limit": limit, "remaining": limit}), 200
 
         total_usage = 0
+        cached_data = get_cached_data_no_workspace("usage", 1)
+        if cached_data:
+            return jsonify(cached_data), 200
+        
         for i in range(0, len(user_api_key_ids), 30):
             chunk = user_api_key_ids[i:i + 30]
             
@@ -163,12 +168,22 @@ def analysis_usage(current_user):
             total_usage += count_query.get()[0][0].value
 
         remaining = max(0, limit - total_usage)
+
+        create_date = user.get("created_at")
+        trial_left = 0
+        if is_trial:
+            trial_left = 7 - (datetime.date.today() - create_date).days
         
+        if trial_left > 0:
+            remaining = max(0, limit - total_usage)
+        
+        set_cached_data_no_workspace("usage", 1, {"usage": total_usage, "limit": limit, "remaining": remaining})
         return jsonify({
             "usage": total_usage,
             "limit": limit,
             "remaining": remaining,
             "is_trial": is_trial,
+            "trial_left": trial_left,
             "status": "active" if remaining > 0 else "limit_exceeded"
         }), 200
 

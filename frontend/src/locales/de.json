@@ -1,17 +1,19 @@
 {
     "common": {
         "search": "Suche...",
-        "search_placeholder": "Workspaces, Schlüssel, Fingerabdrücke suchen...",
+        "search_placeholder": "Workspaces, Keys, Fingerabdrücke finden...",
         "loading": "Laden...",
         "no_results": "Keine Ergebnisse gefunden",
-        "no_results_desc": "Wir konnten nichts finden, was mit \"{{query}}\" übereinstimmt. Versuchen Sie es mit einem anderen Begriff.",
+        "no_results_desc": "Wir konnten nichts finden, was mit \"{{query}}\" übereinstimmt.",
         "dashboard": "Dashboard",
         "account": "Konto",
         "settings": "Einstellungen",
         "logout": "Abmelden",
-        "creating": "Erstellen...",
+        "creating": "Wird erstellt...",
         "create": "Erstellen",
         "delete": "Löschen",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
         "actions": "Aktionen",
         "status": "Status",
         "name": "Name",
@@ -25,8 +27,6 @@
             "dark": "Dunkel",
             "system": "System"
         },
-        "save": "Änderungen speichern",
-        "cancel": "Abbrechen",
         "email": "E-Mail",
         "password": "Passwort",
         "phone": "Telefon",
@@ -36,6 +36,11 @@
         "flag": "Flag",
         "go_to_app": "Zur App",
         "safe": "Sicher",
+        "platform": "Plattform",
+        "or": "oder",
+        "and": "und",
+        "available_platforms": "Verfügbare Plattformen",
+        "select_platform": "Plattform auswählen",
         "usage": {
             "title": "Nutzung",
             "monthly_events": "Monatliche Ereignisse",
@@ -44,22 +49,25 @@
             "usage_details": "Nutzungsdetails",
             "account_status": "Kontostatus",
             "distribution": "Ereignisverteilung nach Plattform",
-            "trial_remaining": "Testversion verbleibend",
+            "trial_remaining": "Verbleibende Testtage",
             "monthly_quota": "Monatliches Kontingent",
             "status": "Status",
             "current_plan": "Aktueller Plan",
             "remaining_requests": "verbleibende Anfragen",
             "limit_reached": "Nutzungslimite erreicht",
-            "increase_limit": "Limit erhöhen"
+            "increase_limit": "Limit erhöhen",
+            "unlimited": "Unbegrenzt",
+            "events": "Ereignisse",
+            "trial_ended_msg": "Testversion abgelaufen. Aktualisieren Sie auf Pro, um den Zugriff wiederherzustellen."
         }
     },
     "nav": {
         "main_nav": "Hauptnavigation",
         "home": "Startseite",
         "analysis": "Analyse",
-        "identification": "Identifikation",
+        "identification": "Identifizierung",
         "api_keys": "API-Schlüssel",
-        "workspaces": "Arbeitsbereiche",
+        "workspaces": "Workspaces",
         "rules": "Regeln",
         "get_started": "Erste Schritte",
         "documentation": "Dokumentation",
@@ -68,8 +76,18 @@
         "contact": "Kontakt",
         "account": "Konto",
         "log_out": "Abmelden",
-        "toast": {
-            "workspace_created": "Arbeitsbereich erstellt."
+        "manage_subscription_explain": "Verwalten Sie Ihr Abonnement, sehen Sie Nutzungsstatistiken und Plattformverteilung ein.",
+        "workspace": {
+            "create": "Workspace erstellen",
+            "workspace_name": "Workspace-Name",
+            "workspace_example": "z.B. example.com - production",
+            "workspace_created": "Workspace erfolgreich erstellt.",
+            "name_required": "Name ist erforderlich",
+            "error_workspaces": "Fehler beim Erstellen des Workspaces",
+            "key_modal_title": "Ihre Workspace-ID",
+            "key_modal_description": "Bitte speichern Sie diese Workspace-ID sicher ab. Sie werden sie nicht noch einmal sehen können!",
+            "key_modal_warning": "Dies ist Ihre einzige Chance, sie zu kopieren. Wenn Sie sie verlieren, müssen Sie eine neue erstellen.",
+            "key_modal_close": "Gespeichert, Schließen"
         }
     },
     "search": {
@@ -128,7 +146,10 @@
             "no_data": "Keine Analysedaten für den ausgewählten Arbeitsbereich / Zeitraum.",
             "unauthorized": "Nicht autorisiert. Bitte melden Sie sich an.",
             "access_denied": "Zugriff auf diesen Arbeitsbereich verweigert.",
-            "rate_limited": "Rate begrenzt. Später erneut versuchen."
+            "rate_limited": "Rate begrenzt. Später erneut versuchen.",
+            "pdf_export_fail": "PDF-Export fehlgeschlagen. Bitte versuchen Sie es später erneut.",
+            "workspace_not_found": "Workspace nicht gefunden.",
+            "pdf_export_success": "PDF-Export erfolgreich."
         }
     },
     "identification": {
@@ -149,27 +170,27 @@
         "details": "Details",
         "technical_specs": "Technische Spezifikationen",
         "detail": {
-            "request_id": "Request ID",
-            "fingerprint": "Fingerprint",
-            "workspace_id": "Workspace ID",
-            "created_at": "Created At",
-            "updated_at": "Last Updated",
-            "device_type": "Device Type",
-            "platform": "Platform",
+            "request_id": "Anfrage-ID",
+            "fingerprint": "Fingerabdruck",
+            "workspace_id": "Workspace-ID",
+            "created_at": "Erstellt am",
+            "updated_at": "Zuletzt aktualisiert",
+            "device_type": "Gerätetyp",
+            "platform": "Plattform",
             "browser": "Browser",
-            "time_zone": "Time Zone",
+            "time_zone": "Zeitzone",
             "user_agent": "User Agent String",
-            "color_depth": "Color Depth",
-            "color_gamut": "Color Gamut",
-            "bar_visibility": "Bar Visibility",
-            "browser_feature_support": "Browser Features",
-            "status": "Connection Status",
+            "color_depth": "Farbtiefe",
+            "color_gamut": "Farbraum",
+            "bar_visibility": "Sichtbarkeit der Leiste",
+            "browser_feature_support": "Browser-Funktionen",
+            "status": "Verbindungsstatus",
             "vpn_details": "VPN-Details",
             "previous_location": "Vorheriger Standort",
             "current_location": "Aktueller Standort",
             "is_fast_travel": "Schnellreise erkannt",
             "is_vpn": "VPN-Verbindung",
-            "ip": "IP",
+            "ip": "IP-Adresse",
             "probability": "Wahrscheinlichkeit",
             "location_info": "Standortinformationen",
             "security_and_network": "Sicherheit & Netzwerk",
@@ -239,10 +260,10 @@
         "login": "Anmelden",
         "signup": "Registrieren",
         "email_placeholder": "name@beispiel.de",
-        "password_placeholder": "Passwort",
+        "password_placeholder": "Min. 8 Zeichen",
         "forgot_password": "Passwort vergessen?",
         "dont_have_account": "Sie haben noch kein Konto?",
-        "already_have_account": "Sie haben bereits ein Konto?",
+        "already_have_account": "Haben Sie bereits ein Konto?",
         "reset_password": "Passwort zurücksetzen",
         "back_to_login": "Zurück zur Anmeldung",
         "send_reset_link": "Link zum Zurücksetzen senden",
@@ -257,7 +278,7 @@
         "forgot_password_success_desc": "Wenn ein Konto mit dieser E-Mail existiert, haben wir Anweisungen zum Zurücksetzen des Passworts gesendet. Überprüfen Sie Ihren Posteingang und den Spam-Ordner.",
         "try_different_email": "Andere E-Mail versuchen",
         "sending": "Wird gesendet...",
-        "terms_and_privacy": "Durch Fortfahren akzeptieren Sie unsere Nutzungsbedingungen und Datenschutzbestimmungen.",
+        "terms_and_privacy": "Durch die Fortsetzung stimmen Sie unseren Nutzungsbedingungen und Datenschutzrichtlinien zu.",
         "toast": {
             "login_success": "Willkommen zurück!",
             "login_failed": "Ungültige Anmeldedaten",
@@ -265,10 +286,12 @@
             "service_unavailable": "Dienst vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
             "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
         },
-        "name_placeholder": "Name",
+        "name_placeholder": "Vollständiger Name",
         "name_desc": "Geben Sie Ihren Namen ein",
         "create_account": "Konto erstellen",
-        "signup_desc": "Geben Sie Deine E-Mail-Adresse und Passwort ein, um ein Konto zu erstellen."
+        "signup_desc": "Geben Sie Deine E-Mail-Adresse und Passwort ein, um ein Konto zu erstellen.",
+        "creating": "Konto wird erstellt...",
+        "signup_success": "Konto erfolgreich erstellt."
     },
     "landing": {
         "hero": {
@@ -363,6 +386,7 @@
             "enterprise": {
                 "name": "Enterprise",
                 "price": "Individuell",
+                "period": "/Monat",
                 "description": "Für große Anwendungen, die maximale Sicherheit und Support erfordern.",
                 "features": [
                     "Unbegrenzte monatliche Events",
@@ -676,6 +700,8 @@
         },
         "terms": {
             "title": "Nutzungsbedingungen",
+            "agreement_prefix": "Durch die Fortsetzung stimmen Sie unseren",
+            "agreement_suffix": " zu.",
             "description": "Bitte lesen Sie diese Nutzungsbedingungen sorgfältig durch, bevor Sie FingerTrace verwenden.",
             "sections": {
                 "agreement": {

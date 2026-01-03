@@ -49,18 +49,16 @@ export const Analysis = () => {
 
   const handlePDFExport = async () => {
     if (!workspace?.id || !analysisData) {
-      toast.error('Workspace or data not found');
+      toast.error(t("analysis.toast.workspace_not_found"));
       return;
     }
 
     try {
-      toast.info('PDF oluşturuluyor...');
       const blob = await exportAnalyticsPDF(workspace.id, analysisData);
       downloadBlob(blob, `analytics_${period}days_${new Date().toISOString().split('T')[0]}.pdf`);
-      toast.success('PDF indirildi!');
+      toast.success(t("analysis.toast.pdf_export_success"));
     } catch (error) {
-      console.error('PDF export error:', error);
-      toast.error('PDF export başarısız oldu');
+      toast.error(t("analysis.toast.pdf_export_fail"));
     }
   };
 

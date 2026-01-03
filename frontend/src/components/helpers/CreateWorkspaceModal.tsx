@@ -1,8 +1,30 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { createWorkspace } from "@/services/workspaces";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CreateWorkspaceKeyModal } from "./WorkspaceKeyModal";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function CreateWorkspaceModal({
   open,
@@ -13,76 +35,100 @@ export default function CreateWorkspaceModal({
   onClose: () => void;
   onCreated?: () => void;
 }) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [platform, setPlatform] = useState("");
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [showWorkspaceKeyModal, setShowWorkspaceKeyModal] = useState(false);
   const queryClient = useQueryClient();
 
   if (!open) return null;
 
-  const create = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!name.trim()) {
-      return setError("Name required");
+      toast.error(t("nav.workspace.name_required"));
+      return;
     }
 
-    setLoading(true);
-    setError(null);
-
     try {
-      const res = await createWorkspace({ name: name.trim() });
+      const res = await createWorkspace({ name: name.trim(), platform: platform.trim() });
       const id = (res && (res.id || (res as any).workspaceId)) ?? name.trim();
+
       setWorkspaceId(id);
       setShowWorkspaceKeyModal(true);
-      toast.success("Workspace created!");
       queryClient.invalidateQueries({ queryKey: ['workspaces'] });
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to create workspace");
-      }
-    } finally {
-      setLoading(false);
+      toast.success(t("nav.workspace.workspace_created"));
+    } catch (error) {
+      toast.error(t("nav.workspace.error_workspaces"));
     }
   };
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={onClose}
-        />
-        <div className="relative bg-background border border-border rounded-lg p-6 w-full max-w-md z-10 shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Create Workspace</h3>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Workspace name"
-            className="w-full px-3 py-2 border rounded-md text-sm placeholder:text-muted-foreground disabled:opacity-50 mb-3 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
-            disabled={loading}
-          />
-          {error && <div className="text-sm text-destructive mb-3">{error}</div>}
-          <div className="flex gap-2 justify-end">
-            <button
-              className="px-4 py-2 rounded-md text-sm border border-border hover:bg-accent/50 transition-colors disabled:opacity-50"
-              onClick={onClose}
-              disabled={loading}
+      <AlertDialog open={open} onOpenChange={onClose}>
+        <AlertDialogContent className="max-w-md gap-0 p-0 overflow-hidden">
+          <AlertDialogHeader className="p-6 pb-2">
+            <AlertDialogTitle className="text-xl font-semibold tracking-tight">
+              {t("nav.workspace.create")}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+
+          <Separator />
+
+          <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+            <div className="grid gap-2.5">
+              <Label htmlFor="workspace-name" className="text-sm font-medium">
+                {t("nav.workspace.workspace_name")}
+              </Label>
+              <Input
+                id="workspace-name"
+                type="text"
+                placeholder={t("nav.workspace.workspace_example")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="focus-visible:ring-primary"
+              />
+            </div>
+
+            <div className="grid gap-2.5">
+              <Label htmlFor="platform-select" className="text-sm font-medium">
+                {t("common.platform")}
+              </Label>
+              <Select value={platform} onValueChange={setPlatform}>
+                <SelectTrigger id="platform-select" className="w-full bg-background">
+                  <SelectValue placeholder={t("common.select_platform")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel className="text-xs uppercase tracking-widest opacity-60">
+                      {t("common.available_platforms")}
+                    </SelectLabel>
+                    <SelectItem value="web">Web</SelectItem>
+                    <SelectItem value="mobile">Mobile</SelectItem>
+                    <SelectItem value="desktop">Desktop</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </form>
+
+          <Separator />
+
+          <AlertDialogFooter className="p-6 bg-muted/30">
+            <AlertDialogCancel onClick={onClose}>
+              {t("common.cancel", { defaultValue: "Cancel" })}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSubmit}
+              className="bg-primary hover:bg-primary/90"
             >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
-              onClick={create}
-              disabled={loading}
-            >
-              {loading ? "Creating..." : "Create"}
-            </button>
-          </div>
-        </div>
-      </div>
+              {t("common.continue", { defaultValue: "Continue" })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {showWorkspaceKeyModal && workspaceId && (
         <CreateWorkspaceKeyModal
           showModal={showWorkspaceKeyModal}
@@ -93,4 +139,4 @@ export default function CreateWorkspaceModal({
       )}
     </>
   );
-}
+};

@@ -45,8 +45,10 @@ export const getUsageDetails = async (): Promise<UsageDetails> => {
   const token = getToken();
   if (!token) throw new Error("No token found");
 
-  return httpRequest<UsageDetails>(`${API_BASE_URL}/analysis/usage`, {
+  const response = await httpRequest<UsageDetails>(`${API_BASE_URL}/analysis/usage`, {
     method: 'GET',
     token,
   });
+
+  return response;
 }

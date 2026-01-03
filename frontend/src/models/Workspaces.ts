@@ -4,4 +4,5 @@ export type WorkspacesType = {
   description?: string
   createdAt?: string | Date
   updatedAt?: string | Date
+  platform?: string
 };

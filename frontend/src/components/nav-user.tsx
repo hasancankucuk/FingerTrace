@@ -20,11 +20,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useNavigate } from "react-router-dom";
+import type { User } from "@/models/UserInterface";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import type { User } from "@/models/UserInterface";
+import { useNavigate } from "react-router-dom";
 
 export function NavUser({
   user,
@@ -34,12 +35,13 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
 
   const signOut = () => {
+    queryClient.invalidateQueries()
     localStorage.removeItem("selectedWorkspace");
     localStorage.removeItem("access_token");
-    // localStorage.removeItem("auth-storage");
     useAuthStore.setState({ token: null });
     useWorkspaceStore.setState({ workspace: null });
     navigate("/login");

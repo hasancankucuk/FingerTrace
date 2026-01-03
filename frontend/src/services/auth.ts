@@ -1,4 +1,5 @@
 import type { AuthResponse } from '@/models/AuthResponse';
+import type { Auth } from '@/models/Authstate';
 import type { User } from '@/models/UserInterface';
 import { useAuthStore } from '@/store/useAuthStore';
 import { sendPasswordResetEmail } from "firebase/auth";
@@ -18,10 +19,10 @@ export const registerUser = (email: string, password: string, name: string) =>
     body: { email, password, name },
   });
 
-export const loginUser = async (email: string, password: string, turnstileToken?: string) => {
+export const loginUser = async ({ email, password, token }: Auth) => {
   const payload: any = { email, password };
-  if (turnstileToken) {
-    payload.turnstile_token = turnstileToken;
+  if (token) {
+    payload.turnstile_token = token;
   }
   const result = await httpRequest<{ uid?: string; access_token?: string; error?: string }>(
     `${API_BASE_URL}/login`,

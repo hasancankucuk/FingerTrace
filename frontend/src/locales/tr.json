@@ -12,6 +12,8 @@
         "creating": "Oluşturuluyor...",
         "create": "Oluştur",
         "delete": "Sil",
+        "save": "Kaydet",
+        "cancel": "İptal",
         "actions": "İşlemler",
         "status": "Durum",
         "name": "İsim",
@@ -25,8 +27,6 @@
             "dark": "Koyu",
             "system": "Sistem"
         },
-        "save": "Değişiklikleri Kaydet",
-        "cancel": "İptal",
         "email": "E-posta",
         "password": "Şifre",
         "phone": "Telefon",
@@ -36,6 +36,11 @@
         "flag": "Bayrak",
         "go_to_app": "Uygulamaya Git",
         "safe": "Güvenli",
+        "platform": "Platform",
+        "or": "veya",
+        "and": "ve",
+        "available_platforms": "Mevcut Platformlar",
+        "select_platform": "Platform Seçin",
         "usage": {
             "title": "Kullanım",
             "monthly_events": "Aylık Olaylar",
@@ -44,19 +49,22 @@
             "usage_details": "Kullanım Detayları",
             "account_status": "Hesap Durumu",
             "distribution": "Platform bazlı olay dağılımı",
-            "trial_remaining": "Deneme Süresi",
+            "trial_remaining": "Kalan Deneme Süresi",
             "monthly_quota": "Aylık Kota",
             "status": "Durum",
-            "current_plan": "Mevcut Plan"
+            "current_plan": "Mevcut Plan",
+            "unlimited": "Sınırsız",
+            "events": "İşlem",
+            "trial_ended_msg": "Deneme süresi doldu. Pro plana geçerek erişimi geri yükleyin."
         }
     },
     "nav": {
         "main_nav": "Ana Menü",
         "home": "Anasayfa",
         "analysis": "Analiz",
-        "identification": "Kimlik Doğrulama",
+        "identification": "Tanımlama",
         "api_keys": "API Anahtarları",
-        "workspaces": "Çalışma Alanları",
+        "workspaces": "Workspaces",
         "rules": "Kurallar",
         "get_started": "Başlayın",
         "documentation": "Dokümantasyon",
@@ -65,8 +73,18 @@
         "contact": "İletişim",
         "account": "Hesap",
         "log_out": "Çıkış yap",
-        "toast": {
-            "workspace_created": "Çalışma alanı oluşturuldu."
+        "manage_subscription_explain": "Aboneliğinizi yönetin, kullanım istatistiklerini ve platform dağılımını görüntüleyin.",
+        "workspace": {
+            "create": "Çalışma Alanı Oluştur",
+            "workspace_name": "Çalışma Alanı Adı",
+            "workspace_example": "örn. example.com - production",
+            "workspace_created": "Çalışma alanı başarıyla oluşturuldu.",
+            "name_required": "İsim gerekli",
+            "error_workspaces": "Çalışma alanı oluşturulurken hata oluştu",
+            "key_modal_title": "Workspace Kimliğiniz",
+            "key_modal_description": "Lütfen bu Workspace Kimliğini güvenli bir şekilde kaydedin. Bunu tekrar göremeyeceksiniz!",
+            "key_modal_warning": "Bu, kimliği kopyalamak için tek şansınız. Kaybederseniz yeni bir tane oluşturmanız gerekecek.",
+            "key_modal_close": "Kaydettim, Kapat"
         }
     },
     "search": {
@@ -124,7 +142,10 @@
             "no_data": "Seçilen çalışma alanı / dönem için analiz verisi yok.",
             "unauthorized": "Yetkisiz erişim. Lütfen giriş yapın.",
             "access_denied": "Bu çalışma alanına erişim reddedildi.",
-            "rate_limited": "İşlem sınırı aşıldı. Daha sonra tekrar deneyin."
+            "rate_limited": "İşlem sınırı aşıldı. Daha sonra tekrar deneyin.",
+            "pdf_export_fail": "PDF dışa aktarma başarısız oldu. Lütfen daha sonra tekrar deneyin.",
+            "workspace_not_found": "Çalışma alanı bulunamadı.",
+            "pdf_export_success": "PDF dışa aktarma başarılı."
         }
     },
     "identification": {
@@ -145,27 +166,27 @@
         "details": "Detaylar",
         "technical_specs": "Teknik Özellikler",
         "detail": {
-            "request_id": "Request ID",
-            "fingerprint": "Fingerprint",
-            "workspace_id": "Workspace ID",
-            "created_at": "Created At",
-            "updated_at": "Last Updated",
-            "device_type": "Device Type",
+            "request_id": "İstek ID",
+            "fingerprint": "Parmak İzi",
+            "workspace_id": "Çalışma Alanı ID",
+            "created_at": "Oluşturulma Tarihi",
+            "updated_at": "Güncellenme Tarihi",
+            "device_type": "Cihaz Tipi",
             "platform": "Platform",
-            "browser": "Browser",
-            "time_zone": "Time Zone",
+            "browser": "Tarayıcı",
+            "time_zone": "Saat Dilimi",
             "user_agent": "User Agent String",
-            "color_depth": "Color Depth",
-            "color_gamut": "Color Gamut",
-            "bar_visibility": "Bar Visibility",
-            "browser_feature_support": "Browser Features",
-            "status": "Connection Status",
+            "color_depth": "Renk Derinliği",
+            "color_gamut": "Renk Gamut",
+            "bar_visibility": "Bar Görünürlüğü",
+            "browser_feature_support": "Tarayıcı Özellik desteği",
+            "status": "Bağlantı Durumu",
             "vpn_details": "VPN Detayları",
             "previous_location": "Önceki Konum",
             "current_location": "Güncel Konum",
             "is_fast_travel": "Hızlı Seyahat",
             "is_vpn": "VPN",
-            "ip": "IP",
+            "ip": "IP Adresi",
             "probability": "Olasılık",
             "location_info": "Konum Bilgisi",
             "security_and_network": "Güvenlik & İnternet",
@@ -237,8 +258,6 @@
     "auth": {
         "login": "Giriş Yap",
         "signup": "Kayıt Ol",
-        "email_placeholder": "isim@ornek.com",
-        "password_placeholder": "Şifre",
         "forgot_password": "Şifremi unuttum?",
         "dont_have_account": "Hesabınız yok mu?",
         "already_have_account": "Zaten hesabınız var mı?",
@@ -256,7 +275,6 @@
         "forgot_password_success_desc": "Bu e-posta ile kayıtlı bir hesap varsa, şifre sıfırlama talimatlarını gönderdik. Gelen kutunuzu ve spam klasörünüzü kontrol edin.",
         "try_different_email": "Farklı bir e-posta dene",
         "sending": "Gönderiliyor...",
-        "terms_and_privacy": "Devam ederek Kullanım Koşulları ve Gizlilik Politikamızı kabul etmiş olursunuz.",
         "toast": {
             "login_success": "Tekrar hoş geldiniz!",
             "login_failed": "Geçersiz bilgiler",
@@ -264,10 +282,15 @@
             "service_unavailable": "Servis geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
             "network_error": "Ağ hatası. Lütfen bağlantınızı kontrol edin ve tekrar deneyin."
         },
-        "name_placeholder": "İsim",
         "name_desc": "İsminizi girin",
         "create_account": "Hesap Oluştur",
-        "signup_desc": "Hesap oluşturmak için e-posta ve şifrenizi girin."
+        "signup_desc": "Hesap oluşturmak için e-posta ve şifrenizi girin.",
+        "terms_and_privacy": "Devam ederek Kullanım Koşullarını ve Gizlilik Politikamızı kabul etmiş olursunuz.",
+        "name_placeholder": "Ad Soyad",
+        "email_placeholder": "isim@ornek.com",
+        "password_placeholder": "En az 8 karakter",
+        "creating": "Hesap oluşturuluyor...",
+        "signup_success": "Hesap başarıyla oluşturuldu."
     },
     "landing": {
         "hero": {
@@ -362,6 +385,7 @@
             "enterprise": {
                 "name": "Kurumsal",
                 "price": "Özel",
+                "period": "/ay",
                 "description": "Maksimum güvenlik ve destek gerektiren büyük ölçekli uygulamalar için.",
                 "features": [
                     "Sınırsız aylık olay",
@@ -675,6 +699,8 @@
         },
         "terms": {
             "title": "Kullanım Koşulları",
+            "agreement_prefix": "Devam ederek",
+            "agreement_suffix": " kabul etmiş olursunuz.",
             "description": "FingerTrace'i kullanmadan önce lütfen bu Kullanım Koşullarını dikkatlice okuyun.",
             "sections": {
                 "agreement": {

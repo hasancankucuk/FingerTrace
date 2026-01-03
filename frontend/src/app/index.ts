@@ -15,11 +15,11 @@ import { Pricing } from "./landing/Pricing";
 import { Privacy } from "./legal/Privacy";
 import { Security } from "./legal/Security";
 import { Terms } from "./legal/Terms";
-import { ForgotPassword } from "./login/ForgotPassword";
-import LoginPage from "./login/Login";
+import { ForgotPassword } from "./auth/ForgotPassword";
+import LoginPage from "./auth/Login";
 import { Rules } from "./rules/Rules";
 import { Search } from "./search/Search";
-import SignupPage from "./signup/Signup";
+import SignupPage from "./auth/Signup";
 
 export {
     Account,

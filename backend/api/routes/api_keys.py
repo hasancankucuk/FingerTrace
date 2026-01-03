@@ -15,6 +15,7 @@ def create_api_key(current_user):
     name = data.get("name")
     environment = data.get("environment", "production")
     status = data.get("status", "active")
+    platform = data.get("platform")
 
     if not name:
         return jsonify({"error": "Missing name"}), 400
@@ -37,7 +38,8 @@ def create_api_key(current_user):
         "api_keys", 
         "created_by", "==", user["email"],
         "name", "==", name,
-        "workspace_id", "==", workspace_id
+        "workspace_id", "==", workspace_id,
+        "platform", "==", platform
     )
 
     if existing_keys:
@@ -52,6 +54,7 @@ def create_api_key(current_user):
         "owner_uid": user["uid"],
         "workspace_id": workspace_id,
         "workspace": workspace_name,
+        "platform": platform,
         "created_at": datetime.utcnow().isoformat()
     })
 
@@ -64,9 +67,12 @@ def create_api_key(current_user):
 def list_api_keys(current_user):
     user = get_user(current_user)
     workspace_id = request.args.get("workspace_id")
+    platform = request.args.get("platform")
     keys = firestore_query("api_keys", "created_by", "==", user["email"])
     if workspace_id:
         keys = [key for key in keys if key.get("workspace_id") == workspace_id]
+    if platform:
+        keys = [key for key in keys if key.get("platform") == platform]
 
     return jsonify(keys), 200
 

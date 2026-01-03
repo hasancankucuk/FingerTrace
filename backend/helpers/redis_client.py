@@ -34,3 +34,22 @@ def delete_cached_data(key_prefix, workspace_id):
             r.delete(*keys)
     except Exception as e:
         print(f"Redis delete error: {e}")
+
+
+def set_cached_data_no_workspace(key, days, data, ttl=60):
+    try:
+        key = f"{key}:{days}"
+        r.setex(key, ttl, json.dumps(data))
+    except Exception as e:
+        print(f"Redis set error: {e}")
+
+def get_cached_data_no_workspace(key, days):
+    try:
+        key = f"{key}:{workspace_id}:{days}"
+        data = r.get(key)
+        if data:
+            return json.loads(data)
+        return None
+    except Exception as e:
+        print(f"Redis get error: {e}")
+        return None

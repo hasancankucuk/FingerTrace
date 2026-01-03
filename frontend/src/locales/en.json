@@ -36,6 +36,11 @@
         "flag": "Flag",
         "go_to_app": "Go to App",
         "Safe": "Safe",
+        "platform": "Platform",
+        "or": "or",
+        "and": "and",
+        "available_platforms": "Available Platforms",
+        "select_platform": "Select Platform",
         "usage": {
             "title": "Usage",
             "monthly_events": "Monthly Events",
@@ -44,13 +49,16 @@
             "usage_details": "Usage Details",
             "account_status": "Account Status",
             "distribution": "Event distribution by platform",
-            "trial_remaining": "Trial Remaining",
+            "trial_remaining": "Remaining Test Days",
             "monthly_quota": "Monthly Quota",
             "status": "Status",
             "current_plan": "Current Plan",
             "remaining_requests": "remaining requests",
             "limit_reached": "Usage limit reached",
-            "increase_limit": "Increase Limit"
+            "increase_limit": "Increase Limit",
+            "unlimited": "Unlimited",
+            "events": "Events",
+            "trial_ended_msg": "Trial ended. Restore access by upgrading to a Pro plan."
         }
     },
     "nav": {
@@ -68,8 +76,18 @@
         "contact": "Contact",
         "account": "Account",
         "log_out": "Log out",
-        "toast": {
-            "workspace_created": "Workspace created."
+        "manage_subscription_explain": "Manage your subscription, view usage stats and platform distribution.",
+        "workspace": {
+            "create": "Create Workspace",
+            "workspace_name": "Workspace Name",
+            "workspace_example": "e.g. example.com - production",
+            "workspace_created": "Workspace successfully created.",
+            "name_required": "Name is required",
+            "error_workspaces": "Error creating workspaces",
+            "key_modal_title": "Your Workspace ID",
+            "key_modal_description": "Please save this Workspace ID securely. You won't be able to see it again!",
+            "key_modal_warning": "This is your only chance to copy it. If you lose it, you'll have to create a new one.",
+            "key_modal_close": "I've saved it, Close"
         }
     },
     "search": {
@@ -127,7 +145,10 @@
             "no_data": "No analysis data for the selected workspace / period.",
             "unauthorized": "Unauthorized. Please sign in.",
             "access_denied": "Access denied to this workspace.",
-            "rate_limited": "Rate limited. Try again later."
+            "rate_limited": "Rate limited. Try again later.",
+            "pdf_export_fail": "PDF export failed. Please try again later.",
+            "workspace_not_found": "Workspace not found.",
+            "pdf_export_success": "PDF export successful."
         }
     },
     "identification": {
@@ -265,12 +286,17 @@
             "login_failed": "Invalid credentials",
             "reset_sent": "If this email exists, a reset link has been sent.",
             "service_unavailable": "Service temporarily unavailable. Please try again later.",
-            "network_error": "Network error. Please check your connection and try again."
+            "network_error": "Network error. Please check your connection and try again.",
+            "register_success": "Account created successfully.",
+            "register_failed": "Failed to create account. Please try again.",
+            "no_token": "Registeration succeeded but no token returned. Please try again."
         },
-        "name_placeholder": "Name",
+        "name_placeholder": "Full Name",
         "name_desc": "Enter your name",
         "create_account": "Create Account",
-        "signup_desc": "Enter your email and password to create an account."
+        "signup_desc": "Enter your email and password to create an account.",
+        "creating": "Creating account...",
+        "signup_success": "Account created successfully."
     },
     "landing": {
         "hero": {
@@ -365,6 +391,7 @@
             "enterprise": {
                 "name": "Enterprise",
                 "price": "Custom",
+                "period": "/month",
                 "description": "For large-scale applications requiring maximum security and support.",
                 "features": [
                     "Unlimited monthly events",
@@ -678,6 +705,8 @@
         },
         "terms": {
             "title": "Terms of Service",
+            "agreement_prefix": "By continuing you agree to our",
+            "agreement_suffix": ".",
             "description": "Please read these Terms of Service carefully before using FingerTrace.",
             "sections": {
                 "agreement": {

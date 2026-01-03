@@ -1,13 +1,13 @@
-import { LoginForm } from "@/components/login-form"
-import { IconInnerShadowTop } from "@tabler/icons-react"
 import { LanguageToggle } from "@/components/language-toggle"
 import { ModeToggle } from "@/components/mode-toggle"
+import { IconInnerShadowTop } from "@tabler/icons-react"
+import { SignupForm } from "./forms/SignupForm"
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
-    <div className="relative min-h-svh flex flex-col items-center justify-center p-6 dark:bg-zinc-950 bg-white">
+    <div className="relative min-h-svh flex flex-col items-center justify-center p-6 bg-white dark:bg-zinc-950">
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full ur-[120px] opacity-50" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50" />
       </div>
 
       <div className="w-full max-w-sm flex flex-col gap-6">
@@ -24,7 +24,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <LoginForm className="w-full" />
+        {/* <SignupForm className="w-full" /> */}
+        <SignupForm />
 
         <div className="text-center text-xs text-muted-foreground/60">
           © {new Date().getFullYear()} Finger Trace. All rights reserved.

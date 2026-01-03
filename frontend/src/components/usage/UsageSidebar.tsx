@@ -21,9 +21,9 @@ export const UsageSidebar = () => {
     const usage = usageData?.usage || 0;
     const limit = usageData?.limit || 1000;
     const remaining = usageData?.remaining ?? 1000;
-    const isTrial = usageData?.is_trial ?? true;
-
-    const percentage = Math.min(Math.round((usage / limit) * 100), 100);
+    // const isTrial = usageData?.is_trial ?? true;
+    const isUnlimited = limit === null || limit === Infinity || limit > 999999999;
+    const percentage = isUnlimited ? 0 : Math.min(Math.round((usage / limit) * 100), 100);
 
     const subscriptionStatus = userData?.subscription_status || "trialing";
     const isRestricted = subscriptionStatus === 'cancelled' || remaining <= 0;
@@ -38,7 +38,7 @@ export const UsageSidebar = () => {
                     {t("common.usage.title")}
                 </span>
                 <span className={percentage > 90 ? "text-destructive font-bold animate-pulse" : ""}>
-                    {usage.toLocaleString()} / {limit.toLocaleString()}
+                    {isUnlimited ? t("common.usage.unlimited") : `${usage.toLocaleString()} / ${limit.toLocaleString()}`}
                 </span>
             </div>
 

@@ -20,4 +20,5 @@ export interface UsageDetails {
   remaining: number;
   is_trial: boolean;
   status: string
+  trial_left: number
 }

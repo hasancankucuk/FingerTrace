@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LegalLayout } from "@/components/legal/LegalLayout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Shield, Lock, Eye, AlertTriangle } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AlertTriangle, ArrowLeft, Eye, Lock, Shield } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { LegalLayout } from "@/components/legal/LegalLayout"
+import { useNavigate } from "react-router-dom"
 
 export const Security = () => {
-  const { t } = useTranslation("landing")
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const securityFeatures = [
@@ -36,7 +36,7 @@ export const Security = () => {
   return (
     <LegalLayout>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
+
         <div className="mb-8">
           <Button
             variant="ghost"
@@ -76,7 +76,6 @@ export const Security = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Infrastructure Security */}
           <Card>
             <CardHeader>
               <CardTitle>{t("legal.security.infrastructure.title")}</CardTitle>
@@ -91,7 +90,6 @@ export const Security = () => {
             </CardContent>
           </Card>
 
-          {/* Contact */}
           <Card>
             <CardHeader>
               <CardTitle>{t("legal.security.contact.title")}</CardTitle>

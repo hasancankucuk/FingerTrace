@@ -1,14 +1,14 @@
 
-import { httpRequest } from "./http";
-import { getToken } from "./auth";
 import type { WorkspacesType } from "@/models/Workspaces";
+import { getToken } from "./auth";
+import { httpRequest } from "./http";
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
 
 export const createWorkspace = async (workspaceData: WorkspacesType) => {
   const token = getToken();
   return httpRequest<{ message: string; id: string }>(
-  `${API_BASE_URL}/workspaces`,
+    `${API_BASE_URL}/workspaces`,
     {
       method: "POST",
       token,

@@ -1,4 +1,3 @@
-import type { ApiKey } from "@/utils/apiHelpers";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,11 +8,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import SyntaxHighlighter from "react-syntax-highlighter/dist/cjs/prism";
-import atomDark from "react-syntax-highlighter/dist/cjs/styles/prism/atom-dark";
 import { Button } from "@/components/ui/button";
+import type { ApiKey } from "@/utils/apiHelpers";
+import { t } from "i18next";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import SyntaxHighlighter from "react-syntax-highlighter/dist/cjs/prism";
+import atomDark from "react-syntax-highlighter/dist/cjs/styles/prism/atom-dark";
+import { toast } from "sonner";
 
 export interface ApiKeyModalProps {
   showModal: boolean;
@@ -44,7 +46,7 @@ export const ApiKeyModal = ({
         1400
       );
     } catch {
-      // ignore
+      toast.error(t("common.error"));
     }
   };
 

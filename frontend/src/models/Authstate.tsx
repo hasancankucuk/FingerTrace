@@ -7,3 +7,9 @@ export type AuthState = {
   setUser: (user: User | null) => void;
   logout: () => void;
 };
+
+export interface Auth {
+  token: string | null;
+  email: string | null;
+  password: string | null;
+}

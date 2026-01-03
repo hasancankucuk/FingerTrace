@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { MergedFingerprint } from "@/models/IdentificationData";
 import { getToken } from "./auth";
 import { httpRequest } from "./http";
-import type { MergedFingerprint } from "@/models/IdentificationData";
 
 const API_BASE_URL = import.meta.env.VITE_APP_URL;
 

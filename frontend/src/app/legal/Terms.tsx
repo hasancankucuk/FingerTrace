@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LegalLayout } from "@/components/legal/LegalLayout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
-import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { LegalLayout } from "@/components/legal/LegalLayout"
+import { useNavigate } from "react-router-dom"
 
 export const Terms = () => {
-  const { t } = useTranslation("landing")
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   return (
